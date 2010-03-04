@@ -1,0 +1,1784 @@
+%\VignetteIndexEntry{GeoXp: an R package for exploratory}
+%\VignetteDepends{}
+%\VignetteKeywords{spatial}
+%\VignettePackage{GeoXp}
+\documentclass{article}
+\usepackage{Sweave}
+\usepackage{times}
+\usepackage{mathptm}
+\usepackage{hyperref}
+\usepackage{natbib}
+
+\setkeys{Gin}{width=0.95\textwidth}
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\newcommand{\strong}[1]{{\normalfont\fontseries{b}\selectfont #1}}
+\let\pkg=\strong
+\RequirePackage{alltt}
+\newenvironment{example}{\begin{alltt}}{\end{alltt}}
+\newenvironment{smallexample}{\begin{alltt}\small}{\end{alltt}}
+\newcommand{\code}[1]{\texttt{\small #1}}
+\def\RR{\textsf{R}\/}
+\def\SP{\texttt{S-PLUS}\/}
+\def\SS{\texttt{S}\/}
+
+\title{GeoXp: an R package for exploratory
+spatial data analysis}
+\author{T. Laurent\footnote{thibault.laurent@univ-tlse1.fr}, A. Ruiz-Gazen\footnote{ruiz@cict.fr} and C. Thomas-Agnan\footnote{cthomas@cict.fr} \cr
+{\normalsize Toulouse School of Economics} }
+\begin{document}
+\maketitle
+\renewcommand{\thefootnote}{\arabic{footnote}}
+
+<<echo=FALSE>>=
+owidth <- getOption("width")
+options("width"=70)
+ow <- getOption("warn")
+options("warn"=-1)
+.PngNo <- 0
+@
+
+
+<<label=bfigl,echo=FALSE,eval=FALSE>>=
+.PngNo <- .PngNo + 1;
+file <- paste("Fig", .PngNo, ".pdf", sep="")
+file2 <- paste("Fig", .PngNo, sep="")
+pdf(file=file, width = 8, height = 8, onefile = FALSE, paper = "special")
+@
+
+
+<<label=zfigla,echo=FALSE,eval=FALSE>>=
+dev.null <- dev.off()
+cat("\\includegraphics[width=0.55\\textwidth]{", file2, "}\n\n", sep="")
+#cat("\\includegraphics[bb = 72 500 288 750]{", file, "}\n\n", sep="")
+@
+<<label=zfiglb,echo=FALSE,eval=FALSE>>=
+dev.null <- dev.off()
+cat("\\includegraphics[width=0.55\\textwidth]{", file2, "}\n\n", sep="")
+#cat("\\includegraphics[bb = 72 500 288 750]{", file, "}\n\n", sep="")
+@
+<<label=zfiglc,echo=FALSE,eval=FALSE>>=
+dev.null <- dev.off()
+cat("\\includegraphics[width=0.9\\textwidth]{", file2, "}\n\n", sep="")
+#cat("\\includegraphics[bb = 72 500 288 750]{", file, "}\n\n", sep="")
+@
+
+We present \pkg{GeoXp}, an \RR~  package implementing interactive graphics for exploratory
+spatial data analysis. We use data bases coming from the \pkg{spdep} package to illustrate the use of these exploratory techniques based on the coupling
+between a statistical graph and a map. Besides elementary plots like boxplots, histograms
+or simple scatterplots, \pkg{GeoXp} also couples maps with Moran scatterplots, variogram
+clouds, Lorenz curves, etc. In order to make the most of the multidimensionality of the
+data, \pkg{GeoXp} includes dimension reduction techniques such as principal components analysis
+and cluster analysis whose results are also linked to the map. \newline
+
+\noindent {\sc \textbf{Key Words}}: Exploratory analysis, spatial econometrics, spatial statistics, interactive
+graphics, brushing and linking, dimension reduction.
+
+\section{Introduction}\label{sec1}
+Exploratory analysis of georeferenced data must take into account their spatial nature.
+The aims of exploratory spatial data analysis include describing geographical distributions,
+identifying spatial outliers, discovering trends or heterogeneity, regimes of spatial
+association, validating models. Geographic Information Systems (GIS) are very elaborate
+cartographic tools but their statistical analysis capabilities are generally limited. When
+they include statistical techniques, they are very basic tools from descriptive statistics
+(boxplots, histograms, barcharts, etc.) but none of the state of the are tools specific to
+spatial data from geostatistics or spatial econometrics. \citet{openshaw:1994}, \citet{anselin:1994} and \citet{anselin:1998} attempt to define the type of
+exploratory data analysis techniques that GIS should try to incorporate.
+\citet{anselin:1994} advocates the integration in the GIS of local
+measures of spatial association, spatial lag pies, spatial lag scatterplots, Moran scatterplots
+as well as variogram clouds and pocket plots. \citet{wilhelm:1998} and \citet{unwin+unwin:1998}
+also argue for the use of local measures of spatial association. \newline
+The use of the coupling between a map and a statistical graph such as a histogram,
+a boxplot or a scattermatrix has already been advocated in the literature (see detailed
+references below). The coupling is the fact that the selection of a zone on the map
+results in the automatic highlighting of the corresponding points on the statistical graph
+or reversely the selection of a portion of the graph results in the automatic highlighting
+of the corresponding points on the map.   \newline
+\citet{haslett+bradley:1991} link histograms, double histograms, scatterplot matrices, and varioclouds
+(see section~\ref{sec4}) with the maps using the PASCAL language. Anselin and Bao
+(1995) implement the methods advocated in \citet{anselin:1994} linking ArcView and Space-
+Stat. \citet{brundson:1998} implements the scatterplot matrix, the neighbour plot and the
+angle plot (see section~\ref{sec4}) plus some spatial smoothing of maps for trend detection with
+the XLISP-STAT language. \citet{haining:1998} and \citet{wise:2001} develop SAGE,
+a software system held in the ARC-INFO GIS, with very similar capabilities as those
+quoted above. Let us mention also the linkage of ArcView and XGobi by \citet{cook:1996}  and \citet{symansik:2000}  and the cartographic data visualizer (cdv)
+of \citet{dykes:1998}  based on the Tcl/Tk language. The ArcGIS Geostatistical Analyst extension\footnote{\url{http://www.esri.com/software/arcgis/extensions/geostatistical/index.html}}
+includes extensive kriging capabilities and exploratory tools but is mainly oriented towards
+geostatistics and requires the expensive ArcGIS software. Mondrian\footnote{\url{http://stats.math.uni-augsburg.de/Mondrian/}}, written in
+JAVA, features interactive descriptive tools such as mosaic plots, scatter plots, bar charts,
+histograms and parallel coordinates plots. \newline
+MANET (\citet{unwin+hawkins:1996}), preceded by SPIDER (\citet{haslett:1990}) and REGARD,
+also contains a number of interactive descriptive tools with a central objective of dealing
+with missing values, but does not contain any tool from spatial statistics.
+GeoDatm is a free specialized software for spatial data analysis developed by \citet{anselin:2003}
+and combines maps with statistical graphs dynamically. It offers many functionalities
+for exploratory data analysis and spatial regression and its main strength is extensive
+mapping with full linking and brushing possibilities. In contrast (see \citet{anselin+syabri+kho:2006}),
+GeoDa is a ``closed box'' which does not benefit from the tremendous expansion of the \RR~
+project and has to be considered as an introductory tool to spatial data analysis.   \newline
+\citet{wise:2001} \footnote{The visualization of area-based spatial data, In: Case Studies of Visualization in the Social Sciences
+online. (ed.) D. Unwin, P. Fisher. Advisory Group on Computer Graphics (AGOCG). Available online
+via \url{http://www.agocg.ac.uk/reports/visual/casestud/contents.htm}} evaluate and compare cdv, MANET, SAGE and SpaceStat.  \newline
+\citet{lesage+pace:2004} develop C/C++ code to export polygons and data information
+from ArcView shapefiles into Matlab and a GUI interface as well as mapping functions
+to link a map with a histogram and a Moran scatterplot with the possibility of zooming
+(see also \citet{lesage:1998}).   \newline
+The need for a more adaptable, comprehensive and unified tool motivated us to start the
+development of a set of statistical routines adapted to the exploration of georeferenced
+data called \pkg{GeoXp}. It is mainly an exploratory tool for researchers and experienced users
+in spatial statistics, spatial econometrics, geography, ecology, epidemiology, etc. GeoXp
+is a stand-alone (free-standing) package independent of a GIS and this is certainly an
+advantage. Its functions allow coupling between statistical plots and elementary maps
+as defined before. The routines are user friendly. The user does not need to write a lot
+of \RR~ code except for loading the data and calling a function in the command window:
+after entering some parameters as arguments of the function (usual inputs are at least the
+name of the variables concerned by the graph), the user needs to execute it. He is then
+asked to perform the selections by mouse clicking.  \newline
+The quality of the cartographic display is not a priority for the exploration itself and
+this is why the emphasis in \pkg{GeoXp} is rather in the implementation of spatial statistics
+tools as numerous and up to date as possible. The final map for a publication can always
+be produced by a more sophisticated mapping tool if necessary. \newline
+GeoXp is based on \RR: this choice of language is motivated by the flexibility of \RR~  and
+the existence of many statistical packages developed in this language. The flexibility and
+adaptability of \pkg{GeoXp} comes from the fact that \RR~  is an open source software and thus
+the user who is familiar with \RR~ can customize \pkg{GeoXp} with its own routines and benefit
+from the large amount of modelling tools available in this environment. \pkg{GeoXp} includes
+spatial econometrics as well as geostatistics tools. The advantage over approaches linking
+a computer engine for statistical computations and a cartographic device such as ArcView
+is that \pkg{GeoXp} is not specific to an operating system and it avoids file transfers. Some
+unique features are present such as linking a map with a Lorenz curve (see section~\ref{sec2}) or
+with generalized principal components analysis (see section~\ref{sec6}). \pkg{GeoXp} offers also some
+rare tools such as the angle plot of \citet{brundson:1998} (see section~\ref{sec4}) and the neighbor plot
+(see section~\ref{sec5}).  \newline
+As far as timing performances are concerned, we ran some tests on an Optiplex GX745
+2 duo 2.13GHz under Windows Vista and using the version 1.2 of \pkg{GeoXp}. With a function
+like histomap, the time required to make a selection is under 1 second for a data set of size
+less than 5 000. With a data set of size 10000, the time required is about 1.5 seconds and
+for size 50 000, it is about 6.5 seconds. For functions which involve selections on couples
+of points like for example the moranplotmap function, the call takes about 19 seconds
+for size 1000 (resp. 3mn50s for size 2500). However, beyond a data set of size 4000, an
+allocation memory problem arises and we should be able to improve on this in the next
+version of \pkg{GeoXp}. \newline
+Section~\ref{sec2} describes the basic functionalities of \pkg{GeoXp} illustrated through an example.
+In section~\ref{sec3}, we present briefly descriptive functions which link simple univariate or
+bivariate graphs to maps. In section~\ref{sec4}, we focus on geostatistics functions such as the
+variocloud and the drift plot while, in section~\ref{sec5}, we describe econometrics functions such
+as the Moran plot and the neighbor plot. The multivariate functions such as generalized
+principal component analysis are presented in section~\ref{sec6}.  \newline
+For this paper, we have chosen to illustrate only a selection of the different routines
+and the reader will find a comprehensive list of the \pkg{GeoXp} functions in the annex and
+more illustrations on the web site\footnote{\url{http://gremaq.univ-tlse1.fr/stat/Chrisweb/SiteGeoXp/Index.htm}}.
+
+<<echo=FALSE,eval=TRUE,results=hide>>=
+library(GeoXp)
+@
+
+\section{Description of the basic functionalities}\label{sec2}
+\subsection{General principles}
+ The \pkg{GeoXp} functions apply to the analysis of any data set of variables measured at geographical
+sites or on geographical zones such as cities, counties, countries, etc. called
+basic spatial units. For each site (for each zone), the data set must contain the cartesian
+coordinates of the site (respectively of the centroid of the zone). Variables can be
+continuous or categorical. In the case of geographical zones, one may use additionally
+the coordinates of polygonal spatial contours to improve the map quality and to help
+identifying locations.  \newline
+As far as format is concerned, any format that can be imported in \RR~ can be used as
+long as it contains the geographical coordinates. For example one can import a shapefile
+format from ArcView using the function \code{readShapePoly} of the \RR~ package maptools or
+the function \code{readOGR} of the \RR~ package rgdal, and a MIF/MID format from MapInfo
+using the function \code{readOGR} of the \RR~ package \pkg{rgdal}. The geographical contours have their
+own format (coordinates of vertices separated from one unit to the next by the missing
+value symbol NA). The \pkg{GeoXp} functions \code{polylist2list} and \code{spdf2list} allow to
+convert respectively the maptools, sp and rgdal formats into the format of GeoXp contours.
+The names of the main \pkg{GeoXp} functions reflect their functionality and always end
+with ``map'' (example: \code{moranplotmap}, \code{scattermap}). A call
+to a \pkg{GeoXp} function generally opens three windows: two graphical \RR~ windows for the
+statistical graph and the map respectively, and one Tk window for the menu. The user
+then selects on the menu the graph on which he wants to select points first. This graph
+then becomes active and the selection by mouse clicking begins.  \newline
+For selecting the points either on a statistical graph or on a map, the user can choose
+between selecting individual points (centroids) or selecting points inside a given polygon.
+For the selection on the statistical graph, there are several cases. In the case of a histogram
+or a bar plot, it is possible to select several non necessarily contiguous bars. In the case of
+a density plot, one can select one or several intervals on the x-axis by mouse clicking or by
+specifying its endpoints. In the case of a \code{boxplot}, one can select outliers or inter-quartiles
+ranges. In the case of the Lorenz curve, it is possible to select either a given percentage
+of spatial units on the first axis or a given threshold value of the variable. \newline
+The selection of an already selected unit delete its selection. Upon exit, each function
+returns a zero-one selection vector (one for selected units and zero for the rest) allowing
+further analysis of the selection's characteristics.  \newline
+Selected units are marked with a different color or alternatively with a different symbol and
+an option allows a chosen label to be printed too. Polygons representing the boundaries of
+the spatial units can be added easily if available. Names of the variables can be specified
+for use in the graph axes labels.  \newline
+As in cartographic devices, proportional symbol maps can be produced by adding bubbles to the map, proportional to a given variable with a legend for their size.\newline
+For most functions, an additional statistical graph can be added in a given choice list,
+using variables specified in an option. This additional graph is only interactive in one
+direction though: selections made on the first graph or the map will appear on this
+additional graph but one cannot select from the additional graph.
+
+\subsection{Example}
+Using the data set \code{eire} from \pkg{spdep}, {\sc Fig.~\ref{plotNC1}} displays a scatterplot of percentage in value terms of gross agricultural output of each county consumed by itself
+versus arterial road network accessibility in 1961, with a conditional quartile curve. An additional graph shows the bar plot of the
+variable ``Pale''. A selection on the map of the eastern districts, in red on the map,
+shows on the scatterplot that these districts have low values for the two numeric variables. Moreover, the barplot shows that they belong mainly to the
+pale one. To underline the simplicity of the code, you will find below the
+code used to load the data set and produce these plots for version 1.3 of \pkg{GeoXp}.
+
+\begin{verbatim}
+data(eire)
+eire.contours<-polylist2list(eire.polys.utm)
+scattermap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$ROADACC,
+eire.df$OWNCONS, listvar=eire.df,listnomvar=names(eire.df),
+carte=eire.contours,xlab="ROADACC",ylab="OWNCONS",
+reg.line=TRUE,quantiles=0.95,cex.lab=0.8)
+\end{verbatim}
+
+\begin{footnotesize}
+<<echo=FALSE,eval=TRUE>>=
+data(eire)
+eire.contours<-polylist2list(eire.polys.utm)
+obs=c(TRUE,TRUE,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE,TRUE,TRUE,TRUE,FALSE,FALSE,TRUE,
+TRUE,FALSE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,TRUE,TRUE,TRUE,TRUE)
+criteria = NULL
+label = ""
+cex.lab = 0.8
+pch = 16
+col = "grey"
+axes = FALSE
+lablong = ""
+lablat = ""
+long=eire.coords.utm$V1
+lat=eire.coords.utm$V2
+var1=eire.df$ROADACC
+var2=eire.df$OWNCONS
+listvar=eire.df
+listnomvar=names(eire.df)
+carte.eire=eire.contours
+xlab="Routes"
+ylab="Taux de consomation"
+reg.line=TRUE
+quantiles=0.95
+nointer <- FALSE
+nocart <- TRUE
+buble <- FALSE
+maptt <- FALSE
+z <- NULL
+legmap <- NULL
+legends <- list(FALSE, TRUE, "", list(x="topleft",y="topleft"))
+labvar = c(xlab, ylab)
+graphChoice <- "Barplot"
+varChoice1 <- "pale"
+varChoice2 <- ""
+choix <- ""
+listgraph <- c("Histogram", "Barplot", "Scatterplot")
+labmod <- c("Beyond the Pale 0","within the Pale 1 ")
+col2 <- c("orange","purple")
+col3 <- c("orange","purple")
+method <- "Cluster"
+pch2 <- pch[1]
+alpha<-14.4
+@
+\end{footnotesize}
+
+\begin{footnotesize}
+<<label=plotNC1,fig=FALSE,echo=FALSE,eval=FALSE>>=
+graphique(var1 = var1, var2 = var2, obs = obs, num = 2, graph = "Scatterplot",
+labvar = labvar, symbol = pch, couleurs = col, opt1 = reg.line,
+quantiles = quantiles, alpha1 = alpha)
+@
+\end{footnotesize}
+
+\begin{footnotesize}
+<<label=plotNC2,fig=FALSE,echo=FALSE,eval=FALSE>>=
+graphique(var1 = listvar[, which(listnomvar ==
+varChoice1)], var2 = listvar[, which(listnomvar ==
+varChoice2)], obs = obs, num = 2, graph = graphChoice,
+couleurs = col3, symbol = pch, labvar = c(varChoice1,
+varChoice2))
+@
+\end{footnotesize}
+
+\begin{footnotesize}
+<<label=plotNC3,fig=FALSE,echo=FALSE,eval=FALSE>>=
+carte(long = long, lat = lat, obs = obs, buble = buble,
+cbuble = z, criteria = criteria, nointer = nointer,
+label = label, symbol = pch2, couleurs = col2,
+carte = carte.eire, nocart = nocart, legmap = legmap,
+legends = legends, axis = axes, labmod = labmod,
+lablong = lablong, lablat = lablat, cex.lab = cex.lab,
+method = method, classe = listvar[, which(listnomvar == varChoice1)])
+@
+\end{footnotesize}
+
+\begin{figure}[htbp]
+\begin{center}
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC1>>
+<<zfigla>>
+@
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC2>>
+<<zfiglb>>
+@
+\newline
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC3>>
+<<zfiglc>>
+@
+\end{center}
+\caption{Scatterplot of percentage in value terms of gross agricultural output of each county consumed by itself
+versus arterial road network accessibility in 1961 and barplot of the variable pale}
+\label{plotNC1}
+\end{figure}
+
+\section{Descriptive functions}\label{sec3}
+The descriptive functions are called \code{barmap}, \code{boxplotmap}, \code{histomap},
+\code{densitymap}, \code{histobarmap}, \code{dblehistomap}, \code{dbledensitymap},
+\code{polyboxplotmap}, \code{ginimap} and \code{scattermap}. \newline
+In the case of a simple histogram, the selection of some bars of this histogram will show the
+corresponding zones on the map, which is just a more elaborate variant of the previous
+tool as in \citet{haslett:1990}. In the other direction, a selection of a subregion of
+the map produces the subhistogram of the distribution of the variable in this subregion.
+Since the goal is then to compare the distribution of the variable on the whole map to its
+subdistribution on the selected zone, it is not optimal to use histograms based on counts
+as most packages do, so we have introduced an alternative function allowing the user to
+produce two kernel density estimators instead of two histograms. The user can choose
+the bandwidth or use a default option for this choice. He can also change the initial
+bandwidth selection with a ruler displayed in the Tk window, resulting in an automatic
+updating of the graphs. For discrete variables, it is also possible to link a bar plot to the
+map. \newline
+When the statistical graph is a simple boxplot, only the selection on the boxplot is implemented
+and allows the user to display the zones corresponding to lower or upper quartiles
+as well as to outliers (as in \citet{haining:1998}). The same information is conveyed by
+choropleth maps in a GIS.   \newline
+For a couple of variables, a double histogram or a double kernel density estimator can be
+graphed and linked to the map. Selection is then possible on the map as well as on one
+of the histograms or density graphs. On  {\sc Fig.~\ref{plotNC2}}, the \code{dbledensitymap} function
+displays the arterial road network accessibility in 1961 and the percentage in value terms of gross
+agricultural output of each county consumed by itself. A selection
+of the counties with more than 6300 and less than 3300 arterial road network accessibility on the first density
+produces on the second plot the graph of the corresponding subdensity for the percentage in value terms of gross
+agricultural output. The subdensity looks different.    \newline
+
+\begin{verbatim}
+data(eire)
+eire.contours<-polylist2list(eire.polys.utm)
+obs<-dbledensitymap(eire.coords.utm$V1,eire.coords.utm$V2,
+eire.df$ROADACC,eire.df$OWNCONS,xlab=c("arterial road networkaccessibility",
+"percentage in value terms of gross agricultural output"),
+carte=eire.contours,kernel="normal",listvar=eire.df,
+listnomvar=names(eire.df))
+\end{verbatim}
+
+\begin{footnotesize}
+<<echo=FALSE,eval=TRUE>>=
+obs<-c(FALSE,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,
+FALSE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE)
+kernel='triweight'
+criteria = NULL
+label = ""
+cex.lab = 0.8
+pch = 16
+col=c("grey","blue")
+axes = FALSE
+lablong = ""
+lablat = ""
+long=eire.coords.utm$V1
+lat=eire.coords.utm$V2
+var1=eire.df$ROADACC
+var2=eire.df$OWNCONS
+listvar=eire.df
+listnomvar=names(eire.df)
+carte.eire=eire.contours
+xlab=c("arterial road network accessibility","percentage in value terms of gross agricultural output")
+ylab=c("density","density")
+graph1<-"Densityplot2"
+graph2<-"Densityplot1"
+alpha11 <- 20
+alpha21 <- 40
+nointer <- FALSE
+nocart <- TRUE
+buble <- FALSE
+maptt <- FALSE
+z <- NULL
+legmap <- NULL
+legends <- list(FALSE, FALSE, "", "")
+graphChoice <- ""
+varChoice1 <- ""
+varChoice2 <- ""
+choix <- ""
+listgraph <- c("Histogram", "Barplot", "Scatterplot")
+col2 <- "blue"
+col3 <- col[1]
+pch2 <- pch[1]
+method <- ""
+pch2 <- pch[1]
+labmod <- ""
+labvar1 <- c(xlab[1], ylab[1])
+labvar2 <- c(xlab[2], ylab[2])
+polyX2<-NULL
+polyX2[[1]]<-list(x=6375.486,x=8383.627)
+polyX2[[2]]<-list(x=3276.216,x=2196.695)
+@
+\end{footnotesize}
+
+\begin{footnotesize}
+<<label=plotNC4,fig=FALSE,echo=FALSE,eval=FALSE>>=
+carte(long = long, lat = lat, obs = obs, buble = buble,
+cbuble = z, criteria = criteria, nointer = nointer,
+label = label, cex.lab = cex.lab, carte = carte.eire,
+nocart = nocart, legmap = legmap, legends = legends,
+axis = axes, lablong = lablong, lablat = lablat,
+symbol = pch2, couleurs = col2, method = method,
+classe = listvar[, which(listnomvar == varChoice1)],
+labmod = labmod)
+@
+\end{footnotesize}
+
+\begin{footnotesize}
+<<label=plotNC5,fig=FALSE,echo=FALSE,eval=FALSE>>=
+graphique(var1=var1, obs=obs, alpha1=alpha11,   num=2, graph=graph1, Xpoly=polyX2,
+labvar=labvar1, couleurs=col[1], kernel=kernel)
+@
+\end{footnotesize}
+
+\begin{footnotesize}
+<<label=plotNC6,fig=FALSE,echo=FALSE,eval=FALSE>>=
+graphique(var1 = var2, obs = obs, alpha1 = alpha21,
+num = 2, graph = graph2, labvar = labvar2,
+couleurs = col[2], symbol = pch, kernel = kernel)
+@
+\end{footnotesize}
+
+\begin{figure}[htbp]
+\begin{center}
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC5>>
+<<zfigla>>
+@
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC6>>
+<<zfiglb>>
+@
+\newline
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC4>>
+<<zfiglc>>
+@
+\end{center}
+\caption{Densities of the arterial road network accessibility and the percentage
+in value terms of gross agricultural output. Selection corresponds to the dashed
+curve on the last plot.}
+\label{plotNC2}
+\end{figure}
+
+
+A simple scatterplot of a couple of variables can also be linked to the map and selection is
+again possible in both directions as in  \citet{brundson:1998}. A kernel smoother can be added
+to the scatterplot for convenience with a flexible choice of bandwidth. An option allows
+the user to overlay conditional quantile estimates instead of the kernel smoother which
+estimates the conditional mean, thus allowing a more precise exploration of the cloud
+when one is interested for example in the extreme rather than the average behaviour.
+The possibility of linking the map with a Lorenz curve allows the study of the geographical
+component of the concentration or inequality measured by the Gini index (see \citet{gastwirth:1972}).
+The Lorenz curve is a scatterplot of the relative mass of a given variable X due to
+the sites with a value of X less than or equal to x versus the relative frequency of such
+sites. The Gini index (area between the Lorenz curve and the diagonal of the unit square)
+measures the inequality in the distribution of X.  \newline
+The selection of a given frequency F on the frequency axis results in the printing of the
+corresponding relative mass G on the other axis, the corresponding quantile (value x such
+that the cumulative distribution function of X at x equals to F) as well as the selection
+of the corresponding points on the map (spatial units such that X is less than or equal
+to x). For example {\sc Fig.~\ref{plotNC3}} shows the Lorenz curve of the total personal income and the
+bar plot of variable pale. The Lorenz curve, which is away from the diagonal with a
+Gini index of 0.47, shows that a small number of counties concentrate a large number of
+income.
+
+\begin{verbatim}
+data(eire)
+eire.contours<-polylist2list(eire.polys.utm)
+obs<-ginimap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$INCOME,
+listvar=eire.df,listnomvar=names(eire.df),carte=eire.contours,col="orange",
+label=as.character(1:26),cex.lab=0.7,xlab="Income",ylab="Total Income")
+\end{verbatim}
+
+\begin{footnotesize}
+<<echo=FALSE,eval=TRUE>>=
+obs<-c(TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,
+TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,
+TRUE,FALSE,FALSE)
+criteria = NULL
+label = ""
+cex.lab = 0.8
+pch = 16
+col=c("grey","blue")
+axes = FALSE
+lablong = ""
+lablat = ""
+long=eire.coords.utm$V1
+lat=eire.coords.utm$V2
+var=eire.df$INCOME
+listvar=eire.df
+listnomvar=names(eire.df)
+carte.eire=eire.contours
+xlab=c("F")
+ylab=c("G")
+nointer <- FALSE
+nocart <- TRUE
+buble <- FALSE
+maptt <- FALSE
+z <- NULL
+legmap <- NULL
+legends <- list(FALSE, TRUE, "", list(x="topleft",y="topleft"))
+graphChoice <- "Barplot"
+varChoice1 <- "pale"
+varChoice2 <- ""
+choix <- ""
+listgraph <- c("Histogram", "Barplot", "Scatterplot")
+labmod <- c("Beyond the Pale 0","within the Pale 1 ")
+col2 <- c("orange","purple")
+col3 <- c("orange","purple")
+pch2 <- pch[1]
+method <- "Cluster"
+pch2 <- pch[1]
+labvar=c(xlab,ylab)
+result <- gini(var)
+F <- result$F
+G <- result$G
+GINI <- result$gini
+@
+\end{footnotesize}
+
+\begin{footnotesize}
+<<label=plotNC4a,fig=FALSE,echo=FALSE,eval=FALSE>>=
+carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
+symbol=pch2, couleurs=col2,carte=carte.eire,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
+lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
+@
+\end{footnotesize}
+
+\begin{footnotesize}
+<<label=plotNC5a,fig=FALSE,echo=FALSE,eval=FALSE>>=
+graphique(var1=var, obs=obs, num=2, graph="Lorentz", Xpoly=0.5405001,labvar=labvar, symbol=pch,
+couleurs=col, F=F, G=G)
+@
+\end{footnotesize}
+
+\begin{footnotesize}
+<<label=plotNC6a,fig=FALSE,echo=FALSE,eval=FALSE>>=
+graphique(var1 = listvar[, which(listnomvar ==
+varChoice1)], var2 = listvar[, which(listnomvar ==
+varChoice2)], obs = obs, num = 2, graph = graphChoice,
+couleurs = col3, symbol = pch, labvar = c(varChoice1,
+varChoice2))
+@
+\end{footnotesize}
+
+\begin{figure}[htbp]
+\begin{center}
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC5a>>
+<<zfigla>>
+@
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC6a>>
+<<zfiglb>>
+@
+\newline
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC4a>>
+<<zfiglc>>
+@
+\end{center}
+\caption{Lorenz curve and Gini index for the number of students: selection of the
+first $38\%$ of counties sorted by increasing number of income.}
+\label{plotNC3}
+\end{figure}
+
+
+\section{Geostatistic functions}\label{sec4}
+The geostatistic functions are called \code{angleplotmap}, \code{driftmap}
+and \code{variocloudmap}.
+As in \citet{cressie:1993}, in order to examine trends in one variable, \pkg{GeoXp} creates a
+grid of a given fineness and for each square of the grid computes the mean of the variable
+for all basic units intersecting the square. It is then easy to produce row and column means
+and medians, and plot the row means and medians to the right of the map as well as the
+column means and medians below the map. No selection is possible here but the study
+of the variation of the row means with longitude and column means with latitude brings
+out the north-south and east-west trends if present. An option allows the user to rotate
+the map by a given angle and thus study trends in any direction. Discrepancies between
+means and corresponding medians detect the presence of outliers in a given row or column.
+Generally, the user may have no prior idea of the directions of the main trends. It is then
+interesting to use an angle plot prior to the trend graphic (see \citet{brundson:1998}) that may
+reveal unknown spatial heterogeneity. The angle plot implemented here is a scatterplot
+of the square root of the absolute differences between the values of the variable at two
+given zones as a function of the bearing of a line joining the centroids of the two zones (in
+radians or degrees).  \newline
+On {\sc Fig.~\ref{plotNC4}}, the selection of the couples of sites with a bearing of $3\pi/4$ radians and
+with large absolute differences in the topsoil copper concentration (see \emph{help(meuse)}) reveals a
+disparity between the sites near the river and the sites far to the river. It is interesting to train
+oneself in the interpretation of angle plots by applying them to deterministic trends such
+as latitude and longitude.  \newline
+
+\begin{verbatim}
+data(eire)
+data(meuse)
+data(meuse.riv)
+obs<-angleplotmap(meuse$x,meuse$y,meuse$copper,col="green",
+quantiles=0.9,listvar=meuse,listnomvar=names(meuse),
+xlab="topsoil copper concentration, ppm. ",pch=7,carte=meuse.riv)
+\end{verbatim}
+
+\begin{footnotesize}
+<<echo=FALSE,eval=TRUE>>=
+data(meuse)
+data(meuse.riv)
+
+long=meuse$x
+lat=meuse$y
+var=meuse$copper
+quantiles=0.9
+listvar=meuse
+listnomvar=names(meuse)
+criteria=NULL
+carte.meuse = meuse.riv[c(21:65,110:153),]
+label = ""
+cex.lab=1
+pch = 16
+col="green"
+xlab="topsoil copper concentration, ppm. "
+ylab="absolut magnitude"
+lablong = ""
+lablat = ""
+axes=FALSE
+
+  nointer<-FALSE
+  nocart<-TRUE
+  buble<-FALSE
+  legends<-list(FALSE,FALSE,"","")
+  z<-NULL
+  legmap<-NULL
+  inout=NULL
+  labvar=c(xlab,ylab)
+  obs <- matrix(FALSE, nrow = length(long), ncol = length(long))
+  obs[rbind(c(53,44),c(44,53),c(126,53),c(126,53),c(127,54),c(128,55),c(134,55),
+  c(53,126),c(54,127),c(55,128),c(55,134))]<-TRUE
+
+# Transformation d'un data.frame en matrix
+if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(listvar)
+
+# calcul des matrices theta et absvar
+long1 <- matrix(rep(t(long), length(long)), ncol = dim(t(long))[2],byrow = FALSE)
+long2 <- matrix(rep(t(long), length(long)), ncol = dim(t(long))[2],byrow = TRUE)
+lat1 <- matrix(rep(t(lat), length(lat)), ncol = dim(t(lat))[2],byrow = FALSE)
+lat2 <- matrix(rep(t(lat), length(lat)), ncol = dim(t(lat))[2],byrow = TRUE)
+theta <- matrix(0, nrow = length(long), ncol = length(long))
+numer <- lat2 - lat1
+denom <- long2 - long1
+
+for (i in 1:length(long))
+{
+ for (j in 1:length(long))
+ {
+  if (denom[i, j] == 0)
+  {
+  theta[i, j] <- pi/2
+  }
+  else
+  {
+  theta[i, j] <- atan(numer[i, j]/denom[i, j])
+  }
+ }
+}
+
+theta[which(theta < 0)] <- theta[which(theta < 0)] + pi
+v1 <- matrix(rep(t(var), length(var)), ncol = dim(t(var))[2],byrow = FALSE)
+v2 <- matrix(rep(t(var), length(var)), ncol = dim(t(var))[2],byrow = TRUE)
+absvar <- abs(v1 - v2)
+
+        u1 <- sort(theta)
+        u1 <- as.vector(u1)
+        z <- seq(1, max(u1), by = (max(u1)/1000))
+        z <- round(z)
+        z1 <- z[2:length(z)] - z[1:(length(z) - 1)]
+        h <- mean(z1)
+        p <- 1/(1 + (h^3/6))
+        p1 <- 1/(1 + (h^3/60))
+        p2 <- 1/(1 + (h^3/0.6))
+        alpha <- (1 - p)/p
+        borne1 <- (1 - p1)/p1
+        borne2 <- (1 - p2)/p2
+
+@
+\end{footnotesize}
+
+
+\begin{footnotesize}
+<<label=plotNC7,fig=FALSE,echo=FALSE,eval=FALSE>>=
+carte(long=long, lat=lat,criteria=criteria,buble=buble,cbuble=z,nointer=nointer,obs=obs,
+lablong=lablong, lablat=lablat,method="Angleplot",label=label,cex.lab=cex.lab, symbol=pch,
+carte=carte.meuse,nocart=nocart,axis=axes,legmap=legmap,legends=legends)
+@
+\end{footnotesize}
+
+\begin{footnotesize}
+<<label=plotNC8,fig=FALSE,echo=FALSE,eval=FALSE>>=
+graphique(var1 = theta, var2 = absvar, obs = obs,num = 2, graph = "Angleplot",
+labvar = labvar,couleurs=col,symbol = pch, quantiles = quantiles,
+alpha1 = alpha)
+@
+\end{footnotesize}
+
+
+\begin{figure}[htbp]
+\begin{center}
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC8>>
+<<zfigla>>
+@
+\newline
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC7>>
+<<zfiglc>>
+@
+\end{center}
+\caption{Angle plot for topsoil copper concentration: selection of large absolute
+differences for a given angle.}
+\label{plotNC4}
+\end{figure}
+
+The variogram cloud is another tool inspired by geostatistics to study autocorrelation
+(\citet{chauvet:1982}). It is a simple scatterplot of the half square of the difference between the
+value of the variable at two locations against the distance between these points. As in
+\citet{haslett+bradley:1991}, outliers may be mapped by highlighting those points on this graph
+which have a high value of the second coordinate. An option allows the user to overlay an
+empirical variogram or a smooth of this scatterplot thus estimating the variogram function
+(with the possibility of a robust alternative (\citet{cressie:1993})). This option is important to
+represent the bulk of the cloud since, because of the high number of couples of positions
+with a low value on the vertical axis, it is often desirable to combine this with another
+option allowing to represent only those couples with a value above a chosen threshold
+percentile (conditional on the value of the horizontal coordinate). Finally, another option
+allows to concentrate on couples of points in a given direction (with a tolerance) and
+overlay a directional variogram. On {\sc Fig.~\ref{plotNC5}}, one can see that high differences in the
+topsoil lead concentration appear between sites located near the river (with a high concentration) and
+sites distant to the river. A threshold of 75 percent has been
+chosen for representing the points.
+
+\begin{verbatim}
+data(meuse)
+data(meuse.riv)
+obs<-variocloudmap(meuse$x,meuse$y,meuse$zinc,
+quantiles=0.75,listvar=meuse,listnomvar=names(meuse),
+xlim=c(0,2000),ylim=c(0,500000),pch=2,ylab='semivariance',
+carte=meuse.riv[c(21:65,110:153),])
+\end{verbatim}
+
+\begin{footnotesize}
+<<echo=FALSE,eval=TRUE>>=
+data(meuse)
+data(meuse.riv)
+
+long=meuse$x
+lat=meuse$y
+var=meuse$zinc
+quantiles=0.75
+listvar=meuse
+listnomvar=names(meuse)
+xlim=c(0,2000)
+ylim=c(0,500000)
+
+bin=NULL
+criteria=NULL
+carte.meuse = meuse.riv[c(21:65,110:153),]
+label = ""
+cex.lab=1
+pch = 2
+col="grey"
+xlab="topsoil zinc concentration, ppm."
+ylab="semivariance"
+lablong = ""
+lablat = ""
+axes=FALSE
+
+
+  nointer<-FALSE
+  nocart<-TRUE
+  buble<-TRUE
+  legends<-list(TRUE,FALSE,list(x=178424.0,y=333637.1),"")
+legmap<-c ("3","1.51617704183449","0.7436517629476",
+"1839","469.72","113","zinc")
+  inout<-NULL
+  labvar<-c(xlab,ylab)
+
+  opt1<-2
+  opt2<-2
+
+  angle<-0
+  obs <- matrix(FALSE, nrow = length(long), ncol = length(long))
+obs[rbind(c(4,2),c(2,4),c(40,37),c(37,40),c(58,53),c(56,54),c(124,54),
+c(54,56),c(53,58),c(123,59),c(68,67),c(113,67),c(115,67),c(67,68),
+c(99,79),c(138,79),c(98,81),c(99,81),c(81,98),c(79,99),c(81,99),c(67,113),
+c(67,115),c(59,123),c(54,124),c(79,138))]=TRUE
+
+# Transformation data.frame en matrix
+if((length(listvar)>0)&&(dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(listvar)
+
+
+####################################################
+# calcul des matrices diff et dist
+####################################################
+
+  long1 <- matrix(rep(t(long), length(long)), ncol = dim(t(long))[2],byrow = FALSE)
+  long2 <- matrix(rep(t(long), length(long)), ncol = dim(t(long))[2],byrow = TRUE)
+
+  lat1 <- matrix(rep(t(lat), length(lat)), ncol = dim(t(lat))[2],byrow = FALSE)
+  lat2 <- matrix(rep(t(lat), length(lat)), ncol = dim(t(lat))[2],byrow = TRUE)
+
+  v1 <- matrix(rep(t(var), length(var)), ncol = dim(t(var))[2],byrow = FALSE)
+  v2 <- matrix(rep(t(var), length(var)), ncol = dim(t(var))[2],byrow = TRUE)
+
+ theta <- matrix(0, nrow = length(long), ncol = length(long))
+ numer <- lat2 - lat1
+ denom <- long2 - long1
+
+  theta[which(denom == 0,arr.ind=TRUE)] <- pi/2
+  theta[which(denom != 0,arr.ind=TRUE)] <- atan(numer[which(denom != 0,arr.ind=TRUE)]/denom[which(denom != 0,arr.ind=TRUE)])
+
+  theta[which(theta < 0)] <- theta[which(theta < 0)] + pi
+
+  dist <- sqrt((long1 - long2)^2 + (lat1 - lat2)^2)
+  dif <-  (v1 - v2)^2/2
+  dif2 <-  (abs(v1 - v2))^(1/2)
+
+
+####################################################
+# choix des bornes des réglettes (inspiré de la documentation de Matlab)
+####################################################
+
+   v4 <- sort(dist)
+   v4 <- as.vector(v4)
+   z <- seq(1, max(v4), by = (max(v4)/1000))
+   z <- round(z)
+   z1 <- z[2:length(z)] - z[1:(length(z) - 1)]
+   h <- mean(z1)
+   p <- 1/(1 + (h^3/6))
+   p1 <- 1/(1 + (h^3/60))
+   p2 <- 1/(1 + (h^3/0.6))
+   alpha <- (1 - p)/p
+   borne1 <- (1 - p1)/p1
+   borne2 <- (1 - p2)/p2
+    z<-c(2.2364327,2.3630516,1.7697845,1.1214940,1.1473780,1.1726909,
+1.3012731,1.4095919,1.3031522,0.9463590,0.9617480,1.1083253,
+2.3159846,1.5705279,1.2631042,2.2473475,1.7221331,1.8653709,
+1.8965926,2.2690197,1.8148382,1.4026309,1.2956194,1.0329009,
+0.9893396,0.9743865,1.0065041,0.9385699,1.0837672,0.9385699,
+1.0089324,0.9843805,1.1061153,0.9693509,1.0209870,1.2533804,
+1.6687317,2.0190770,2.1056903,2.6675502,1.2076429,0.9040420,
+0.9280828,1.1236738,1.9107321,1.9107321,1.5069172,1.3365242,
+1.1747757,1.3547090,1.0423339,1.9934640,2.7524274,3.0000000,
+2.7345890,2.1368361,1.4540263,1.6406341,2.7727996,2.4132586,
+2.1068520,1.9298463,1.7958626,1.7739275,1.9799155,1.9587925,
+2.2776308,0.7631394,1.9512827,1.8548468,1.8188787,1.9700034,
+1.8309466,1.7035612,1.6391419,1.8242521,1.6241449,1.6554818,
+2.3578684,2.6016057,2.3836720,2.8605433,1.9349115,1.1685102,
+1.0860227,1.2455467,1.6331596,1.5720852,1.4336893,1.2746749,
+1.3991375,1.6451025,1.6804218,0.8709560,1.0470186,0.9385699,
+1.0516824,0.9540845,0.9843805,0.9566459,0.9868631,0.8765571,
+0.9967320,0.8365625,0.8158303,0.7566993,0.7436518,0.7976311,
+0.9693509,1.0837672,1.0399837,0.8277409,0.7914717,0.9013313,
+0.9668232,1.0655513,0.9967320,1.8797452,1.0137714,0.9843805,
+0.8247794,1.1127322,1.8548468,2.0178647,1.1323509,0.8336324,
+0.7631394,0.8624863,1.4251299,1.5230689,0.7852640,1.0137714,
+1.0376281,0.8067820,0.8306918,0.8793443,0.7945573,1.0040700,
+1.4856574,1.2035836,0.9617480,0.8681420,0.9094394,1.4043744,
+1.5182414,1.7306375,1.7150138,1.9575428,1.1236738,1.0233808,
+0.9013313,1.5580135,1.2937294,0.8904056,1.3547090)
+@
+\end{footnotesize}
+
+
+\begin{footnotesize}
+<<label=plotNC7,fig=FALSE,echo=FALSE,eval=FALSE>>=
+carte(long = long, lat = lat, obs = obs, lablong = lablong,lablat = lablat,
+label = label,buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte.meuse,nocart=nocart,
+cex.lab=cex.lab, method = "Variocloud",axis=axes,legmap=legmap,legends=legends)
+@
+\end{footnotesize}
+
+\begin{footnotesize}
+<<label=plotNC8,fig=FALSE,echo=FALSE,eval=FALSE>>=
+graphique(var1 = dist, var2 = dif, var3=dif2, obs = obs,opt1=opt1,opt2=opt2, num = 2,
+graph = "Variocloud", labvar = labvar, symbol = pch, couleurs=col, quantiles = quantiles,
+alpha1 = alpha, bin=bin, xlim=xlim, ylim=ylim)
+@
+\end{footnotesize}
+
+
+\begin{figure}[htbp]
+\begin{center}
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC8>>
+<<zfigla>>
+@
+\newline
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC7>>
+<<zfiglc>>
+@
+\end{center}
+\caption{Variocloud plot for topsoil zinc concentration, ppm: selection of large absolute
+differences for a given little distance. The empirical variogram is represented by a continuous line,
+the robust version is represented by a dashed line}
+\label{plotNC5}
+\end{figure}
+
+
+\section{Econometric functions}\label{sec5}
+The econometric functions are called \code{moranplotmap} and \code{neighbourmap}.
+ These two functions use neighborhood or weight matrices of several types, which can be constructed
+using the auxiliary function \code{makeneighborsw} or using other similar
+functions in the \RR~ package \pkg{spdep} of Bivand\footnote{see the site
+\url{http://cran.r-project.org/web/views/Spatial.html}}. The function \code{makeneighborsw}
+creates a weighting scheme based on a given number of nearest neighbors or a given distance
+threshold or using these two criteria together. The function \code{normW} performs
+row standardizing of these matrices if necessary.  \newline
+To examine spatial autocorrelation, given a spatial binary weight matrix (\citet{Bavaud:1998})
+containing information about the neighboring relationships of the basic spatial units, one
+can simply make a scatterplot of the value of the variable on each unit versus the value
+of the same variable on the neighboring units (neighbor plot). Points far away from the
+diagonal on this plot identify local outliers and selection is again possible on the plot
+as well as on the map. When a point is selected on the map, its neighbors are shown
+connected by lines to this point. We illustrate this method with the 49 neighbourhoods in Columbus
+on the variable \code{crime} (see \code{help(columbus)}). We draw on
+{\sc Fig.~\ref{plotNC6}} a neighbor plot with a weight matrix based on 4 nearest neighbors.
+This graph shows some amount of spatial autocorrelation with points not too far
+from the diagonal and we notice the asymmetry due to the corresponding asymmetry of the weight matrix.
+The selection of the counties with the smallest value of crime reveals that their neighbors
+have higher values of crime.   \newline
+This tool is also interesting for investigating a chosen spatial weight matrix as is shown
+on {\sc Fig.~\ref{plotNC7}}. For the same 4 nearest neighbors matrix, the couples of points with a large
+difference in longitude are selected. Large distances between neighbors may arise for some
+weight matrices (for example those based on a Delaunay triangulation) and this type of
+graph points out these inappropriate neighbors.   \newline
+
+\begin{verbatim}
+columbus <- readShapePoly(system.file("etc/shapes/columbus.shp",
+package="spdep")[1])
+
+list.OLD <- spdf2list(columbus)
+contours.OLD <- list.OLD$poly
+x.OLD <- list.OLD$X
+y.OLD <- list.OLD$Y
+
+W <- makeneighborsw(x.OLD , y.OLD,method="neighbor",4)
+obs<-neighbourmap(x.OLD , y.OLD, columbus@data$CRIME, W,
+carte=contours.OLD,criteria=(columbus@data$CRIME>mean(columbus@data$CRIME)),
+listvar=columbus@data, listnomvar=names(columbus@data),
+xlab='crime',id=TRUE, col="grey", pch=4)
+\end{verbatim}
+
+\begin{footnotesize}
+<<echo=FALSE,eval=TRUE>>=
+columbus <- readShapePoly(system.file("etc/shapes/columbus.shp",
+package="spdep")[1])
+list.OLD <- spdf2list(columbus)
+contours.OLD <- list.OLD$poly
+x.OLD <- list.OLD$X
+y.OLD <- list.OLD$Y
+long<-x.OLD
+lat<-y.OLD
+var<-columbus@data$CRIME
+W <- makeneighborsw(x.OLD , y.OLD,method="neighbor",4)
+id=TRUE
+listvar=columbus@data
+listnomvar=names(columbus@data)
+carte.OLD=contours.OLD
+criteria=(columbus@data$CRIME>mean(columbus@data$CRIME))
+label=""
+cex.lab=1
+pch=4
+col="grey"
+xlab='crime'
+ylab=""
+axes=FALSE
+lablong=""
+lablat=""
+
+ obs <- matrix(FALSE, nrow=length(long), ncol=length(long))
+ obs2 <- matrix(FALSE, nrow=length(long), ncol=length(long))
+ obs[rbind(c(7,4),c(7,8),c(7,13),c(7,14),c(20,17),c(20,23),c(20,27),
+c(20,33))]<-TRUE
+ nointer<-TRUE
+ nocart<-TRUE
+ buble<-TRUE
+ legends<-list(TRUE,FALSE,list(x=6.589754,y=14.61352),"")
+ z<-c(1.4333280,1.5672414,2.0002644,2.0569663,2.5743976,1.8453528,
+0.1526071,2.2405184,1.9966408,2.1075676,2.8522997,2.7217608,
+2.4704163,2.7303979,2.5193587,2.6765807,2.1946540,2.3965023,
+2.6688396,0.1709873,2.2880656,2.0983803,1.6183696,2.2367839,
+2.8298540,2.3134938,2.6262180,2.7268946,2.8171596,3.0000000,
+1.5196502,1.5815070,2.3415137,1.7697309,2.2622548,1.3670648,
+2.3547802,2.6489154,1.5796585,1.4566228,1.5715447,1.4678171,
+2.1885393,1.8416538,1.9473720,1.4695357,1.9065035,1.8657212,
+1.7160425)
+ legmap<-c("2.99995549525658","2.14227783531945","0.153346183659309","68.89",
+ "35.13","0.18","CRIME")
+ inout<-NULL
+ graf<-"Neighbourplot1"
+ labvar<-c(xlab,ylab)
+ classe<-rep(1,length(long))
+
+# Transformation data.frame en matrix
+if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(listvar)
+@
+\end{footnotesize}
+
+
+\begin{footnotesize}
+<<label=plotNC4b,fig=FALSE,echo=FALSE,eval=FALSE>>=
+carte(long=long, lat=lat, obs=obs,  carte=carte.OLD,nocart=nocart, classe=classe,
+symbol=c(pch[1],16),W=W, method="Neighbourplot2", buble=buble, cbuble=z, criteria=criteria,
+nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
+label=label, cex.lab=cex.lab)
+@
+\end{footnotesize}
+
+\begin{footnotesize}
+<<label=plotNC5b,fig=FALSE,echo=FALSE,eval=FALSE>>=
+graphique(var1=var, obs=obs, num=3, graph="Neighbourplot", labvar=labvar,
+couleurs=col, symbol=pch, opt1=id , W=W)
+@
+\end{footnotesize}
+
+
+
+\begin{figure}[htbp]
+\begin{center}
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC5b>>
+<<zfigla>>
+@
+\newline
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC4b>>
+<<zfiglc>>
+@
+\end{center}
+\caption{Neighbor plot for crime: selection of small values of crime.}
+\label{plotNC6}
+\end{figure}
+
+
+\begin{verbatim}
+columbus <- readShapePoly(system.file("etc/shapes/columbus.shp",
+package="spdep")[1])
+
+list.OLD <- spdf2list(columbus)
+contours.OLD <- list.OLD$poly
+x.OLD <- list.OLD$X
+y.OLD <- list.OLD$Y
+
+W <- makeneighborsw(x.OLD , y.OLD,method="neighbor",4)
+obs<-neighbourmap(x.OLD , y.OLD, x.OLD, W,carte=contours.OLD,
+criteria=(columbus@data$CRIME>mean(columbus@data$CRIME)),
+listvar=columbus@data, listnomvar=names(columbus@data),
+xlab='longitude',id=TRUE, col="grey", pch=4)
+\end{verbatim}
+
+\begin{footnotesize}
+<<echo=FALSE,eval=TRUE>>=
+columbus <- readShapePoly(system.file("etc/shapes/columbus.shp",
+package="spdep")[1])
+list.OLD <- spdf2list(columbus)
+contours.OLD <- list.OLD$poly
+x.OLD <- list.OLD$X
+y.OLD <- list.OLD$Y
+long<-x.OLD
+lat<-y.OLD
+var<-x.OLD
+W <- makeneighborsw(x.OLD , y.OLD,method="neighbor",4)
+id=TRUE
+listvar=columbus@data
+listnomvar=names(columbus@data)
+carte.OLD=contours.OLD
+criteria=(columbus@data$CRIME>mean(columbus@data$CRIME))
+label=""
+cex.lab=1
+pch=4
+col="grey"
+xlab='longitude'
+ylab=""
+axes=FALSE
+lablong=""
+lablat=""
+
+ obs <- matrix(FALSE, nrow=length(long), ncol=length(long))
+ obs2 <- matrix(FALSE, nrow=length(long), ncol=length(long))
+ obs[rbind(c(2,3),c(10,9),c(6,10),c(39,42),c(42,46))]<-TRUE
+ nointer<-FALSE
+ nocart<-TRUE
+ buble<-FALSE
+ legends<-list(FALSE,FALSE,"","")
+ z<-NULL
+ legmap<-NULL
+ inout<-NULL
+ graf<-"Neighbourplot1"
+ labvar<-c(xlab,ylab)
+ classe<-rep(1,length(long))
+
+# Transformation data.frame en matrix
+if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(listvar)
+@
+\end{footnotesize}
+
+
+\begin{footnotesize}
+<<label=plotNC4c,fig=FALSE,echo=FALSE,eval=FALSE>>=
+carte(long=long, lat=lat, obs=obs,  carte=carte.OLD,nocart=nocart, classe=classe,
+symbol=c(pch[1],16),W=W, method="Neighbourplot2", buble=buble, cbuble=z, criteria=criteria,
+nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
+label=label, cex.lab=cex.lab)
+@
+\end{footnotesize}
+
+\begin{footnotesize}
+<<label=plotNC5c,fig=FALSE,echo=FALSE,eval=FALSE>>=
+graphique(var1=var, obs=obs, num=2, graph="Neighbourplot", labvar=labvar,
+couleurs=col, symbol=pch, opt1=id , W=W)
+@
+\end{footnotesize}
+
+
+\begin{figure}[htbp]
+\begin{center}
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC5c>>
+<<zfigla>>
+@
+\newline
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC4c>>
+<<zfiglc>>
+@
+\end{center}
+\caption{Neighbor plot for longitude: selection of large differences in longitude.}
+\label{plotNC7}
+\end{figure}
+
+A simple scatterplot linked to the map has potentials for more advanced investigations if
+one applies it to transformations of the raw variables. For example, for a centered variable
+$X$ and for a given weight matrix $W$, the classical Moran scatterplot (\citet{anselin:1995}) is
+the scatterplot of the spatial lag variable $WX$ against $X$. The function moranplotmap of
+\pkg{GeoXp} links this scatterplot to the map and exhibits the regression line whose slope is
+the Moran index indicating the strength and nature of the spatial autocorrelation. But
+the observation of the cloud itself conveys more information about changes in spatial
+autocorrelation regimes and also outliers (see \citet{anselin:1995} for details). The selection
+of each quadrant on the plot exhibits zones of positive and negative autocorrelation on
+the map. An option allows the computation of the local Moran statistic for the selected
+points. The p-value of the Moran gaussian test for spatial autocorrelation is displayed by
+default and the p-value of the permutation test based on a chosen number of simulations
+can also be obtained.  \newline
+{\sc Fig.~\ref{plotNC8}} displays the Moran scatterplot of the House sales price in Baltimore
+in 1978 (see help(baltimore)). The
+Moran index of 0.51 has a p-value of 0.0001 for the gaussian and the permutation tests
+(with 500 permutations). The selection of the first quadrant, corresponding to districts
+with a House sales price higher than average as well as their neighbors, shows
+that these are mainly located in the North.
+
+\begin{verbatim}
+data(baltimore)
+W <- makeneighborsw(baltimore$X,baltimore$Y,method="neighbor",4)
+moranplotmap(baltimore$X,baltimore$Y,baltimore$PRICE,W,
+label=baltimore$STATION,criteria=(baltimore$PRICE>mean(baltimore$PRICE)),
+listvar=baltimore,listnomvar=names(baltimore),flower=TRUE,
+locmoran=TRUE,cex.lab=0.7,pch=16)
+\end{verbatim}
+
+\begin{footnotesize}
+<<echo=FALSE,eval=TRUE>>=
+data(baltimore)
+W <- makeneighborsw(baltimore$X,baltimore$Y,method="neighbor",4)
+long=baltimore$X
+lat=baltimore$Y
+var=baltimore$PRICE
+flower=TRUE
+locmoran=TRUE
+listvar=baltimore
+listnomvar=names(baltimore)
+carte.balt=NULL
+criteria=NULL
+label=baltimore$STATION
+cex.lab=0.7
+col="blue"
+pch=16
+xlab=expression((X-bar(X)))
+ylab=expression(W(X-bar(X)))
+axes=FALSE
+lablong=""
+lablat=""
+names.arg=c("H.-H.","L.-H.","L.-L.","H.-L.")
+
+obs<-vector(mode = "logical", length = length(long))
+obsq<-rep(0,length(long))
+nointer<-FALSE
+nocart<-FALSE
+buble<-FALSE
+buble2<-TRUE
+maptest<-FALSE
+classe<-rep(1,length(long))
+
+legends<-list(FALSE,TRUE,"",list(x=862.6895,y=603.6133))
+legends2<-list(TRUE,FALSE,list(x=-38.00112,y= 277.8989),"")
+
+z<-NULL
+z2<-c(0.269195106,2.032639623,3.000000000,2.377796730,1.015159719,
+1.179875147,2.686037082,0.506825783,0.515661125,2.101122553,
+0.884523687,0.570325116,0.522921314,0.388940971,0.309188775,
+1.095443591,1.068160499,1.043934848,0.084807805,0.116082268,
+0.129991286,0.554121549,0.454864653,0.290289772,0.119948505,
+0.182008478,0.066957580,0.073435017,0.031440722,0.119671237,
+0.091612293,0.024987566,0.027474910,0.157671459,0.235796630,
+0.008353253,0.169113143,0.265969342,0.050018637,0.168238204,
+0.082304160,0.178772134,0.130903774,1.503660451,0.973235848,
+0.131918582,0.457793940,2.249734690,0.675120313,0.325404579,
+0.383658884,0.620301368,1.164173447,0.559409620,0.425950540,
+1.227506012,0.398862001,1.680725328,0.724714962,0.342931375,
+0.110688583,0.186875259,0.093918167,0.762989528,0.185570093,
+0.336744611,0.376879152,0.355364219,0.253293120,1.447519252,
+0.030825783,0.763767868,0.913787021,0.787772867,0.215260550,
+0.152705648,0.371315311,0.358836769,0.173094938,0.659676854,
+0.099268180,0.417309045,0.576532952,0.556656509,0.955765822,
+0.196478231,0.427379217,0.579382038,0.643484749,0.672728318,
+0.525383635,0.574716845,0.624244596,0.502570414,0.539917976,
+0.377703241,0.236181650,0.251019009,0.408879581,0.160120396,
+0.308674994,0.275505724,0.147162891,0.429422254,0.369929214,
+0.382647307,0.087088529,0.422877299,0.202292741,0.419638412,
+0.092057168,0.175483986,0.133486134,0.222228475,0.108056945,
+0.202292741,0.300739711,0.420022765,0.357335334,0.373434406,
+0.339048388,0.349114387,0.101996358,0.276409838,0.375448468,
+0.328314879,0.291299600,0.409894372,0.454773254,0.247227400,
+0.803918810,0.784852196,0.981407462,1.128941933,1.186380302,
+0.366576893,0.840642018,0.333898999,1.149809338,0.728629714,
+0.553802542,0.540941162,0.139745539,0.321997228,0.193565057,
+0.180464303,0.136438976,0.117693485,0.504340125,0.318534078,
+0.410441632,0.444821162,0.369006821,0.628062734,0.607014998,
+0.746790844,0.598341263,0.137352856,0.452320075,0.657060324,
+0.352407783,0.489181507,0.668097709,0.551211629,0.080833770,
+0.241474359,0.426626429,0.490149404,0.624908672,0.163125270,
+0.287139248,0.234550780,0.972074051,0.723458897,0.475058967,
+0.928784153,0.428961869,0.611583732,1.233813726,0.632818989,
+0.302692024,0.122420548,0.096739044,0.037877642,0.760564829,
+0.023489324,0.224659726,0.162954258,0.041660379,0.258386924,
+0.244216938,0.183866700,0.487224657,0.089759806,0.030927967,
+0.134273026,0.298086081,0.388571643,0.282462104,0.128825230,
+0.026805680,0.218564283,0.034265512,0.153059895,0.244923289,
+0.164927074,0.154231202,0.055586810,0.584673061,0.482616774,
+0.133772062 )
+
+legmap<-NULL
+legmap2<-c("2.99998161694096","0.658383245982480","0","49.83","2.4","0","abs(LISA)")
+num<-1
+labvar=c(xlab,ylab)
+
+graphChoice <- "Barplot"
+varChoice1 <- "NROOM"
+varChoice2 <- ""
+choix <- list("NROOM","","Barplot")
+listgraph <- c("Histogram","Barplot","Scatterplot")
+
+
+quad <- FALSE
+
+# Transformation data.frame en matrix
+if((length(listvar)>0)&&(dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(listvar)
+
+# Option sur le moran
+method <- "Neighbourplot1"
+
+choix.col<-FALSE
+
+graph <- "Moran"
+col2 <- rep(col[1],4)
+pch2 <- rep(pch[1],4)
+
+
+#Normalize w
+#W<-normw(W)
+is.norm<-FALSE
+# calcul du I de Moran
+var <- var - mean(var)
+wvar <- W%*%var
+stdvar <- var/sd(var)
+uns <- rep(1, length(var))
+result <- nonormmoran(stdvar,uns,W)
+MORAN <- result$morani
+prob.I <- pnorm(result$istat)
+rvar <- qr(var)
+beta.I <- qr.coef(rvar,wvar)
+
+# calcul de la variable obsq (pour les quadrants)
+
+obsq[which((var > 0) & (wvar >= 0))] <- 1
+obsq[which((var <= 0) & (wvar > 0))] <- 2
+obsq[which((var < 0) & (wvar <= 0))] <- 3
+obsq[which((var >= 0) & (wvar < 0))] <- 4
+
+obs[which(obsq == 1)] <- !obs[which(obsq == 1)]
+  method <- "Quadrant"
+  graph <- "Quadrant"
+
+col2<-colors()[100:103]
+legends<-list(FALSE,TRUE,"",list(x=866.6738,y=600.127))
+@
+\end{footnotesize}
+
+\begin{footnotesize}
+<<label=plotNC88,fig=FALSE,echo=FALSE,eval=FALSE>>=
+carte(long=long, lat=lat, obs=obs, carte=carte.balt,nocart=nocart, classe=obsq,
+couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
+label=label, cex.lab=cex.lab,labmod=names.arg)
+@
+\end{footnotesize}
+
+\begin{footnotesize}
+<<label=plotNC21,fig=FALSE,echo=FALSE,eval=FALSE>>=
+graphique(var1=var, var2=wvar, obs=obs, num=2, graph="Moran", labvar=labvar, couleurs=col2, symbol=pch2,
+locmoran=locmoran, obsq=obsq, buble=buble2, cbuble=z2, legmap=legmap2, legends=legends2)
+@
+\end{footnotesize}
+
+\begin{figure}[htbp]
+\begin{center}
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC88>>
+<<zfiglc>>
+@
+\newline
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC21>>
+<<zfigla>>
+@
+\end{center}
+\caption{Moran scatterplot of the House sales price in Boston : selection of first
+quadrant}
+\label{plotNC8}
+\end{figure}
+
+
+\section{Multivariate functions}\label{sec6}
+\pkg{GeoXp} includes the possibility of linking the results of a clustering algorithm (k-means
+from the \RR~ function kmeans or hierarchical clustering from the \RR~ function \code{hclust}) to the
+map. We suggest using a preliminary dimension reduction technique such as principal
+components analysis to produce bivariate plots of relevant linear combinations of the
+variables linked to the map. Exploratory analysis becomes rapidly cumbersome with large
+numbers of variables hence it is essential to use devices that select interesting projections
+of the data. The multivariate functions are called \code{clustermap} and \code{pcamap}.
+The function \code{pcamap} implements the generalized principal components analysis (PCA) as it is described
+in \citet{caussinus:2003}. Note that using the link between map and scatterplot, users
+can rapidly customize \pkg{GeoXp} to any other dimension reduction method.  \newline
+In the case of usual PCA, which is a specific case of generalized PCA, one can do a
+scatterplot of the projection of the cloud for any couple of factorial axes and one can link
+it to the map. If outliers or groups appear on one of these plots, it is interesting to locate
+them on the map and explore their relative spatial position. Reversely, the positions
+on the scatterplot of a selected subregion of the map may provide information about its
+specificities with respect to the principal axes. The interpretation of the principal axes is
+guided by the representation of the variables on a separate non interactive plot. In the
+case of standardized PCA, correlations between the original variables and the principal
+components are plotted inside a correlations circle.  \newline
+{\sc Fig.~\ref{plotNC9}}~ illustrates this method on the following set of seven variables: housing value, household income,
+residential burglaries and vehicle thefts per thousand households in the neighborhood,
+open space in neighborhood, percentage housing units without plumbing, distance to CBD. The right top
+plot of {\sc Fig.~\ref{plotNC9}} shows that the first axis is positively correlated to residential burglaries
+and vehicle thefts per thousand households in the neighborhood.
+The second axis is negatively correlated to the open space in neighborhood. The labels on the axes
+indicate the percentages of inertia associated with each principal axis (which is nearly
+$66\%$ for the first two axes of this example) while the percentages for the variables indicate
+their quality of representation on the principal plane. Three counties have been selected
+on the extreme right bottom part of the scatterplot. The quality of their representation on
+the factorial plane is given on the scatterplot and is high (more than
+$76\%$ of their norm is accounted for by the first two principal coordinates). They differ
+from other counties because they have low level of crime and low level of income and are located in the center.
+
+
+\begin{verbatim}
+example(columbus)
+coords <- coordinates(columbus)
+cont<-spdf2list(columbus)$poly
+
+obs<-pcamap(coords[,1], coords[,2],columbus@data[,6:12],
+label=columbus@data$NEIGNO, carte=cont,listvar=columbus@data,
+qualproj=TRUE,listnomvar=names(columbus@data),
+name.dataset=names(columbus@data[,6:12]),
+cex.lab=0.7, pch=6, col="purple")
+\end{verbatim}
+
+\begin{footnotesize}
+<<echo=FALSE,eval=TRUE>>=
+example(columbus)
+coords <- coordinates(columbus)
+cont<-spdf2list(columbus)$poly
+long=coords[,1]
+lat=coords[,2]
+dataset=columbus@data[,6:12]
+name.dataset=names(columbus@data[,6:12])
+direct=c(1,2)
+weight=rep(1/nrow(dataset),length=nrow(dataset))
+metric=diag(ncol(dataset))
+center=NULL
+reduce=TRUE
+qualproj=TRUE
+listvar=columbus@data
+listnomvar=names(columbus@data)
+criteria=NULL
+carte.col=cont
+label=""
+cex.lab=0.7
+pch=6
+col="purple"
+axes=FALSE
+xlab=as.character(direct[1])
+ylab=as.character(direct[2])
+lablong=""
+lablat=""
+
+  obs<-vector(mode = "logical", length = length(long))
+  obs[c(11,12,13,14,16,19,21,25,28,29,30)]=TRUE
+  graphics.off()
+  nointer<-FALSE
+  nocart<-TRUE
+  buble<-FALSE
+  maptest<-FALSE
+  z<-NULL
+  legmap<-NULL
+  legends<-list(FALSE,FALSE,"","")
+  labvar <- c(xlab,ylab)
+  graphChoice <- ""
+  varChoice1 <- ""
+  varChoice2 <- ""
+  choix <- ""
+  listgraph <- c("Histogram","Barplot","Scatterplot")
+  method<- ""
+  labmod <- ""
+  col2 <- "blue"
+  col3 <- col[1]
+  pch2 <- pch[1]
+
+
+  # transformation data.frame en matrix
+  if((length(listvar)>0)&& (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(listvar)
+
+# calcul de l'ACP et récupération des résultats
+p <- genpca(dataset,w=weight,m=metric,center=center,reduc=reduce)
+casecoord <- p$casecoord
+varcoord <- p$varcoord
+
+if((max(varcoord[,1])+min(varcoord[,1]))<0)
+{varcoord[,1]=-varcoord[,1]
+casecoord[,1]=-casecoord[,1]}
+
+inertia <- p$inertia
+
+inerpart <- inertia/sum(inertia)
+inertpartperc <- inerpart*100
+
+casequal <- casecoord[,direct[1]]^2 + casecoord[,direct[2]]^2
+den <- colSums(t(casecoord) * t(casecoord))
+casequal <- sqrt(casequal/den)
+casequalperc <- casequal*100
+
+varqual <- varcoord[,direct[1]]^2 + varcoord[,direct[2]]^2
+denv <- colSums(t(varcoord) * t(varcoord))
+varqual <- sqrt(varqual/denv)
+varqualperc <- varqual*100
+
+noms <- names(dataset[1,])
+@
+\end{footnotesize}
+
+\begin{footnotesize}
+<<label=plotNC4e,fig=FALSE,echo=FALSE,eval=FALSE>>=
+carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
+symbol=pch2, couleurs=col2,carte=carte.col,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
+lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
+@
+\end{footnotesize}
+
+\begin{footnotesize}
+<<label=plotNC5e,fig=FALSE,echo=FALSE,eval=FALSE>>=
+graphique(var1=casecoord[,direct[1]], var2=casecoord[,direct[2]], obs=obs, num=2, graph="Acp1",
+symbol=pch,labmod=casequalperc,direct=direct, inertie=inertpartperc, label=qualproj, cex.lab=cex.lab,
+labvar=labvar,couleurs=col)
+@
+\end{footnotesize}
+
+\begin{footnotesize}
+<<label=plotNC6e,fig=FALSE,echo=FALSE,eval=FALSE>>=
+graphique(var1=varcoord[,direct[1]], var2=varcoord[,direct[2]], obs=obs, num=2, graph="Acp2", labvar=labvar,
+legmap=name.dataset, cex.lab=cex.lab, labmod=varqualperc, direct=direct, inertie=inertpartperc,couleurs=col)
+@
+\end{footnotesize}
+
+\begin{figure}[htbp]
+\begin{center}
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC5e>>
+<<zfigla>>
+@
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC6e>>
+<<zfiglb>>
+@
+\newline
+<<results=tex,echo=FALSE>>=
+<<bfigl>>
+<<plotNC4e>>
+<<zfiglc>>
+@
+\end{center}
+\caption{Principal components analysis: selection of the counties on the right
+part of the first principal plane.}
+\label{plotNC9}
+\end{figure}
+
+
+
+
+\section{Conclusion}\label{sec7}
+The project \pkg{GeoXp} started before 2000 and has known many different versions. A 1998
+Matlab version (working with Matlab 6) still is on the site of the econometrics toolbox of
+LeSage and contains tools which have not yet been translated to \RR. It is now an \RR~ package downloadable
+from CRAN. For applications oriented purposes, this set of routines has
+also been translated into C++ in the context of a contract with the Midi-{Pyr\'een\'ees region
+council. There are a lot of new tools that we plan to include in \pkg{GeoXp} such as a weighted
+version of ginimap, a Moran scatter plot for residuals of a OLS model, a 3-d version of the
+scattermap, a micromap display (see \citet{symansik:2000}), an Apleplotmap based
+on \citet{li+al+cressie:1998}, etc. More structural changes will involve in the near future the use of
+\RR~ classes for a larger compatibility of formats with the \pkg{sp} \RR~ package and also of sparse
+matrices for handling large weight matrices.  \newline
+
+\textbf{Acknowledgments:} We thank the team of students who participated in the writing of
+the several versions of \pkg{GeoXp}. We thank as well our faculty colleagues from the university
+of Toulouse I for their research assistance and many colleagues for their remarks (E. Malin,
+I. Heba, J. LeSage, R. Bivand, J. Symanzik., etc.)
+
+\section{Annex}
+\pkg{GeoXp} includes two types of functions: the main functions and the auxiliary ones. The
+auxiliary functions are just routines called by the main functions. The list of main functions
+can be found below.
+\begin{itemize}
+\item \code{angleplotmap}: links a map and an angle plot (only the angle plot is active).
+\item \code{barmap}: links a map and a bar plot.
+\item \code{boxplotmap}: links a map and a box and whiskers plot.
+\item \code{clustermap}: links a map and a bar map of a clustering variable (kmeans method).
+\item \code{dbledensitymap}: links a map and two density estimators.
+\item \code{dblehistomap}: links a map and two histograms.
+\item \code{densitymap}: links a map and a density estimator.
+\item \code{driftmap}: this function is meant for detecting trends (non interactive)
+\item \code{ginimap}: links a map and a Gini plot (Lorenz curve).
+\item \code{histobarmap}: links a map to an histogram and a bar plot.
+\item \code{histomap}: links a map and an histogram.
+\item \code{moranplotmap}: links a map and a Moran scatterplot.
+\item \code{neighbourmap}: links a map and a neighbor plot (scatterplot of variable against
+variable for the neighboring sites)
+\item \code{pcamap}: links a map and a scatterplot of principal axes of Principal Components
+Analysis
+\item \code{polyboxplotmap}: links a map and a box and whiskers plot.
+\item \code{scattermap}: links a map and a two-dimensional scatterplot.
+\item \code{variocloudmap}: links a map and a variogram cloud (only the variogram cloud is
+active).
+\end{itemize}
+\section*{References}
+
+\begin{description}
+
+\bibitem[\protect\citeauthoryear{Anselin}{Anselin}{1994}]{anselin:1994}
+Anselin, L., 1994.
+\newblock {Exploratory spatial data analysis and geographic information systems}.
+\newblock {in M. Painho ed.},
+\newblock Luxembourg: Eurostat:45-54.
+
+\bibitem[\protect\citeauthoryear{Anselin}{Anselin}{1995}]{anselin:1995}
+Anselin, L., 1995.
+\newblock {Local indicators of spatial association-LISA}.
+\newblock {Geographical Analysis},
+\newblock 27: 93-115.
+
+\bibitem[\protect\citeauthoryear{Anselin and Bao}{Anselin and Bao}{1995}]{anselin+bao:1995}
+Anselin, L and Bao, S (1995).
+\newblock {Exploratory spatial data analysis linking SpaceStat and Arcview}.
+\newblock {Regional Research Institute, West Virginia University}.
+
+\bibitem[\protect\citeauthoryear{Anselin}{Anselin}{1998}]{anselin:1998}
+Anselin, L (1998).
+\newblock {Exploratory spatial data analysis in a geocomputational environment}.
+\newblock {in Paul Longley, Sue Brooks, Bill Macmillan and Rachel McDonnell (eds)},
+\newblock {New York: Wiley}.
+
+\bibitem[\protect\citeauthoryear{Anselin}{Anselin}{2003}]{anselin:2003}
+Anselin, L (2003).
+\newblock {GeoDa 0.9. User's guide}.
+\newblock {Urbana-Champaign, IL: Spatial Analysis Laboratory (SAL)},
+\newblock {Department of Agricultural and Consumer Economics, University of Illinois}.
+
+\bibitem[\protect\citeauthoryear{Anselin and Syabri and Kho}{Anselin and Syabri and Kho Y}{2006}]{anselin+syabri+kho:2006}
+Anselin, L, Syabri I, Kho Y (2006).
+\newblock {GeoDa: An Introduction to Spatial Data Analysis}.
+\newblock {Geographical Analysis},
+\newblock 38 (1), 522.
+
+\bibitem[\protect\citeauthoryear{Bavaud}{Bavaud}{1998}]{Bavaud:1998}
+Bavaud, F (1998).
+\newblock {Models for spatial weights: a systematic look}.
+\newblock {Geographical Analysis},
+\newblock 30 (2): 153-171.
+
+\bibitem[\protect\citeauthoryear{Bessy-Pietri and Sicamois}{Bessy-Pietri and Sicamois}{2001}]{bessy-pietri+sicamois:2001}
+Bessy-Pietri P., Sicamois Y, (2001).
+\newblock {Le Zonage en Aires Urbaines en 1999. 4 millions d'habitants en plus dans les aires urbaines}.
+\newblock {INSEE-Premi\`ere},
+\newblock 765 : 1-4.
+
+\bibitem[\protect\citeauthoryear{Brundson}{Brundson}{1998}]{brundson:1998}
+Brundson, C (1998).
+\newblock {Exploratory spatial data analysis and local indicators of spatial association with XLISP-STAT}.
+\newblock {The Statistician},
+\newblock 47: 471-484.
+
+\bibitem[\protect\citeauthoryear{Caussinus et al.}{Caussinus et al.}{2003}]{caussinus:2003}
+Caussinus, H., Fekri, M., Hakam, S., Ruiz-Gazen A. (2003).
+\newblock {A monitoring display of multivariate outliers}.
+\newblock {Computational Statististics and Data Analysis},
+\newblock 44: 237-252.
+
+\bibitem[\protect\citeauthoryear{Chauvet}{Chauvet}{1982}]{chauvet:1982}
+Chauvet P. (1982).
+\newblock {The variogram cloud}.
+\newblock {Proceedings of the 17th APCOM In-
+ternational Symposium, Golden, Colorado}
+
+\bibitem[\protect\citeauthoryear{Cook et al.}{Cook et al.}{1996}]{cook:1996}
+Cook, D., Majure, JJ., Symanzik, J. and Cressie, N. (1996).
+\newblock {Dynamic graphics in a GIS: exploring and analysing multivariate spatial data using linked software}.
+\newblock {Computational Statistics},
+\newblock 11: 467-480.
+
+
+
+\bibitem[\protect\citeauthoryear{Cressie}{Cressie}{1993}]{cressie:1993}
+Cressie, N (1993).
+\newblock {Statistics for spatial data}.
+\newblock {Wiley}.
+
+\bibitem[\protect\citeauthoryear{Dykes}{Dykes}{1998}]{dykes:1998}
+Dykes, J (1998).
+\newblock {Cartographic visualization: exploratory spatial data analysis with local indicators of spatial association using Tcl/Tk and cdv}.
+\newblock {The Statistician},
+\newblock 47:485-497.
+
+\bibitem[\protect\citeauthoryear{Gastwirth}{Gastwirth}{1972}]{gastwirth:1972}
+Gastwirth, J L, (1972).
+\newblock {The Estimation of the Lorenz Curve and Gini Index}.
+\newblock {The Review of Economics and Statistics, MIT Press}.
+\newblock {vol. 54(3), pages 306-16, August}.
+
+\bibitem[\protect\citeauthoryear{Haining et al}{Haining et al}{1998}]{haining:1998}
+Haining, R., Wise S., and Ma, J. (1998).
+\newblock {Exploratory spatial data analysis in a geographic information system environment}.
+\newblock {The Statistician},
+\newblock {47: 457-469.}.
+
+\bibitem[\protect\citeauthoryear{Haslett et al}{Haslett et al}{1990}]{haslett:1990}
+Haslett, J.,Wills, G. and Unwin, AR. (1990).
+\newblock {SPIDER - an interactive statistical tool for the analysis of spatially distributed data}.
+\newblock {International Journal of Geographical Information Systems},
+\newblock {4(3), 285-296}.
+
+\bibitem[\protect\citeauthoryear{Haslett and Bradley}{Haslett and Bradley}{1991}]{haslett+bradley:1991}
+Haslett, J., Bradley, R., Craig, P., Unwin A. and Wills G. (1991).
+\newblock {Dynamic graphics for exploring spatial data with application to locating global and local anomalies}.
+\newblock {The American Statistician},
+\newblock 45: 234-242.
+
+\bibitem[\protect\citeauthoryear{Lesage and Pace}{Lesage and Pace}{2004}]{lesage+pace:2004}
+LeSage J. and Pace K., (2004).
+\newblock {Arc Mat, a Toolbox for Using ArcView Shape Files for Spatial Econometrics and Statistics}.
+\newblock {in Geographic Information Science, Proceedings of the Third International Conference, Max J. Egenhofer, Christian Freksa and Harvey J. Miller (eds.)},
+\newblock pp. 179-190.
+
+\bibitem[\protect\citeauthoryear{LeSage}{LeSage}{1998}]{lesage:1998}
+LeSage J. (1998).
+\newblock {Spatial Econometrics}.
+\newblock {\url{http://www.econ.utoledo.edu/faculty/lesage/lesage.html}}.
+
+
+\bibitem[\protect\citeauthoryear{Li et al}{Li et al}{2007}]{li+al+cressie:1998}
+Li H., Calder C. A., and Cressie N., (2007).
+\newblock {Beyond Moran's I: Testing for spatial dependence based on the SAR model}.
+\newblock {Geographical Analysis},
+\newblock 39, 357-375.
+
+\bibitem[\protect\citeauthoryear{Openshaw}{Openshaw}{1994}]{openshaw:1994}
+Openshaw, S (1994).
+\newblock {What is a gisable spatial analysis}.
+\newblock {in M. Painho (ed.)},
+\newblock {Luxembourg: Eurostat: 36-44}.
+
+\bibitem[\protect\citeauthoryear{Symanzik et al.}{Symanzik et al.}{2000}]{symansik:2000}
+Symanzik J., Cook D., Lewin-Koh N., Majure J.J. and Megretskaia I. (2000).
+\newblock {Linking Arcview and XGobi: Insight behind the front end}.
+\newblock {Journal of Computational and Graphical Statistics},
+\newblock 9, pp. 470-490.
+
+\bibitem[\protect\citeauthoryear{Unwin et al}{Unwin et al}{1996}]{unwin+hawkins:1996}
+Unwin A.R., Hawkins, G., Hofman H. and Siegl, B. (1996).
+\newblock {Interactive graphics for data sets with missing values - MANET}.
+\newblock {J. Comput. Graph. Statist}.
+\newblock 5: 113-122.
+
+\bibitem[\protect\citeauthoryear{Unwin et al}{Unwin et al}{1998}]{unwin+unwin:1998}
+Unwin, A, Unwin, D (1998).
+\newblock {Exploratory spatial data analysis with local statistics}.
+\newblock {The Statistician},
+\newblock 47: 415-421.
+
+\bibitem[\protect\citeauthoryear{Wilhelm}{Wilhelm}{1998}]{wilhelm:1998}
+Wilhelm, A., Steck, R. (1998).
+\newblock {Exploring spatial data with interactive graphics and local statistics}.
+\newblock {The Statistician},
+\newblock 47: 423-430.
+
+\bibitem[\protect\citeauthoryear{Wise et al.}{Wise et al.}{2001}]{wise:2001}
+Wise S, Haining R and Ma J (2001).
+\newblock {Providing spatial data analysis functionality for the GIS user: the SAGE project}.
+\newblock {International Journal of Geographical Information Science},
+\newblock 15 (3), pp. 239-254.
+
+
+
+
+
+
+\end{description}
+\end{document}
