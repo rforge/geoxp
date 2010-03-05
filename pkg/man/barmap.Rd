@@ -57,8 +57,9 @@ col=colors()[101:102],pch=5:6,label=as.character(1:49),cex.lab=0.5)
 data(eire)
 eire.contours<-polylist2list(eire.polys.utm)
 barmap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$pale,carte=eire.contours,
-listvar=eire.df,listnomvar=names(eire.df),xlab="Appartenance à
-la région du Pale",names.arg=c("Hors Pale","Pale"),col=c("purple","pink"))
+listvar=eire.df,listnomvar=names(eire.df),
+xlab="Appartenance à la région du Pale",names.arg=c("Hors Pale","Pale"),
+col=c("purple","pink"))
 
 }
 \keyword{spatial}

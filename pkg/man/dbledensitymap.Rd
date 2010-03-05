@@ -56,8 +56,8 @@ data(auckland)
 contours.auckland<-polylist2list(auckpolys)
 dbledensitymap(auckland$Easting,auckland$Northing,var1=auckland$Deaths.1977.85,
 var2=auckland$Under.5.1981,carte=contours.auckland,
-listvar=cbind(auckland,as.numeric(auckland$Deaths.1977.85>
-mean(auckland$Deaths.1977.85))), listnomvar=c(names(auckland),"sup to mean"),
+listvar=cbind(auckland,as.numeric(auckland$Deaths.1977.85>mean(auckland$Deaths.1977.85))),
+ listnomvar=c(names(auckland),"sup to mean"),
 xlab=c("Deaths.1977.85","Under.5.1981"),
 criteria=(auckland$Deaths.1977.85>mean(auckland$Deaths.1977.85)))
 
