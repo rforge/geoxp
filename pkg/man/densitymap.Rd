@@ -56,7 +56,7 @@ midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
 cont_midiP<-spdf2list(midiP)$poly
 densitymap(immob$longitude,immob$latitude,immob$prix.vente,
 carte=cont_midiP,listvar=immob,listnomvar=names(immob),
-xlab="Prix de vente moyen par m2",label=immob$Nom,cex.lab=0.7,col='purple',pch=15)
+xlab="Average price per square meter",label=immob$Nom,cex.lab=0.7,col='purple',pch=15)
 
 # data olcol
 example(columbus)
@@ -72,7 +72,7 @@ data(eire)
 eire.contours<-polylist2list(eire.polys.utm)
 densitymap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$A,
 carte=eire.contours,listvar=eire.df,listnomvar=names(eire.df),
-xlab="Taux d'individus au groupe sanguin A",ylab="densite")
+xlab="Individuals rate of blood A",ylab="density")
 
 }
 

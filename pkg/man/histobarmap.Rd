@@ -63,7 +63,7 @@ data(eire)
 eire.contours<-polylist2list(eire.polys.utm)
 histobarmap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$pale,eire.df$A,carte=eire.contours,
 listvar=eire.df,listnomvar=names(eire.df),
-xlab=c("Appartenance à la région du Pale","Taux moyen de groupe sanguin A"),
+xlab=c("Appartenance to the region of Pale","Average number of people with blood A"),
 names.arg=c("Hors Pale","Pale"),
 col=colors()[101:102],label=as.character(1:26),cex.lab=0.7,pch=c(3,7))
 }

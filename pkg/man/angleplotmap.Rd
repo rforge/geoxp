@@ -66,7 +66,7 @@ data(meuse.riv)
 obs<-angleplotmap(meuse$x,meuse$y,meuse$copper,
 col="green",quantiles=0.9,
 listvar=meuse,listnomvar=names(meuse),
-xlab="Concentration en plomb (en ppm)",pch=7,carte=meuse.riv[c(21:65,110:153),])
+xlab="Concentration in plomb (in ppm)",pch=7,carte=meuse.riv[c(21:65,110:153),])
 }
 
 

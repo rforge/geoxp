@@ -54,7 +54,7 @@ eire.contours<-polylist2list(eire.polys.utm)
 
 polyboxplotmap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$pale,
 eire.df$POPCHG, listvar=eire.df,listnomvar=names(eire.df),carte=eire.contours,
-xlab="Appartenance ou non à la région du Pale", names.arg=c("Hors Pale","Pale"),
+xlab="Appartenance to the region of Pale", names.arg=c("Hors Pale","Pale"),
 col=c("purple","violet"))
 }
 \keyword{spatial}

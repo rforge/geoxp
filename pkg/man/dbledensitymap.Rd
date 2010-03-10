@@ -76,7 +76,7 @@ col=c("purple","pink"),xlab=c("hoval","crime"),pch=14)
 data(eire)
 eire.contours<-polylist2list(eire.polys.utm)
 dbledensitymap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$A,eire.df$towns,
-xlab=c("Taux d'individus au groupe sanguin A",
+xlab=c("Individuals rate of blood type A",
 "Surface urbaine"),carte=eire.contours,kernel="normal",
 listvar=eire.df,listnomvar=names(eire.df))
 

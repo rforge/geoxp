@@ -61,7 +61,7 @@ data(eire)
 eire.contours<-polylist2list(eire.polys.utm)
 boxplotmap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$POPCHG,
 listvar=eire.df,listnomvar=names(eire.df),carte=eire.contours,
-xlab="Taux d'évolution de la population de 1921 à 1962",pch=7)
+xlab="Evolution rate of the population from 1921 to 1962",pch=7)
 }
 
 \keyword{spatial}

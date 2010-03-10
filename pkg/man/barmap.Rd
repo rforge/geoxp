@@ -58,7 +58,7 @@ data(eire)
 eire.contours<-polylist2list(eire.polys.utm)
 barmap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$pale,carte=eire.contours,
 listvar=eire.df,listnomvar=names(eire.df),
-xlab="Appartenance à la région du Pale",names.arg=c("Hors Pale","Pale"),
+xlab="Appartenance to the region of Pale",names.arg=c("Hors Pale","Pale"),
 col=c("purple","pink"))
 
 }

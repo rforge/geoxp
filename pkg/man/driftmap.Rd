@@ -56,7 +56,7 @@ midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
 cont_midiP<-spdf2list(midiP)$poly
 driftmap(immob$longitude,immob$latitude,immob$prix.vente,
 carte= cont_midiP, col=colors()[35:38] ,lty=c(3,4),cex.lab=0.7,
-xlab="Prix de vente",nuage=TRUE,pch=c(1,3,5,7),listvar=immob,
+xlab="Price of sell",nuage=TRUE,pch=c(1,3,5,7),listvar=immob,
 listnomvar=names(immob))
 
 
@@ -71,7 +71,7 @@ xlab="Number of conflicts", carte=africa.contour,pch=c(4,5,16,16))
 data(meuse)
 data(meuse.riv)
 driftmap(meuse$x,meuse$y,meuse$copper,
-nuage=TRUE,interpol=TRUE,xlab="Concentration de cuivre (en ppm)",
+nuage=TRUE,interpol=TRUE,xlab="Concentration in cuivre (in ppm)",
 carte=meuse.riv)
 }
 

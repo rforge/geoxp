@@ -73,7 +73,7 @@ data(eire)
 eire.contours<-polylist2list(eire.polys.utm)
 
 histomap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$A,carte=eire.contours,listvar=eire.df,
-listnomvar=names(eire.df),xlab="Taux d'individus au groupe sanguin A",pch=5)
+listnomvar=names(eire.df),xlab="Rate of individuals with groupe sanguin A",pch=5)
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
