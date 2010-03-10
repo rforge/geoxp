@@ -2,7 +2,7 @@ Package: GeoXp
 Type: Package
 Title: Interactive exploratory spatial data analysis
 Encoding: latin1
-Version: 1.4
+Version: 1.4.1
 Date: 2009-08-28
 Author: Yves Aragon, Thibault Laurent, Lauriane Robidou, Anne
         Ruiz-Gazen, Christine Thomas-Agnan
