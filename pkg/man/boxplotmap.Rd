@@ -42,7 +42,7 @@ are represented on the map in red.
 \seealso{\code{\link{histomap}}, \code{\link{histobarmap}}, \code{\link{scattermap}}, \code{\link{densitymap}}}
 
 \examples{
-# donnees oldcol
+# 1st example
 example(columbus)
 coords <- coordinates(columbus)
 cont<-spdf2list(columbus)$poly
@@ -51,12 +51,12 @@ boxplotmap(coords[,1], coords[,2],columbus@data$CRIME,listvar=columbus@data,
 carte=cont, listnomvar=names(columbus@data),criteria=(columbus@data$CP==1),
 xlab="Crime",ylab="Percent",label=columbus@data$COLUMBUS.I,cex.lab=0.7) 
 
-# donnees boston
+# 2nd example
 data(boston)
 obs<-boxplotmap(boston.utm[,1],boston.utm[,2],boston.c$CRIM,listvar=boston.c,
 listnomvar=names(boston.c),criteria=(boston.c$CHAS==1)) 
 
-# données eire
+# 3rd example
 data(eire)
 eire.contours<-polylist2list(eire.polys.utm)
 boxplotmap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$POPCHG,

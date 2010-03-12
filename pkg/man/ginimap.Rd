@@ -43,7 +43,7 @@ with a value of \code{var} lower or equal to the threshold are then selected on 
 \seealso{\code{\link{gini}}}
 
 \examples{
-# données eire
+# data eire
 data(eire)
 eire.contours<-polylist2list(eire.polys.utm)
 obs<-ginimap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$INCOME,

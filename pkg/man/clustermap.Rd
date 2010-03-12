@@ -61,7 +61,7 @@ then use the function barmap.r to visualize the calculated clusters. }
 \seealso{\code{\link{barmap}}, \code{\link{pcamap}}}
 
 \examples{
-# données oldcol
+# 1st example
 example(columbus)
 coords <- coordinates(columbus)
 cont<-spdf2list(columbus)$poly
@@ -75,23 +75,6 @@ listvar=columbus@data,listnomvar=names(columbus@data),carte=cont,
 criteria=(columbus@data$CP==1),col=colors()[20:22],label=as.character(1:49),
 cex.lab=0.7)
 
-# Extract for GeoXp manual
-# data avifaune 
-#library(ade4)
-#data(mafragh)
-#d<-distchi2(mafragh$flo)
-
-#obs<-clustermap(x<-mafragh$xy[,1],y<-mafragh$xy[,2],d,
-#4,method="hclust",type="ward",
-#listvar=mafragh$partition,listnomvar="class")
-
-#clas<-obs$vectclass
-#e<-by(d,clas,mean)
-#g<-rbind(e[1]$'1',e[2]$'2',e[3]$'3',e[4]$'4')
-
-
-#clustermap(x<-mafragh$xy[,1],y<-mafragh$xy[,2],
-#d,4,centers=g,listvar=mafragh$partition,listnomvar="class")
 }
 
 \keyword{spatial}
