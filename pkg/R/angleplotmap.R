@@ -3,6 +3,7 @@ function (long, lat, var, quantiles=NULL,listvar=NULL, listnomvar=NULL, criteria
 carte = NULL, label = "",cex.lab=1,pch = 16,col="blue", xlab = "angle",ylab="absolut magnitude",
 lablong = "", lablat = "", axes=FALSE) 
 {
+# ajout commentaire
  # initialisation
   nointer<-FALSE
   nocart<-FALSE
