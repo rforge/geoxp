@@ -7,7 +7,7 @@ The function \code{histomap()} draws a histogram of the given variable \code{var
 and a map with sites of coordinates (\code{long},\code{lat}). Each site is associated to a value of \code{var} and there is interactivity between the two windows.
 }
 \usage{
-histomap(long,lat,var,nbcol=10, listvar=NULL, listnomvar=NULL, criteria=NULL,
+histomap(long,lat,var,nbcol=10,type = c("count","percent", "density"), listvar=NULL, listnomvar=NULL, criteria=NULL,
 carte=NULL, label="",cex.lab=1, pch=16, col="blue", xlab="",ylab="",axes=FALSE,
 lablong="",lablat="")
 }
@@ -17,6 +17,7 @@ lablong="",lablat="")
   \item{lat}{a vector y of size n}
   \item{var}{a vector of numeric values of size n}
   \item{nbcol}{number of cells for histogram (10 by default)}
+  \item{type}{Character string indicating type of histogram to be drawn. "percent" and "count" give relative frequency and frequency histograms, "density" produces a density scale histogram.}
   \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
   \item{listnomvar}{a list with names of variables \code{listvar}}
   \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}  \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
@@ -37,7 +38,7 @@ represented in red as a sub-histogram on the histogram.
 \value{
 A vector of boolean of size n. TRUE if the site was in the last selection.
 }
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2009), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
 
 \author{Thomas-Agnan C., Aragon Y.,  Ruiz-Gazen A., Laurent T., Robidou L.}
 
