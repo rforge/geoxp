@@ -1,6 +1,7 @@
 `histomap` <-
-function(long,lat,var,nbcol=10, listvar=NULL, listnomvar=NULL, criteria=NULL,
-carte=NULL, label="",cex.lab=1, pch=16, col="blue", xlab="",ylab="",axes=FALSE,
+function(long,lat,var,nbcol=10, type = c("count","percent", "density"),
+listvar=NULL, listnomvar=NULL, criteria=NULL,
+carte=NULL, label="",cex.lab=1, pch=16, col="lightblue", xlab="",ylab="",axes=FALSE,
 lablong="",lablat="")
 {
 ####################################################
@@ -59,6 +60,9 @@ pointfunc<-function()
          if(is.null(loc))
            {
             quit<-TRUE
+      carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
+      symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
+      lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
             next
            }
       
@@ -66,12 +70,13 @@ pointfunc<-function()
 
       # graphiques
 
-      graphique(var1=var, obs=obs, num=3, graph="Histogram", nbcol=nbcol, labvar=labvar,couleurs=col, symbol=pch)
+      graphique(var1=var, obs=obs, num=3, graph="Histogram", nbcol=nbcol,bin=type, labvar=labvar,couleurs=col, symbol=pch)
     
       carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
       lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
-  
+      title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
             graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
@@ -105,6 +110,8 @@ polyfunc<-function()
         polyX <- c(polyX, loc[1])
         polyY <- c(polyY, loc[2])
         lines(polyX,polyY)
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
     }
 
     polyX <- c(polyX, polyX[1])
@@ -120,12 +127,12 @@ polyfunc<-function()
 
       # graphiques
 
-      graphique(var1=var, obs=obs, num=3, graph="Histogram", nbcol=nbcol, labvar=labvar, symbol=pch, couleurs=col)
+      graphique(var1=var, obs=obs, num=3, graph="Histogram", nbcol=nbcol,bin=type, labvar=labvar, symbol=pch, couleurs=col)
       
       carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
       lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
-  
+
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
          graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
@@ -150,13 +157,16 @@ barfunc<-function()
         if(is.null(loc)) 
         {
             quit<-TRUE
+            graphique(var1=var, obs=obs, num=3, graph="Histogram", nbcol=nbcol,bin=type, labvar=labvar, symbol=pch, couleurs=col)
+   
             next
         }           
         obs<<-selectstat(var1=var,obs=obs,Xpoly=loc[1], Ypoly=loc[2],method="Histogram", nbcol=nbcol)    
         
       # graphiques
 
-      graphique(var1=var, obs=obs, num=3, graph="Histogram", nbcol=nbcol, labvar=labvar, symbol=pch, couleurs=col)
+      graphique(var1=var, obs=obs, num=3, graph="Histogram", nbcol=nbcol,bin=type, labvar=labvar, symbol=pch, couleurs=col)
+      title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
       carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
@@ -247,7 +257,7 @@ SGfunc<-function()
  obs<<-vector(mode = "logical", length = length(long));
 
  # graphiques
- graphique(var1=var, obs=obs, num=3, graph="Histogram", nbcol=nbcol, labvar=labvar,couleurs=col, symbol=pch)
+ graphique(var1=var, obs=obs, num=3, graph="Histogram", nbcol=nbcol,bin=type, labvar=labvar,couleurs=col, symbol=pch)
  
  carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
  symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
@@ -319,7 +329,7 @@ carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=
 symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
 lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
   
-graphique(var1=var, obs=obs, num=3, graph="Histogram", nbcol=nbcol, labvar=labvar,couleurs=col, symbol=pch)
+graphique(var1=var, obs=obs, num=3, graph="Histogram", nbcol=nbcol,bin=type, labvar=labvar,couleurs=col, symbol=pch)
   
 
 ####################################################

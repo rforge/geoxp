@@ -7,7 +7,7 @@ function (var1, var2, var3, obs, num, graph = "", couleurs = "",
     xlim,ylim)
 {
     dev.set(num)
-    par(mar = c(4.5, 4.5, 0.5, 0.5))
+  #  par(mar = c(4.5, 4.5, 0.5, 0.5))
 
 
 ####################################################
@@ -59,10 +59,24 @@ else
           cpt <- c(cpt, cnt)
           absc <- c(absc, x1)
         }
-        
+       
+       sum.cpt<-sum(cpt) 
+       
         cpt <- c(cpt, 0)
+        if(bin[1]=="percent")
+         {cpt<-cpt/sum.cpt
+          if(labvar[2]=="") labvar[2]="percent"
+         }
+         else
+          {if(bin[1]=="density")
+           {cpt<-cpt/sum.cpt/h
+           if(labvar[2]=="") labvar[2]="density"
+           }
+          }
+        
+        if(labvar[2]=="") labvar[2]="counts"
         plot(absc, cpt, "n", xlim = c(mnv - h, mxv + h), ylim = c(0,max(cpt)),
-        xlab = labvar[1], ylab = labvar[2])
+        xlab = labvar[1], ylab = labvar[2],frame.plot=FALSE)
         
         for (i in 1:nbcol) 
          {
@@ -88,6 +102,15 @@ else
             
             cpt1 <- c(cpt1, 0)
             
+        if(bin[1]=="percent")
+         {cpt1<-cpt1/sum.cpt
+         }
+         else
+          {if(bin[1]=="density")
+           {cpt1<-cpt1/sum.cpt/h
+           }
+          }
+          
             for (i in 1:nbcol) 
                {
                   rect(absc[i], 0, absc[i + 1], cpt1[i], density = 4,
