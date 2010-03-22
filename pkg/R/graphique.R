@@ -36,6 +36,7 @@ else
         
     if (graph == "Histogram") 
     {
+        if(is.null(bin)) bin<-"count"
         mnv <- min(var1)
         mxv <- max(var1)
         h <- (mxv - mnv)/(nbcol)
@@ -61,7 +62,8 @@ else
         }
        
        sum.cpt<-sum(cpt) 
-       
+
+
         cpt <- c(cpt, 0)
         if(bin[1]=="percent")
          {cpt<-cpt/sum.cpt

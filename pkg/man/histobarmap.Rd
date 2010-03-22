@@ -9,7 +9,7 @@ a histogram of the given variable \code{var2} and a map with sites of coordinate
 
 \usage{
 histobarmap(long,lat,var1,var2,criteria=NULL,carte=NULL, label = "",cex.lab=1,
-pch = 16, col= "grey", nbcol = 10,names.arg="", xlab=c("",""), ylab=c("",""),
+pch = 16, col= "lightblue", nbcol = 10,type = c("count","percent", "density"), names.arg="", xlab=c("",""), ylab=c("",""),
 listvar=NULL, listnomvar=NULL, axes=FALSE,lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
@@ -24,6 +24,7 @@ listvar=NULL, listnomvar=NULL, axes=FALSE,lablong="", lablat="")
   \item{pch}{16 by default, symbol for selected points}
   \item{col}{"grey" by default, color of bars on the histogram}
   \item{nbcol}{number of cells for histogram (10 by default)}
+  \item{type}{Character string indicating type of histogram to be drawn. "percent" and "count" give relative frequency and frequency histograms, "density" produces a density scale histogram.}
   \item{names.arg}{names of factors of \code{var1}}
   \item{xlab}{a list of title for the two x-axis graphics}
   \item{ylab}{a list of title for the two y-axis graphics}

@@ -1,6 +1,6 @@
 `histobarmap` <-
-function(long,lat,var1,var2,criteria=NULL,carte=NULL,label = "",cex.lab=1, pch = 16, col= "grey",
-nbcol = 10,names.arg="", xlab=c("",""), ylab=c("",""), listvar=NULL, listnomvar=NULL,
+function(long,lat,var1,var2,criteria=NULL,carte=NULL,label = "",cex.lab=1, pch = 16, col= "lightblue",
+nbcol = 10,type = c("count","percent", "density"),names.arg="", xlab=c("",""), ylab=c("",""), listvar=NULL, listnomvar=NULL,
 axes=FALSE,lablong="", lablat="")
 {
 
@@ -59,7 +59,7 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
            graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot",labvar = labvar1, symbol = pch, 
            labmod = names.arg,couleurs=col)
            
-           graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol, labvar = labvar2,couleurs=col[1])
+           graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol,bin=type, labvar = labvar2,couleurs=col[1])
 
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
@@ -107,7 +107,7 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
            graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot",labvar = labvar1, symbol = pch, 
            labmod = names.arg,couleurs=col)
            
-           graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol, labvar = labvar2,couleurs=col[1])
+           graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol,bin=type, labvar = labvar2,couleurs=col[1])
 
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
@@ -144,7 +144,7 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
            graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot",labvar = labvar1, symbol = pch, 
            labmod = names.arg,couleurs=col)
            
-           graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol, labvar = labvar2,couleurs=col[1])
+           graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol,bin=type, labvar = labvar2,couleurs=col[1])
            
           if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
           {
@@ -181,7 +181,7 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
            graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot",labvar = labvar1, symbol = pch, 
            labmod = names.arg,couleurs=col)
            
-           graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol, labvar = labvar2,couleurs=col[1])
+           graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol,bin=type, labvar = labvar2,couleurs=col[1])
 
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
@@ -255,7 +255,7 @@ SGfunc <- function()
    graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot",labvar = labvar1, symbol = pch, 
    labmod = names.arg,couleurs=col)
            
-   graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol, labvar = labvar2,couleurs=col[1])
+   graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol,bin=type, labvar = labvar2,couleurs=col[1])
 
    if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
     {
@@ -326,7 +326,7 @@ legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
 graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot",labvar = labvar1, symbol = pch, 
 labmod = names.arg,couleurs=col)
            
-graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol, labvar = labvar2,couleurs=col[1])
+graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol, bin=type, labvar = labvar2,couleurs=col[1])
 
 ####################################################
 # création de la boite de dialogue to create legens
