@@ -1,6 +1,6 @@
 `dblehistomap` <-
 function(long, lat, var1, var2,listvar=NULL, listnomvar=NULL, nbcol=c(10,10),
-carte = NULL,criteria=NULL, pch = 16, col=c("grey","blue"), xlab = c("",""),
+type = c("count","percent", "density"),carte = NULL,criteria=NULL, pch = 16, col=c("grey","lightblue"), xlab = c("",""),
 ylab=c("count","count"), label = "",cex.lab=1,axes=FALSE, lablong="", lablat="")
 {
 # initialisation
@@ -59,8 +59,8 @@ pointfunc <- function()
     obs <<- selectmap(var1 = long, var2 = lat, obs = obs, 
     Xpoly = loc[1], Ypoly = loc[2], method = "point")
  
-    graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1], labvar = labvar1, couleurs=col[1])
-    graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2], labvar = labvar2, couleurs=col[2])
+    graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1],bin=type, labvar = labvar1, couleurs=col[1])
+    graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2],bin=type, labvar = labvar2, couleurs=col[2])
   
     carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
     symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
@@ -105,8 +105,8 @@ pointfunc <- function()
         obs <<- selectmap(var1 = long, var2 = lat, obs = obs, 
             Xpoly = polyX, Ypoly = polyY, method = "poly")
   
-  graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1], labvar = labvar1, couleurs=col[1])
-    graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2], labvar = labvar2, couleurs=col[2])
+  graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1],bin=type, labvar = labvar1, couleurs=col[1])
+    graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2],bin=type, labvar = labvar2, couleurs=col[2])
   
     carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
     symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
@@ -140,8 +140,8 @@ pointfunc <- function()
             }
             obs <<- selectstat(var1 = var1, obs = obs, Xpoly = loc[1],Ypoly = loc[2], method = "Histogram", nbcol = nbcol[1])
  
-     graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1], labvar = labvar1, couleurs=col[1])
-     graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2], labvar = labvar2, couleurs=col[2])
+     graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1],bin=type, labvar = labvar1, couleurs=col[1])
+     graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2],bin=type, labvar = labvar2, couleurs=col[2])
   
      carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
      symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
@@ -176,8 +176,8 @@ pointfunc <- function()
             }
             obs <<- selectstat(var1 = var2, obs = obs, Xpoly = loc[1],Ypoly = loc[2], method = "Histogram", nbcol = nbcol[2])
  
-    graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1], labvar = labvar1, couleurs=col[1])
-    graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2], labvar = labvar2, couleurs=col[2])
+    graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1],bin=type, labvar = labvar1, couleurs=col[1])
+    graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2],bin=type, labvar = labvar2, couleurs=col[2])
   
     carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
     symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
@@ -270,8 +270,8 @@ SGfunc<-function()
 
  # graphiques
 
-     graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1], labvar = labvar1, couleurs=col[1])
-     graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2], labvar = labvar2, couleurs=col[2])
+     graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1],bin=type, labvar = labvar1, couleurs=col[1])
+     graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2],bin=type, labvar = labvar2, couleurs=col[2])
   
      carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
      symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
@@ -346,8 +346,8 @@ fbubble<-function()
   symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
   lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
   
-     graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1], labvar = labvar1, couleurs=col[1])
-     graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2], labvar = labvar2, couleurs=col[2])
+     graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1], bin=type, labvar = labvar1, couleurs=col[1])
+     graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2], bin=type, labvar = labvar2, couleurs=col[2])
  
 ####################################################
 # création de la boite de dialogue

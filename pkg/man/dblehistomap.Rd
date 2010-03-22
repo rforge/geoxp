@@ -8,7 +8,7 @@ and \code{var2} and there is interactivity between the two windows created.}
 
 \usage{
 dblehistomap(long, lat, var1, var2,listvar=NULL, listnomvar=NULL, nbcol=c(10,10),
-carte = NULL,criteria=NULL, pch = 16, col=c("grey","blue"), xlab = c("",""),
+type = c("count","percent", "density"),carte = NULL,criteria=NULL, pch = 16, col=c("grey","lightblue"), xlab = c("",""),
 ylab=c("count","count"), label = "",cex.lab=1,axes=FALSE, lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
@@ -20,6 +20,7 @@ ylab=c("count","count"), label = "",cex.lab=1,axes=FALSE, lablong="", lablat="")
   \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
   \item{listnomvar}{a list with names of variables \code{listvar}}
   \item{nbcol}{a list of number of cells for histogram 1 and histogram 2 (10 by default)}
+  \item{type}{Character string indicating type of histogram to be drawn. "percent" and "count" give relative frequency and frequency histograms, "density" produces a density scale histogram.}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
   \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}  \item{pch}{16 by default, symbol for selected points}
   \item{col}{a list of colors for the bars on the histogram 1 and histogram 2}

@@ -8,7 +8,7 @@ and a map with sites of coordinates (\code{long},\code{lat}). Each site is assoc
 }
 \usage{
 histomap(long,lat,var,nbcol=10,type = c("count","percent", "density"), listvar=NULL, listnomvar=NULL, criteria=NULL,
-carte=NULL, label="",cex.lab=1, pch=16, col="blue", xlab="",ylab="",axes=FALSE,
+carte=NULL, label="",cex.lab=1, pch=16, col="lightblue", xlab="",ylab="",axes=FALSE,
 lablong="",lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
