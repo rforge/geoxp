@@ -49,29 +49,31 @@ ginifunc<-function()
   quit <- FALSE
   ptX <- NULL
 
-
+  dev.set(3)
+  title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    
  while(!quit)
    {
-   
-  #  while (length(ptX)<1)
-    
-        dev.set(3)
+     
+       dev.set(3)
         loc<-locator(1)
-        ptX <- loc[1]
 
          if(is.null(loc))
            {
             quit<-TRUE
+          graphique(var1=var, obs=obs, num=3, graph="Lorentz", Xpoly=ptX, labvar=labvar, symbol=pch,
+          couleurs=col, F=F, G=G)
             next
            }
-    
+    ptX <- loc[1] 
     
     obs<<-selectstat(var1=var,obs=obs,Xpoly=ptX$x, method="Lorentz", F=F)    
 
     # graphiques
     graphique(var1=var, obs=obs, num=3, graph="Lorentz", Xpoly=ptX, labvar=labvar, symbol=pch,
     couleurs=col, F=F, G=G)
- 
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+   
       carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
       lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 

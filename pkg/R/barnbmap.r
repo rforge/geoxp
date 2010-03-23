@@ -52,10 +52,14 @@ pointfunc<-function()
    }
     quit <- FALSE;
     graf<<-"Neighbourplot1"
+    
+    dev.set(2)
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+        
     while(!quit)
     {
-        dev.set(2);
-        loc<-locator(1);
+        dev.set(2)
+        loc<-locator(1)
         if (is.null(loc))
         {
             quit<-TRUE;
@@ -67,7 +71,9 @@ pointfunc<-function()
         carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=pch,
         method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,buble=buble,criteria=criteria,
         nointer=nointer,cbuble=z,carte=carte,nocart=nocart,couleurs=col,classe=card(object),cex.lab=cex.lab)
-        
+    
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    
         graphique(var1=nb, obs=obs, num=3, graph="bar.nb", W=W,
         labvar=labvar, symbol=pch,couleurs=col);
 
@@ -85,35 +91,39 @@ polyfunc<-function()
 {
    if (graf=="Neighbourplot2")
    {
-    SGfunc();
+    SGfunc()
    }
     graf<<-"Neighbourplot1"
-    polyX <- NULL;
-    polyY <- NULL;
-    quit <- FALSE;
-
+    polyX <- NULL
+    polyY <- NULL
+    quit <- FALSE
+  
+    dev.set(2)
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+   
+    
     while(!quit)
     {
-        dev.set(2);
-        loc<-locator(1);
+        dev.set(2)
+        loc<-locator(1)
         if(is.null(loc))
         {
-            quit<-TRUE;
-            next;
+            quit<-TRUE
+            next
         }
 
-        polyX <- c(polyX, loc[1]);
-        polyY <- c(polyY, loc[2]);
+        polyX <- c(polyX, loc[1])
+        polyY <- c(polyY, loc[2])
         lines(polyX,polyY);
-    }
+   }
 
-    polyX <- c(polyX, polyX[1]);
-    polyY <- c(polyY, polyY[1]);
+    polyX <- c(polyX, polyX[1])
+    polyY <- c(polyY, polyY[1])
 if (length(polyX)>0)
 {
-    lines(polyX,polyY);
+    lines(polyX,polyY)
 
-    obs <<- selectmap(var1=long, var2=lat, obs=obs, Xpoly=polyX, Ypoly=polyY, method="poly");
+    obs <<- selectmap(var1=long, var2=lat, obs=obs, Xpoly=polyX, Ypoly=polyY, method="poly")
 
     # graphiques
     carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=pch,
@@ -121,7 +131,7 @@ if (length(polyX)>0)
     nointer=nointer,cbuble=z,carte=carte,nocart=nocart,couleurs=col,classe=card(object),cex.lab=cex.lab)
     
     graphique(var1=nb, obs=obs, num=3, graph="bar.nb", W=W, labvar=labvar,
-    symbol=pch,couleurs=col);
+    symbol=pch,couleurs=col)
     
  #   obs <<- matrix(FALSE, nrow=length(long), ncol=length(long));
 
@@ -141,15 +151,19 @@ barfunc<-function()
    graf<<-"Neighbourplot2"
     
    quit <- FALSE
-
+   dev.set(3)
+   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+     
     while(!quit)
     {
-        dev.set(3);
+        dev.set(3)
         loc<-locator(1)
         if(is.null(loc))
         {
          quit<-TRUE
-         next
+        graphique(var1=nb, obs=obs, num=3, graph="bar.nb", 
+        labvar=labvar, symbol=pch,couleurs=col)
+          next
         }
         obs<<-selectstat(var1=nb,obs=obs,Xpoly=loc[1], Ypoly=loc[2],method="barnb")
 
@@ -157,7 +171,8 @@ barfunc<-function()
 
         graphique(var1=nb, obs=obs, num=3, graph="bar.nb", 
         labvar=labvar, symbol=pch,couleurs=col)
-        
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+          
         carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label,
         symbol=pch, method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,
         buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart,

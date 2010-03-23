@@ -60,6 +60,9 @@ pointfunc<-function()
     quit <- FALSE
     loc <- NULL
 
+    dev.set(2)
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
     while(!quit)
     {
         dev.set(2)
@@ -68,7 +71,11 @@ pointfunc<-function()
         if(is.null(loc)) 
         {
           quit<-TRUE
-          next
+        carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
+        label=label,cex.lab=cex.lab, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
+        lablong=lablong, lablat=lablat,symbol=pch2, couleurs=col2,method=method,
+        classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
+         next
         }
 
         obs<<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point")         
@@ -85,6 +92,7 @@ pointfunc<-function()
         label=label,cex.lab=cex.lab, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
         lablong=lablong, lablat=lablat,symbol=pch2, couleurs=col2,method=method,
         classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
         
          if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
           {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
@@ -108,7 +116,10 @@ polyfunc<-function()
     polyX <- NULL
     polyY <- NULL
     quit <- FALSE
-
+    
+    dev.set(2)
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+      
     while(!quit)
     {
       dev.set(2)
@@ -133,11 +144,12 @@ if (length(polyX)>0)
 
     obs <<- selectmap(var1=long, var2=lat, obs=obs, Xpoly=polyX, Ypoly=polyY, method="poly")
 
-    #graphiques
-    
+    #graphique
+    if (length(var[obs]) >= 2)
+    {    
     graphique(var1=var, obs=obs, alpha1=alpha1,  num=3, graph=graph, labvar=labvar,
     symbol=pch, couleurs=col,kernel=kernel)
-            
+    }        
     carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
     label=label,cex.lab=cex.lab, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
     lablong=lablong, lablat=lablat,symbol=pch2, couleurs=col2,method=method,classe=listvar[,
@@ -172,6 +184,7 @@ interfunc<-function()
     while (length(polyX)<2)
     {
       dev.set(3)
+      title(sub = "Click two times to select an interval", cex.sub = 0.8, font.sub = 3,col.sub='red') 
       loc<-locator(1)
       polyX <- c(polyX, loc[1])
     }
@@ -267,8 +280,14 @@ refresh.code<-function(...)
 {
     alpha1<<-slider1(no=1) 
     if(graph=="Densityplot1") 
-    {graphique(var1=var, obs=obs, alpha1=alpha1,  num=3, graph=graph, labvar=labvar,
-     symbol=pch, couleurs=col, kernel=kernel)}
+    { if (length(var[obs]) > 1)
+       {graphique(var1=var, obs=obs, alpha1=alpha1,  num=3, graph=graph, labvar=labvar,
+        symbol=pch, couleurs=col, kernel=kernel)}
+       else
+       {dev.set(3)
+       title(sub = "You have to choose at least two sites to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')  
+       }
+    }   
     else
     {graphique(var1=var, obs=obs, alpha1=alpha1,  num=3, graph="Densityplot2",
      Xpoly=polyX2, labvar=labvar, symbol=pch, couleurs=col, kernel=kernel)

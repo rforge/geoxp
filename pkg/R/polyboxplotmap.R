@@ -40,6 +40,10 @@ if(names.arg[1]=="") names.arg<-levels(as.factor(var))
 boxfunc <- function() 
  {
   quit <- FALSE
+ 
+  dev.set(3)
+  title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
   while (!quit) 
    {
     dev.set(3)
@@ -47,6 +51,8 @@ boxfunc <- function()
     if (is.null(loc)) 
     {
      quit <- TRUE
+     graphique(var1 = var2, var2 = var1, obs = obs, num = 3, graph = "Polyboxplot",
+     labvar = labvar, symbol = pch, couleurs = col, labmod = names.arg,bin=varwidth)
      next
     }
     
@@ -55,7 +61,8 @@ boxfunc <- function()
    
     graphique(var1 = var2, var2 = var1, obs = obs, num = 3, graph = "Polyboxplot",
     labvar = labvar, symbol = pch, couleurs = col, labmod = names.arg,bin=varwidth)
-   
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
     carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
     lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,method="Cluster",
     classe=var1,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,axis=axes,cex.lab=cex.lab)

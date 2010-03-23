@@ -157,8 +157,7 @@ polyfunc<-function()
         polyX <- c(polyX, loc[1])
         polyY <- c(polyY, loc[2])
         lines(polyX,polyY)
-        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
- }
+  }
 
     polyX <- c(polyX, polyX[1])
     polyY <- c(polyY, polyY[1])

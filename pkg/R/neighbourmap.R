@@ -27,6 +27,7 @@ dev.new()
 dev.new()
 
 fin <- tclVar(FALSE)
+
 ####################################################
 # sélection d'un point sur la carte
 ####################################################
@@ -38,6 +39,9 @@ pointfunc<-function()
    quit <- FALSE
    graf<<-"Neighbourplot1"
    
+   dev.set(2)
+   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+  
     while(!quit)
     {
      dev.set(2)
@@ -46,6 +50,10 @@ pointfunc<-function()
       if (is.null(loc)) 
        {
          quit<-TRUE
+         carte(long=long, lat=lat, obs=obs,  carte=carte,nocart=nocart, classe=classe,
+         symbol=c(pch[1],16),W=W, method="Neighbourplot1", buble=buble, cbuble=z, criteria=criteria,
+         nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
+         label=label, cex.lab=cex.lab)    
          next
        }           
    
@@ -58,6 +66,8 @@ pointfunc<-function()
       nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
       label=label, cex.lab=cex.lab)      
       
+      title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+       
       graphique(var1=var, obs=obs, num=3, graph="Neighbourplot", labvar=labvar,
       couleurs=col, symbol=pch, opt1=id, W=W)  
     }
@@ -76,6 +86,9 @@ polyfunc<-function()
     polyY <- NULL
     quit <- FALSE
 
+    dev.set(2)
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+  
     while(!quit)
     {
         dev.set(2)
@@ -123,6 +136,9 @@ voisfunc <- function()
    graf<<-"Neighbourplot2"
    quit <- FALSE
 
+    dev.set(3)
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+  
     while(!quit)
     {
         dev.set(3)
@@ -130,6 +146,8 @@ voisfunc <- function()
         if(is.null(loc)) 
         {
             quit<-TRUE
+            graphique(var1=var, obs=obs, num=3, graph="Neighbourplot", labvar=labvar,
+            couleurs=col, symbol=pch, opt1=id , W=W)   
             next
         }
  
@@ -144,6 +162,8 @@ voisfunc <- function()
       
       graphique(var1=var, obs=obs, num=3, graph="Neighbourplot", labvar=labvar,
       couleurs=col, symbol=pch, opt1=id , W=W) 
+      title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+  
     }
   }
 
@@ -165,6 +185,9 @@ polyscatfunc <- function()
   polyX <- NULL
   polyY <- NULL
  
+    dev.set(3)
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+  
    while (!quit) 
     {
      dev.set(3)

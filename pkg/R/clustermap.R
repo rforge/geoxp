@@ -68,6 +68,9 @@ cex.lab=1, pch=16, col="blue", names.arg="", axes=FALSE, lablong="", lablat="")
 pointfunc<-function() 
 {
     quit <- FALSE;
+   
+     dev.set(2)
+     title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
     {
@@ -76,8 +79,12 @@ pointfunc<-function()
         loc<-locator(1)
         if(is.null(loc)) 
         {
-            quit<-TRUE;
-            next;
+            quit<-TRUE
+        carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+        lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,
+        method="Cluster",classe=vectclass,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,
+        cex.lab=cex.lab,axis=axes)
+            next
         }   
         obs<<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point")         
 
@@ -87,7 +94,8 @@ pointfunc<-function()
         lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,
         method="Cluster",classe=vectclass,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,
         cex.lab=cex.lab,axis=axes)
-        
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    
         graphique(var1=vectclass, obs=obs, num=3,graph="Barplot", labvar=labvar, symbol=pch,labmod=names.arg,couleurs=col);
         
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
@@ -109,6 +117,9 @@ polyfunc<-function()
     polyX <- NULL
     polyY <- NULL
     quit <- FALSE
+ 
+    dev.set(2)
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red') 
 
     while(!quit)
     {
@@ -159,7 +170,10 @@ barfunc<-function()
 {
     SGfunc()
     quit <- FALSE
-
+  
+    dev.set(3)
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    
     while(!quit)
     {
         dev.set(3)
@@ -167,6 +181,8 @@ barfunc<-function()
         if(is.null(loc)) 
         {
           quit<-TRUE
+        graphique(var1=vectclass, obs=obs, num=3,graph="Barplot", labvar=labvar, symbol=pch,labmod=names.arg,
+        couleurs=col)
           next
         }           
         obs<<-selectstat(var1=as.vector(vectclass),obs=obs,Xpoly=loc[1], Ypoly=loc[2],method="Barplot");   
@@ -174,7 +190,8 @@ barfunc<-function()
         # graphiques
         graphique(var1=vectclass, obs=obs, num=3,graph="Barplot", labvar=labvar, symbol=pch,labmod=names.arg,
         couleurs=col)
-        
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+       
         carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
         lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,couleurs=col,
         method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)

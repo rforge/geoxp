@@ -82,6 +82,10 @@ fin <- tclVar(FALSE)
  pointfunc <- function() 
  {
   quit <- FALSE
+ 
+  dev.set(3)
+  title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+  
   while (!quit) 
   {
     dev.set(3)
@@ -89,6 +93,8 @@ fin <- tclVar(FALSE)
       if (is.null(loc)) 
        {
         quit <- TRUE
+        graphique(var1 = theta, var2 = absvar, obs = obs,num = 3, graph = "Angleplot", labvar = labvar,
+        couleurs=col,symbol = pch, quantiles = quantiles,alpha1 = alpha)
         next
        }
 
@@ -99,7 +105,8 @@ fin <- tclVar(FALSE)
    
    graphique(var1 = theta, var2 = absvar, obs = obs,num = 3, graph = "Angleplot", labvar = labvar,
    couleurs=col,symbol = pch, quantiles = quantiles,alpha1 = alpha)
-  
+   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
    carte(long = long, lat = lat, obs = obs,buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,
    nocart=nocart, lablong = lablong,lablat = lablat,label = label,cex.lab=cex.lab, symbol = pch,method = "Angleplot",
    axis=axes,legmap=legmap,legends=legends) 
@@ -119,6 +126,9 @@ fin <- tclVar(FALSE)
   polyX <- NULL
   polyY <- NULL
 
+   dev.set(3)
+   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+ 
    while (!quit) 
     {
      dev.set(3)
@@ -134,7 +144,7 @@ fin <- tclVar(FALSE)
       if (length(polyX)>0)
       {
         lines(polyX, polyY)
-      }
+     }
     }  
      
    polyX <- c(polyX, polyX[1])

@@ -82,7 +82,16 @@ pointfunc<-function()
 {
     quit <- FALSE
     quad <<- FALSE
-
+ 
+    if(maptest) 
+      { dev.set(2)
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+      }
+     else
+     { dev.set(3)
+       title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+     }
+      
     while(!quit)
     {
         if(maptest) 
@@ -92,6 +101,10 @@ pointfunc<-function()
             if(is.null(loc)) 
             {
               quit<-TRUE
+              carte(long=long, lat=lat, obs=obs,  carte=carte,nocart=nocart, classe=obsq,
+              couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+              nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
+              label=label, cex.lab=cex.lab, labmod=names.arg)   
               next
             }           
             obs<<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point") 
@@ -103,6 +116,9 @@ pointfunc<-function()
             if(is.null(loc)) 
             {
               quit<-TRUE
+              graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2, 
+              symbol=pch2, locmoran=locmoran,obsq=obsq, cex.lab=cex.lab,buble=buble2, cbuble=z2, 
+              legmap=legmap2, legends=legends2 )       
               next
             }
             obs<<-selectmap(var1=var,var2=wvar,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point")
@@ -117,7 +133,17 @@ pointfunc<-function()
         graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2, 
         symbol=pch2, locmoran=locmoran,obsq=obsq, cex.lab=cex.lab,buble=buble2, cbuble=z2, 
         legmap=legmap2, legends=legends2 ) 
-           
+      
+      if(maptest) 
+      { dev.set(2)
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+      }
+     else
+     { dev.set(3)
+       title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+     }  
+     
+        
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
             graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)], 
@@ -160,7 +186,16 @@ polyfunc<-function()
    polyY <- NULL
    quit <- FALSE
    quad <<- FALSE
-
+   
+   if(maptest) 
+      { dev.set(2)
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+      }
+     else
+     { dev.set(3)
+       title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+     }
+      
    while(!quit)
     {
         if(maptest)

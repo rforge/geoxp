@@ -47,6 +47,10 @@ ylab=c("count","count"), label = "",cex.lab=1,axes=FALSE, lablong="", lablat="")
 pointfunc <- function() 
  {
   quit <- FALSE
+ 
+  dev.set(2)
+  title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
   while (!quit) 
    {
      dev.set(2)
@@ -54,7 +58,10 @@ pointfunc <- function()
      if (is.null(loc)) 
       {
        quit <- TRUE
-       next
+      carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
+      symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
+      lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
+          next
       }
     obs <<- selectmap(var1 = long, var2 = lat, obs = obs, 
     Xpoly = loc[1], Ypoly = loc[2], method = "point")
@@ -65,7 +72,8 @@ pointfunc <- function()
     carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
     symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
     lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
-  
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
      if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
        {
         graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
@@ -84,6 +92,10 @@ pointfunc <- function()
         polyX <- NULL
         polyY <- NULL
         quit <- FALSE
+        
+        dev.set(2)   
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+        
         while (!quit) {
             dev.set(2)
             loc <- locator(1)
@@ -95,7 +107,7 @@ pointfunc <- function()
             polyX <- c(polyX, loc[1])
             polyY <- c(polyY, loc[2])
             lines(polyX, polyY)
-        }
+       }
         polyX <- c(polyX, polyX[1])
         polyY <- c(polyY, polyY[1])
 
@@ -130,17 +142,24 @@ pointfunc <- function()
     {
         SGfunc()
         quit <- FALSE
+      
+        dev.set(3)
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
         while (!quit) {
             dev.set(3)
             loc <- locator(1)
             if (is.null(loc)) 
             {
               quit <- TRUE
+              graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1],bin=type, labvar = labvar1, couleurs=col[1])
               next
             }
             obs <<- selectstat(var1 = var1, obs = obs, Xpoly = loc[1],Ypoly = loc[2], method = "Histogram", nbcol = nbcol[1])
  
      graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1],bin=type, labvar = labvar1, couleurs=col[1])
+     title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+ 
      graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2],bin=type, labvar = labvar2, couleurs=col[2])
   
      carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
@@ -165,6 +184,10 @@ pointfunc <- function()
     {
         SGfunc()
         quit <- FALSE
+     
+       dev.set(4)      
+       title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+ 
         while (!quit)
          {
             dev.set(4)
@@ -172,13 +195,15 @@ pointfunc <- function()
             if (is.null(loc)) 
             {
               quit <- TRUE
+              graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2],bin=type, labvar = labvar2, couleurs=col[2])
               next                                                     
             }
             obs <<- selectstat(var1 = var2, obs = obs, Xpoly = loc[1],Ypoly = loc[2], method = "Histogram", nbcol = nbcol[2])
  
     graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1],bin=type, labvar = labvar1, couleurs=col[1])
     graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2],bin=type, labvar = labvar2, couleurs=col[2])
-  
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+   
     carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
     symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
     lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 

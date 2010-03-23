@@ -89,6 +89,9 @@ pointfunc<-function()
  {
     quit <- FALSE
 
+    dev.set(2)  
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
     while(!quit)
      {
       #sélection des points
@@ -99,7 +102,10 @@ pointfunc<-function()
          if(is.null(loc))
            {
             quit<-TRUE
-            next
+           carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,label=label,
+           symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
+           cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
+             next
            }
       
        obs<<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point")
@@ -115,7 +121,9 @@ pointfunc<-function()
       carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,label=label,
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
       cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
-  
+    
+      title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
             graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
@@ -136,7 +144,9 @@ polyfunc<-function()
     polyX <- NULL
     polyY <- NULL
     quit <- FALSE
-
+                dev.set(2)
+           title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+     
     while(!quit)
     {
         dev.set(2)
@@ -150,7 +160,7 @@ polyfunc<-function()
         polyX <- c(polyX, loc[1])
         polyY <- c(polyY, loc[2])
         lines(polyX,polyY)
-    }
+   }
 
     polyX <- c(polyX, polyX[1])
     polyY <- c(polyY, polyY[1])

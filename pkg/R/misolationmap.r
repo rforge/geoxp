@@ -120,16 +120,21 @@ pointfunca<-function()
    if (graf=="pairwise") SGfunc()
    graf<<-"Neighbourplot1"
    
-    quit <- FALSE;
+    quit <- FALSE
+    dev.set(2)
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
     {
-        dev.set(2);
-        loc<-locator(1);
+        dev.set(2)
+        loc<-locator(1)
         if (is.null(loc))
         {
-            quit<-TRUE;
-            next;
+            quit<-TRUE
+            carte(long = long, lat = lat, obs = obs,buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,
+            nocart=nocart, lablong = lablong,lablat = lablat,label = label,cex.lab=cex.lab, symbol = pch,method = "pairwise",
+            axis=axes,legmap=legmap,legends=legends)
+            next
         }
         obs2<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point");
 
@@ -150,6 +155,7 @@ pointfunca<-function()
    carte(long = long, lat = lat, obs = obs,buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,
    nocart=nocart, lablong = lablong,lablat = lablat,label = label,cex.lab=cex.lab, symbol = pch,method = "pairwise",
    axis=axes,legmap=legmap,legends=legends)
+   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
    
    #     carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=16,
    #     method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,buble=buble,criteria=criteria,
@@ -174,32 +180,35 @@ polyfunca<-function()
    if (graf=="pairwise") SGfunc()
    graf<<-"Neighbourplot1"
    
-    polyX <- NULL;
-    polyY <- NULL;
-    quit <- FALSE;
-
+    polyX <- NULL
+    polyY <- NULL
+    quit <- FALSE
+  
+    dev.set(2)
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+   
     while(!quit)
     {
-        dev.set(2);
-        loc<-locator(1);
+        dev.set(2)
+        loc<-locator(1)
         if(is.null(loc))
         {
-            quit<-TRUE;
-            next;
+            quit<-TRUE
+            next
         }
 
-        polyX <- c(polyX, loc[1]);
-        polyY <- c(polyY, loc[2]);
-        lines(polyX,polyY);
+        polyX <- c(polyX, loc[1])
+        polyY <- c(polyY, loc[2])
+        lines(polyX,polyY)
     }
 
-    polyX <- c(polyX, polyX[1]);
-    polyY <- c(polyY, polyY[1]);
+    polyX <- c(polyX, polyX[1])
+    polyY <- c(polyY, polyY[1])
 if (length(polyX)>0)
 {
-    lines(polyX,polyY);
+    lines(polyX,polyY)
 
-    obs2 <- selectmap(var1=long, var2=lat, obs=obs, Xpoly=polyX, Ypoly=polyY, method="poly");
+    obs2 <- selectmap(var1=long, var2=lat, obs=obs, Xpoly=polyX, Ypoly=polyY, method="poly")
     obs<<-(W*obs2>0)
 
     if(!outselect)
@@ -244,6 +253,10 @@ if (length(polyX)>0)
    graf<<-"pairwise"
    
   quit <- FALSE
+ 
+  dev.set(3)
+  title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
   while (!quit) 
   {
     dev.set(3)
@@ -251,6 +264,8 @@ if (length(polyX)>0)
       if (is.null(loc)) 
        {
         quit <- TRUE
+        graphique(var1 = theta, var2 = absvar, obs = obs,num = 3, graph = "pairwise", labvar = labvar,
+        couleurs=col,symbol = pch, direct=propneighb)
         next
        }
 
@@ -271,7 +286,8 @@ if (length(polyX)>0)
    
    graphique(var1 = theta, var2 = absvar, obs = obs,num = 3, graph = "pairwise", labvar = labvar,
    couleurs=col,symbol = pch, direct=propneighb)
-  
+   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
    carte(long = long, lat = lat, obs = obs,buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,
    nocart=nocart, lablong = lablong,lablat = lablat,label = label,cex.lab=cex.lab, symbol = pch,method = "pairwise",
    axis=axes,legmap=legmap,legends=legends) 
@@ -475,6 +491,9 @@ if (length(polyX)>0)
   quit <- FALSE
   polyX <- NULL
   polyY <- NULL
+
+   dev.set(3) 
+   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
    while (!quit) 
     {

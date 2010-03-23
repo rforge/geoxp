@@ -41,6 +41,10 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
     pointfunc <- function() 
     {
         quit <- FALSE
+        
+        dev.set(2)
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    
         while (!quit)
          {
             dev.set(2)
@@ -48,6 +52,9 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
             if (is.null(loc)) 
             {
               quit <- TRUE
+              carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
+              cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col,method="Cluster",classe=var1,legmap=legmap,
+              legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
               next
             }
            obs <<- selectmap(var1 = long, var2 = lat, obs = obs,Xpoly = loc[1], Ypoly = loc[2], method = "point")
@@ -55,7 +62,8 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
            carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
            cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col,method="Cluster",classe=var1,legmap=legmap,
            legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
-           
+           title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    
            graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot",labvar = labvar1, symbol = pch, 
            labmod = names.arg,couleurs=col)
            
@@ -78,6 +86,10 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
         polyX <- NULL
         polyY <- NULL
         quit <- FALSE
+        
+        dev.set(2)
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    
         while (!quit) 
         {
             dev.set(2)
@@ -125,6 +137,10 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
     {
         SGfunc()
         quit <- FALSE
+       
+        dev.set(3)
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    
         while (!quit) 
         {
             dev.set(3)
@@ -132,6 +148,8 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
             if (is.null(loc)) 
             {
               quit <- TRUE
+              graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot",labvar = labvar1, symbol = pch, 
+              labmod = names.arg,couleurs=col)
               next
             }
 
@@ -143,7 +161,8 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
            
            graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot",labvar = labvar1, symbol = pch, 
            labmod = names.arg,couleurs=col)
-           
+           title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    
            graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol,bin=type, labvar = labvar2,couleurs=col[1])
            
           if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
@@ -162,6 +181,10 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
     {
         SGfunc()
         quit <- FALSE
+       
+        dev.set(4)
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    
         while (!quit) 
         {
             dev.set(4)
@@ -169,6 +192,7 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
             if (is.null(loc)) 
             {
               quit <- TRUE
+              graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol,bin=type, labvar = labvar2,couleurs=col[1])
               next
             }
 
@@ -182,7 +206,8 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
            labmod = names.arg,couleurs=col)
            
            graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol,bin=type, labvar = labvar2,couleurs=col[1])
-
+           title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
             graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],

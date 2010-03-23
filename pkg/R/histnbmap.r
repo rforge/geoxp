@@ -115,6 +115,10 @@ pointfunc<-function()
 
     quit <- FALSE
     graf<<-"Neighbourplot1"
+   
+    dev.set(2)
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    
     while(!quit)
     {
       dev.set(2)
@@ -122,6 +126,9 @@ pointfunc<-function()
         if (is.null(loc))
         {
           quit<-TRUE
+          carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=pch,
+          method="Neighbourplot3", W=W,axis=axes,cex.lab=cex.lab,legmap=legmap,legends=legends,buble=buble,
+          criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart)
           next
         }
         obs<<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point")
@@ -130,7 +137,8 @@ pointfunc<-function()
         carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=pch,
         method="Neighbourplot3", W=W,axis=axes,cex.lab=cex.lab,legmap=legmap,legends=legends,buble=buble,
         criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart)
-        
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    
         graphique(var1=nb,var2=dlist, obs=obs, num=3, graph="histo.nb",nbcol=nbcol, W=W,
         labvar=labvar, symbol=pch,couleurs=col)
 
@@ -150,7 +158,10 @@ polyfunc<-function()
     polyX <- NULL
     polyY <- NULL
     quit <- FALSE
-
+    
+    dev.set(2)
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    
     while(!quit)
     {
         dev.set(2)
@@ -197,9 +208,10 @@ barfunc<-function()
    if (graf=="Neighbourplot1") SGfunc()
 
     graf<<-"Neighbourplot2"
-    
     quit <- FALSE
-
+    dev.set(3)
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    
     while(!quit)
     {
       dev.set(3)
@@ -207,6 +219,8 @@ barfunc<-function()
         if(is.null(loc))
         {
           quit<-TRUE
+          graphique(var1=nb,var2=dlist, obs=obs, num=3, graph="histo.nb",nbcol=nbcol, W=W,
+          labvar=labvar, symbol=pch,couleurs=col)
           next
         }
         obs<<-selectstat(var1=nb,var2=dlist,obs=obs,Xpoly=loc[1], Ypoly=loc[2],method="nbhist", nbcol=nbcol)
@@ -218,7 +232,8 @@ barfunc<-function()
       
    graphique(var1=nb,var2=dlist, obs=obs, num=3, graph="histo.nb",nbcol=nbcol, W=W,
    labvar=labvar, symbol=pch,couleurs=col)
-         
+   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+          
     }
   }
 

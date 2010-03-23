@@ -49,7 +49,9 @@ fin <- tclVar(FALSE)
 pointfunc<-function() 
  {
     quit <- FALSE
-
+    dev.set(2)
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    
     while(!quit)
      {
       #sélection des points
@@ -149,7 +151,11 @@ barfunc<-function()
 {
     SGfunc()
     quit <- FALSE
-
+   
+    dev.set(3)
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+        
+        
     while(!quit)
     {
         dev.set(3)

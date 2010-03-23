@@ -80,12 +80,20 @@ if((length(listvar)>0)&&(dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(list
     pointfunc <- function() 
      {
         quit <- FALSE
+        
+        dev.set(3)
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
         while (!quit) 
         {
             dev.set(3)
             loc <- locator(1)
-            if (is.null(loc)) {
-                quit <- TRUE
+            if (is.null(loc))
+             {
+               quit <- TRUE
+               graphique(var1 = dist, var2 = dif, var3=dif2, obs = obs,opt1=opt1,opt2=opt2, num = 3, 
+               graph = "Variocloud", labvar = labvar, symbol = pch, couleurs=col, quantiles = quantiles, 
+               alpha1 = alpha, bin=bin, xlim=xlim, ylim=ylim)
                 next
             }
      obs <<- selectstat(var1 = dist, var2 = dif, obs = obs,Xpoly = loc[1], Ypoly = loc[2], 
@@ -94,7 +102,8 @@ if((length(listvar)>0)&&(dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(list
      graphique(var1 = dist, var2 = dif, var3=dif2, obs = obs,opt1=opt1,opt2=opt2, num = 3, 
      graph = "Variocloud", labvar = labvar, symbol = pch, couleurs=col, quantiles = quantiles, 
      alpha1 = alpha, bin=bin, xlim=xlim, ylim=ylim)
-     
+     title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
      carte(long = long, lat = lat, obs = obs, lablong = lablong,lablat = lablat, 
      label = label,buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart, 
      cex.lab=cex.lab, method = "Variocloud",axis=axes,legmap=legmap,legends=legends)
@@ -110,6 +119,10 @@ if((length(listvar)>0)&&(dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(list
         quit <- FALSE
         polyX <- NULL
         polyY <- NULL
+        
+        dev.set(3) 
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
         while (!quit) {
             dev.set(3)
             loc <- locator(1)

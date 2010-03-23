@@ -44,6 +44,8 @@ dev.new()
 boxfunc<-function()
 {
     quit <- FALSE
+    dev.set(3)
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
     {
@@ -52,12 +54,14 @@ boxfunc<-function()
         if(is.null(loc)) 
         {
           quit<-TRUE
+          graphique(var1=var, obs=obs, num=3, graph="Boxplot", labvar=labvar,couleurs=col, symbol=pch)
           next
         }           
         obs<<-selectstat(var1=var,obs=obs,Xpoly=loc[1], Ypoly=loc[2],method="Boxplot")
 
         # graphiques
         graphique(var1=var, obs=obs, num=3, graph="Boxplot", labvar=labvar,couleurs=col, symbol=pch)
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
         carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
         symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,

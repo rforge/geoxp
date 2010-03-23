@@ -19,6 +19,7 @@ choix.bubble<-function(buble,listvar,listnomvar,legends)
 
          tt2 <- tktoplevel()
          z<-sqrt(abs(bubble)/max(abs(bubble)))*3
+         legmap<-NULL
 
          OnOK <- function()
           {
