@@ -75,7 +75,17 @@ cex.lab=0.7, pch=6, col="purple")
 data(boston)
 obs<-pcamap(boston.utm[,1],boston.utm[,2],boston.c[,12:15],label=boston.c$TOWN, 
 listvar=boston.c,listnomvar=names(boston.c),name.dataset=names(boston.c[,12:15]),
-cex.lab=0.3,center=c(0,0,0,0))
+cex.lab=0.3)
+
+# generalized PCA
+cov.boston<-cov.mcd(boston.c[,12:15],cor=TRUE)
+b.center<-cov.boston$center
+b.cov<-cov.boston$cor
+
+obs<-pcamap(boston.utm[,1],boston.utm[,2],boston.c[,12:15],label=boston.c$TOWN, 
+metric=b.cov,listvar=boston.c,listnomvar=names(boston.c),name.dataset=names(boston.c[,12:15]),
+cex.lab=0.3,center=b.center)
+
 
 }
 
