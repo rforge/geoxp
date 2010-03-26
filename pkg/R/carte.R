@@ -20,8 +20,8 @@ if(!is.null(carte))
 {
  if(!is.list(carte))
  {
-  x.cont.lim=range(carte[,1],na.rm=TRUE)
-  y.cont.ylim=range(carte[,2],na.rm=TRUE)
+  x.lim=range(carte[,1],na.rm=TRUE)
+  y.lim=range(carte[,2],na.rm=TRUE)
  }
 else
  {kol<-length(carte)
@@ -32,16 +32,19 @@ else
     xk.cont.lim=c(xk.cont.lim,range(cartek[,1],na.rm=TRUE))
     yk.cont.ylim=c(yk.cont.ylim,range(cartek[,2],na.rm=TRUE))
    }
-  x.cont.lim=range(xk.cont.lim,na.rm=TRUE)
-  y.cont.ylim=range(yk.cont.ylim,na.rm=TRUE)
+  x.lim=range(xk.cont.lim,na.rm=TRUE)
+  y.lim=range(yk.cont.ylim,na.rm=TRUE)
  }
  
- asp=1/cos((mean(y.cont.ylim) * pi)/180)
+ asp=1/cos((mean(y.lim) * pi)/180)
 }
 else
 {
 asp=1/cos((mean(y.lim) * pi)/180)
-if(asp>1.40||asp<0.6) asp=1 
+
+x.lim=c(min(long,na.rm=TRUE),max(long,na.rm=TRUE)) 
+y.lim=c(min(lat,na.rm=TRUE),max(lat,na.rm=TRUE))
+
 }
 
 if(asp>1.40||asp<0.6) asp=1 
@@ -116,7 +119,7 @@ else
 
 if(nocart)
 {                                                                                        
-plot(x.cont.lim,y.cont.ylim,"n", xlab=lablong, ylab=lablat, tcl=-.25, las=1, cex=cbuble,asp=asp,axes=axis)
+plot(x.lim,y.lim,"n", xlab=lablong, ylab=lablat, tcl=-.25, las=1, cex=cbuble,asp=asp,axes=axis)
   if(class(carte)!="list")
    {
     n <- nrow(carte);
@@ -208,9 +211,13 @@ else
 
  }
 
- if(legends[[2]])
- {
-legend(legends[[4]]$x,legends[[4]]$y, labmod,cex=cex.lab,col=couleurs,pch = leg.symb, pt.cex=1.125)}
+if(legends[[2]])
+ { if(is.null(legends[[4]]$name))
+   {legend(legends[[4]]$x,legends[[4]]$y, labmod,cex=cex.lab,col=couleurs,pch = leg.symb, pt.cex=1.125)}
+  else
+  {legend(legends[[4]]$x,legends[[4]]$y, labmod,cex=cex.lab,col=couleurs,pch = leg.symb, pt.cex=1.125,
+   title=legends[[4]]$name)}
+ }
 
 
 
@@ -375,7 +382,7 @@ if(length(long[obs])!=0)
 ####################################################
 
 if(nointer)
-{points(long[criteria],lat[criteria], pch="X",cex=0.7)}
+{points(long[criteria],lat[criteria], pch="X",cex=0.7,col="green")}
 
  }
 
