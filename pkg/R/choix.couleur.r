@@ -39,8 +39,6 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
               return()
              }
 
-            cat("Executing from script window:","-----", code, "result:", sep="\n")
-            print(eval(e))
 
             col2<<-eval(e)
             col3<<-eval(e)
@@ -76,8 +74,6 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
                     return()
                   }
 
-                cat("Executing from script window:","-----", code, "result:", sep="\n")
-                print(eval(e))
                 pch2<<-eval(e)
 
                  if (length(pch2)!=n.col)
@@ -93,9 +89,12 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
                       msg <- paste("Click on the map to indicate the location of the upper left corner of the legend box")
                       tkmessageBox(message=msg)
 
-                      dev.set(2);
+                      dev.set(2)
                       loc <- locator(1)
+                      loc$name <- varChoice1
+                      
                       legends<<-list(legends[[1]],TRUE,legends[[3]],loc)
+                      print(legends)
                       tkdestroy(tt1)
                      }
 
@@ -143,9 +142,9 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
                     msg <- paste("Click on the map to indicate the location of the upper left corner of the legend box")
                     tkmessageBox(message=msg)
 
-                    dev.set(2);
+                    dev.set(2)
                     loc <- locator(1)
-
+                    loc$name <- varChoice1
                     legends<<-list(legends[[1]],TRUE,legends[[3]],loc)
                    }
 
