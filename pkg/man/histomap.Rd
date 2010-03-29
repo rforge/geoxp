@@ -2,29 +2,32 @@
 \alias{histomap}
 
 \title{Interactive Histogram and map}
+
 \description{
-The function \code{histomap()} draws a histogram of the given variable \code{var}
-and a map with sites of coordinates (\code{long},\code{lat}). Each site is associated to a value of \code{var} and there is interactivity between the two windows.
+The function \code{histomap()} draws a histogram of a given variable \code{name.var}
+and a map with sites of coordinates coordinates(sp.obj). Each site is associated to a value of \code{name.var} and there is
+interactivity between the two windows.
 }
+
 \usage{
-histomap(long,lat,var,nbcol=10,type = c("count","percent", "density"), listvar=NULL, listnomvar=NULL, criteria=NULL,
-carte=NULL, label="",cex.lab=1, pch=16, col="lightblue", xlab="",ylab="",axes=FALSE,
-lablong="",lablat="")
+histomap(sp.obj, name.var, nbcol=10, type = c("count","percent", "density"),
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue",
+xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 }
+
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{long}{a vector x of size n}
-  \item{lat}{a vector y of size n}
-  \item{var}{a vector of numeric values of size n}
+  \item{sp.obj}{object of class extending Spatial-class}
+  \item{name.var}{character; attribute name or column number in attribute table}
   \item{nbcol}{number of cells for histogram (10 by default)}
   \item{type}{Character string indicating type of histogram to be drawn. "percent" and "count" give relative frequency and frequency histograms, "density" produces a density scale histogram.}
-  \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
-  \item{listnomvar}{a list with names of variables \code{listvar}}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}  \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
-  \item{label}{a list of character of size n with name of site. Names are printed on map after a selection}
+  \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
+  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
+  \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
   \item{pch}{16 by default, symbol for selected points}
-  \item{col}{"blue" by default, color of bars on the histogram}
+  \item{col}{"lightblue" by default, color of bars on the histogram}
   \item{xlab}{a title for the graphic x-axis}
   \item{ylab}{a title for the graphic y-axis}
   \item{axes}{a boolean with TRUE for drawing axes on the map}
@@ -32,8 +35,8 @@ lablong="",lablat="")
   \item{lablat}{name of the y-axis that will be printed on the map}
 }
 \details{
-Sites selected by a bar on the histogram are represented on the map in red and the values of sites selected on the map by `points' or `polygon' are 
-represented in red as a sub-histogram on the histogram. 
+Sites selected by a bar on the histogram are represented on the map in red and the values of sites selected on the map by `points' or `polygon' are
+represented in red as a sub-histogram on the histogram.
 }
 \value{
 A vector of boolean of size n. TRUE if the site was in the last selection.
@@ -44,40 +47,43 @@ A vector of boolean of size n. TRUE if the site was in the last selection.
 
 \seealso{\code{\link{histomap}}, \code{\link{histobarmap}}, \code{\link{scattermap}}, \code{\link{densitymap}}}
 \examples{
-# data on price indices of real estate in France
-data(immob)
-midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
-cont_midiP<-spdf2list(midiP)$poly
-histomap(immob$longitude,immob$latitude,immob$prix.vente,
-carte= cont_midiP,listvar=immob, col='grey',
-listnomvar=names(immob),label=immob$Nom,cex.lab=0.6)
 
+######
 # data oldcol
 example(columbus)
-coords <- coordinates(columbus)
-cont<-spdf2list(columbus)$poly
 
-histomap(coords[,1], coords[,2],columbus@data$CRIME,listvar=columbus@data, 
-listnomvar=names(columbus@data),criteria=(columbus@data$CRIME>mean(columbus@data$CRIME)),
-carte=cont,col="grey")
+# columbus is included in the Spatial-Class object
+# a very simple use of histomap :
+histomap(columbus,"CRIME")
 
-# data afcon
-data(afcon)
-africa <- readShapePoly(system.file("shapes/Africa.shp", package = "GeoXp")[1])
-africa.contour<-spdf2list(africa)$poly
-histomap(afcon$x,afcon$y,afcon$totcon,listvar=afcon,
-listnomvar=names(afcon),criteria=(afcon$totcon>mean(afcon$totcon)),
-label=afcon$name,cex.lab=0.6,pch=14,carte=africa.contour)
+######
+# data on price indices of real estate in France
+data(immob)
+row.names(immob)<-immob$Nom
 
-# data eire
-data(eire)
-eire.contours<-polylist2list(eire.polys.utm)
+# immob is a data.frame object. We have to create
+# a Spatial object, by using first the longitude and latitude
+# to create Spatial Points object ...
+immob.sp = SpatialPoints(cbind(immob$longitude,immob$latitude))
+# ... and then by integrating other variables to create SpatialPointsDataFrame
+immob.spdf = SpatialPointsDataFrame(immob.sp, immob)
+# For more details, see vignette('sp', package="sp")
 
-histomap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$A,carte=eire.contours,listvar=eire.df,
-listnomvar=names(eire.df),xlab="Rate of individuals with groupe sanguin A",pch=5)
+# optional : we add some contours that don't correspond to the spatial unit
+# but are nice for mapping
+midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
+cont_midiP<-spdf2list(midiP)$poly
 
+# A basic call of histomap function
+histomap(immob.spdf,"prix.vente", carte= cont_midiP, identify=TRUE, cex.lab=0.6)
+
+# ... with all options
+histomap(immob.spdf,4, nbcol=15, type = "percent",
+names.attr=names(immob), criteria=immob$rentabilite>5, carte=cont_midiP,
+identify=TRUE, cex.lab=0.5, pch=12, col="pink",
+xlab="average price of square meter", ylab="percent", axes=TRUE, lablong="x",
+lablat="y")
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
+
 \keyword{spatial}
 \keyword{univar}
