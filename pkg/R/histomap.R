@@ -1,6 +1,6 @@
 `histomap` <-
 function(sp.obj, name.var, nbcol=10, type = c("count","percent", "density"),
-names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue",
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
 xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 {
 

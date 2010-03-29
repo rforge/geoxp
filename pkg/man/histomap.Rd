@@ -11,7 +11,7 @@ interactivity between the two windows.
 
 \usage{
 histomap(sp.obj, name.var, nbcol=10, type = c("count","percent", "density"),
-names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue",
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
 xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 }
 
@@ -27,7 +27,7 @@ xlab="", ylab="", axes=FALSE, lablong="", lablat="")
   \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
   \item{pch}{16 by default, symbol for selected points}
-  \item{col}{"lightblue" by default, color of bars on the histogram}
+  \item{col}{"lightblue3" by default, color of bars on the histogram}
   \item{xlab}{a title for the graphic x-axis}
   \item{ylab}{a title for the graphic y-axis}
   \item{axes}{a boolean with TRUE for drawing axes on the map}

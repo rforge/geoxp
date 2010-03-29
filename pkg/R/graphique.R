@@ -197,8 +197,13 @@ else
     
     if ((graph == "Barplot") || (graph == "Cluster")) 
     {
+    
+      if(is.null(bin)) bin<-"count"
       r <- table(var1)
       nomsr <- names(r)
+      r.total<-r
+      
+      if(bin[1]=="percent") r<-r/sum(r)
        
       if (labmod[1] == "") 
        {
@@ -218,10 +223,11 @@ else
          
         if (length(var1[obs]) != 0) 
         {
-         t <- table(var1[obs])
-         nomst <- names(t)
-        
-         for (i in 1:length(t)) 
+         t.obs <- table(var1[obs])
+         nomst <- names(t.obs)
+         if(bin[1]=="percent") t.obs<-t.obs/sum(r.total)
+               
+         for (i in 1:length(t.obs)) 
           {
            quit <- FALSE
            j <- 1
@@ -230,7 +236,7 @@ else
              {
               if (nomst[i] == nomsr[j]) 
                   {                
-                   rect(g[j] - 0.4, 0, g[j] + 0.4, t[[i]],
+                   rect(g[j] - 0.4, 0, g[j] + 0.4, t.obs[[i]],
                    col = "red", density = 4, angle = 45,lwd = 1)
                    quit <- TRUE
                   }

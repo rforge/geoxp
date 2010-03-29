@@ -5,29 +5,29 @@
 The function \code{barmap()} draws a bar plot (vertical bar) of the given factor variable \code{var} and a map with sites of coordinates (\code{long},\code{lat}).}
 
 \usage{
-barmap(long,lat,var,listvar=NULL,listnomvar=NULL,criteria=NULL,carte=NULL,
-label="",cex.lab=1,col="blue",pch=16,xlab="",ylab="",names.arg="",
-axes=FALSE, lablong="", lablat="")
+barmap(sp.obj, name.var, type = c("count","percent"),
+names.arg="", names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, 
+col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 }
 
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{long}{a vector x of size n}
-  \item{lat}{a vector y of size n}
-  \item{var}{a vector of factor of size n}
-  \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
-  \item{listnomvar}{list of character with name of variables from \code{listvar}}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}  \item{carte}{matrix with 2 columns for drawing spatial polygonal contours using the tcltk window : x and y coordinates of the vertices of the polygon}
-  \item{label}{a list of character of size n with name of site. Names are printed on map after a selection}
+  \item{sp.obj}{object of class extending Spatial-class}
+  \item{name.var}{character; attribute name or column number in attribute table}
+  \item{type}{Character string indicating type of histogram to be drawn. "percent" and "count" give relative frequency and frequency histograms.}
+  \item{names.arg}{names of factors of \code{name.var}}
+  \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
+  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
+  \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
-  \item{col}{a vector of colors which must be equal to the number of group else all sites and all bars are printed in col[1]}
   \item{pch}{a vector of symbol which must be equal to the number of group else all sites are printed in pch[1]}
+  \item{col}{a vector of colors which must be equal to the number of group else all sites and all bars are printed in col[1]}
   \item{xlab}{a title for the graphic x-axis}
   \item{ylab}{a title for the graphic y-axis}
-  \item{names.arg}{names of factors of \code{var}}
   \item{axes}{a boolean with TRUE for drawing axes on the map}
   \item{lablong}{name of the x-axis that will be printed on the map}
-  \item{lablat}{name of the y-axis that will be printed on the map}
+  \item{lablat}{name of the y-axis that will be printed on the map}  
 }
 \details{The selection of a bar on the bar plot results in the corresponding 
 sites coloured on the map with the corresponding colour observed on the bar.
@@ -44,22 +44,20 @@ results in the drawing of the sub-barplot in red.
 \seealso{\code{\link{histomap}}, \code{\link{histobarmap}}, \code{\link{scattermap}}, \code{\link{densitymap}}}
 
 \examples{
-# data oldcol 
-example(columbus)
-coords <- coordinates(columbus)
-cont<-spdf2list(columbus)$poly
-
-barmap(coords[,1], coords[,2], columbus@data$NSA, listvar=columbus@data,
-carte=cont, listnomvar=names(columbus@data),criteria=(columbus@data$CP==1),
-col=colors()[101:102],pch=5:6,label=as.character(1:49),cex.lab=0.5)
-
+######
 # data eire
-data(eire)
-eire.contours<-polylist2list(eire.polys.utm)
-barmap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$pale,carte=eire.contours,
-listvar=eire.df,listnomvar=names(eire.df),
-xlab="Appartenance to the region of Pale",names.arg=c("Hors Pale","Pale"),
-col=c("purple","pink"))
+eire <- readShapePoly(system.file("etc/shapes/eire.shp", package="spdep")[1],
+ID="names", proj4string=CRS("+proj=utm +zone=30 +units=km"))
+
+# a basic usage ...
+barmap(eire,"pale")
+
+# ... with all options
+barmap(eire,3, type = "percent",col=c("pink","orange"),
+names.arg=c("not pale","pale"), names.attr=names(eire), 
+criteria=NULL, identify=TRUE, cex.lab=0.8, pch=c(10,11), 
+xlab="Are majority people are pale ?", ylab="Percent", 
+axes=TRUE, lablong="longitude", lablat="latitude")
 
 }
 \keyword{spatial}
