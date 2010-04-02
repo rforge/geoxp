@@ -3,32 +3,31 @@
 \title{Detection of an eventual directional trend}
 \description{
 The function \code{angleplotmap()} is used to detect an eventual directional trend associated
-to variable \code{var}. It represents the absolute difference between the value of \code{var} at two sites
+to variable \code{name.var}. It represents the absolute difference between the value of \code{name.var} at two sites
 as a function of the angle between vector \eqn{\overrightarrow{s_is_j}}{vector(s_is_j)} and the x-axis.
 }
 \usage{
-angleplotmap(long, lat, var, quantiles=NULL,listvar=NULL, listnomvar=NULL,
-criteria=NULL,carte = NULL, label = "", cex.lab=1, pch = 16,col="blue",
-xlab = "angle",ylab="absolut magnitude",lablong = "", lablat = "", axes=FALSE) 
+angleplotmap(sp.obj, name.var, quantiles=NULL,
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
+xlab="angle", ylab="absolut magnitude", axes=FALSE, lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{long}{a vector x of size n }
-  \item{lat}{a vector y of size n}
-  \item{var}{a vector of numeric values of size n}
+  \item{sp.obj}{object of class extending Spatial-class}
+  \item{name.var}{character; attribute name or column number in attribute table}
   \item{quantiles}{list of values of quantile orders (the regression quantile is obtained by spline smoothing)}
-  \item{listvar}{matrix of variables which permit to plot bubbles on map using the tk window}
-  \item{listnomvar}{names of variables \code{listvar}}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}  \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
-  \item{label}{a list of character of size n with names of sites}
+  \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
+  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
+  \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
   \item{pch}{16 by default, symbol for selected points}
-  \item{col}{"blue" by default, colors of points on the angle plot}
+  \item{col}{"lightblue3" by default, color of bars on the histogram}
   \item{xlab}{a title for the graphic x-axis}
   \item{ylab}{a title for the graphic y-axis}
-  \item{lablong}{a title for the map x-axis}
-  \item{lablat}{a title for the map y-axis}
   \item{axes}{a boolean with TRUE for drawing axes on the map}
+  \item{lablong}{name of the x-axis that will be printed on the map}
+  \item{lablat}{name of the y-axis that will be printed on the map}
 }
 \details{
 For each couple of sites \eqn{(s_i,s_j)}{(s_i,s_j)}, the graphic represents on the y-axis the absolute difference
@@ -43,30 +42,53 @@ If that case, only the pair of sites \eqn{(s_i,s_j)}{(s_i,s_j)} verifying :
 
 \value{A matrix of boolean of size \eqn{n \times n}{n x p}. TRUE if pair of sites was in the last selection}
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2009), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
 
 \author{Thomas-Agnan Christine, Aragon Yves, Ruiz-Gazen Anne, Laurent Thibault, Robidou Lauriane}
 
 \keyword{spatial}
 
 \examples{
-# Data  afcon
+######
+# data Conflicts Africa
 data(afcon)
 
+# afcon is a data.frame object. We have to create
+# a Spatial object, by using first the longitude and latitude
+# to create Spatial Points object ...
+afcon.sp = SpatialPoints(cbind(afcon$x,afcon$y))
+# ... and then by integrating other variables to create SpatialPointsDataFrame
+afcon.spdf = SpatialPointsDataFrame(afcon.sp, afcon)
+# For more details, see vignette('sp', package="sp")
+
+# optional : we add some contours that don't correspond to the spatial unit
+# but are nice for mapping
 africa <- readShapePoly(system.file("shapes/Africa.shp", package = "GeoXp")[1])
 africa.contour<-spdf2list(africa)$poly
 
-obs<-angleplotmap(afcon$x,afcon$y,afcon$totcon,listvar=afcon,
-listnomvar=names(afcon),label=afcon$name,cex.lab=0.5,quantiles=c(0.1,0.5,0.95),
-criteria=(afcon$totcon>mean(afcon$totcon)),carte=africa.contour)
+# A basic call of histomap function
+obs<-angleplotmap(afcon.spdf,"totcon", carte= africa.contour,
+identify=TRUE, cex.lab=0.6)
 
+
+#####
 # Data Meuse
 data(meuse)
+
+# meuse is a data.frame object. We have to create
+# a Spatial object, by using first the longitude and latitude
+# to create Spatial Points object ...
+meuse.sp = SpatialPoints(cbind(meuse$x,meuse$y))
+# ... and then by integrating other variables to create SpatialPointsDataFrame
+meuse.spdf = SpatialPointsDataFrame(meuse.sp, meuse)
+
+# meuse.riv is used for contour plot
 data(meuse.riv)
-obs<-angleplotmap(meuse$x,meuse$y,meuse$copper,
+
+obs<-angleplotmap(meuse.spdf,"copper",
 col="green",quantiles=0.9,
-listvar=meuse,listnomvar=names(meuse),
 xlab="Concentration in plomb (in ppm)",pch=7,carte=meuse.riv[c(21:65,110:153),])
+
 }
 
 

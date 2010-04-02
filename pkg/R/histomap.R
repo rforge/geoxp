@@ -34,6 +34,9 @@ listnomvar<-names.attr
 
  if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
 
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
+
 ####################################################
 # initialisation
 ####################################################
@@ -58,8 +61,6 @@ listnomvar<-names.attr
   col3 <- col[1]
   pch2 <- pch[1]
 
-# for identifyng the selected sites
-ifelse(identify, label<-row.names(listvar),label<-"")
 
 # Change data.frame in matrix
 if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(listvar)
