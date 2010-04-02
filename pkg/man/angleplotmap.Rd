@@ -22,7 +22,7 @@ xlab="angle", ylab="absolut magnitude", axes=FALSE, lablong="", lablat="")
   \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
   \item{pch}{16 by default, symbol for selected points}
-  \item{col}{"lightblue3" by default, color of bars on the histogram}
+  \item{col}{"lightblue3" by default, color of bars on the cloud map}
   \item{xlab}{a title for the graphic x-axis}
   \item{ylab}{a title for the graphic y-axis}
   \item{axes}{a boolean with TRUE for drawing axes on the map}
@@ -42,7 +42,10 @@ If that case, only the pair of sites \eqn{(s_i,s_j)}{(s_i,s_j)} verifying :
 
 \value{A matrix of boolean of size \eqn{n \times n}{n x p}. TRUE if pair of sites was in the last selection}
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+
+Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer.
+}
 
 \author{Thomas-Agnan Christine, Aragon Yves, Ruiz-Gazen Anne, Laurent Thibault, Robidou Lauriane}
 

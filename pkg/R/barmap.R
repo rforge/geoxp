@@ -35,6 +35,10 @@ listnomvar<-names.attr
  ifelse(length(col)==1, col2<-"blue", col2<-col)
  col3<-"lightblue3"
 
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
+
+
   #initialisation
   nointer<-FALSE
   nocart<-FALSE
@@ -52,10 +56,6 @@ listnomvar<-names.attr
   varChoice2 <- ""
   choix<-""
   listgraph <- c("Histogram","Barplot","Scatterplot")
-
-# for identifyng the selected sites
-ifelse(identify, label<-row.names(listvar),label<-"")
-
 
  #transformation data.frame en matrice
 
@@ -353,7 +353,7 @@ msg <- paste("Click on the map to indicate the location of the upper left corner
 
 dev.set(2)
 loc <- locator(1)
-loc$name <- names(eire[,name.var])
+loc$name <- names(listvar[,name.var])
 legends<<-list(legends[[1]],TRUE,legends[[3]],loc)
 
 carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,

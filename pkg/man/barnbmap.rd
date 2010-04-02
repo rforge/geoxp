@@ -20,7 +20,7 @@ xlab="", ylab="", axes=FALSE, lablong="", lablat="")
   \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
   \item{pch}{16 by default, symbol for selected points}
-  \item{col}{"lightblue3" by default, color of bars on the histogram}
+  \item{col}{"lightblue3" by default, color of bars on the barplot}
   \item{xlab}{a title for the graphic x-axis}
   \item{ylab}{a title for the graphic y-axis}
   \item{axes}{a boolean with TRUE for drawing axes on the map}
@@ -40,7 +40,10 @@ No value returned.
 }
 
 \references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010),
-\emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
+\emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+
+Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer.
+}
 
 \author{Aragon Y., Thomas-Agnan C., Ruiz-Gazen A., Laurent T.}
 

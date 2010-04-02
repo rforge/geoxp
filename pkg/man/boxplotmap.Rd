@@ -2,26 +2,26 @@
 \alias{boxplotmap}
 \title{Interactive boxplot and map}
 \description{
-The function \code{boxplotmap()} draws a boxplot of the given variable $var$
-and a map with site of coordinates (\code{long},\code{lat}). }
+The function \code{boxplotmap()} draws a boxplot of the given variable $name.var$
+and a map with site of coordinates \code{coordinates(sp.obj}. }
 
 \usage{
-boxplotmap(long,lat,var,listvar=NULL, listnomvar=NULL,carte=NULL,criteria=NULL,
-label="", cex.lab=1,pch=16,col="grey",xlab="",ylab="",axes=FALSE, 
-lablong="", lablat="")
+boxplotmap(sp.obj, name.var,
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
+xlab="", ylab="", axes=FALSE, lablong="", lablat="")
+
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{long}{a vector x of size n}
-  \item{lat}{a vector y of size n}
-  \item{var}{a vector of numerical values of size n}
-  \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
-  \item{listnomvar}{list of character of size p with names of variables from \code{listvar}}
+  \item{sp.obj}{object of class extending Spatial-class}
+  \item{name.var}{character; attribute name or column number in attribute table}
+  \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
+  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}  \item{label}{vector of character of size n with name of site. Names are printed on map after a selection}
+  \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
   \item{pch}{16 by default, symbol for selected points}
-  \item{col}{"grey" by default, color of the boxplot}
+  \item{col}{"lightblue3" by default, color of bars on the boxplot}
   \item{xlab}{a title for the graphic x-axis}
   \item{ylab}{a title for the graphic y-axis}
   \item{axes}{a boolean with TRUE for drawing axes on the map}
@@ -35,33 +35,35 @@ are represented on the map in red.
 
 \value{A vector of boolean of size n. TRUE if the site was in the last selection.}
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2009), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+
+Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer.
+}
 
 \author{Thomas-Agnan C., Aragon Y., Ruiz-Gazen A., Laurent T., Robidou L.}
 
 \seealso{\code{\link{histomap}}, \code{\link{histobarmap}}, \code{\link{scattermap}}, \code{\link{densitymap}}}
 
 \examples{
-# 1st example
+######
+# data columbus
 example(columbus)
-coords <- coordinates(columbus)
-cont<-spdf2list(columbus)$poly
 
-boxplotmap(coords[,1], coords[,2],columbus@data$CRIME,listvar=columbus@data,
-carte=cont, listnomvar=names(columbus@data),criteria=(columbus@data$CP==1),
-xlab="Crime",ylab="Percent",label=columbus@data$COLUMBUS.I,cex.lab=0.7) 
+# a basic use of boxplotmap
+boxplotmap(columbus,"CRIME", criteria=(columbus@data$CP==1),
+xlab="Crime",ylab="Percent",identify=TRUE, cex.lab=0.7)
 
-# 2nd example
+######
+# data boston
 data(boston)
-obs<-boxplotmap(boston.utm[,1],boston.utm[,2],boston.c$CRIM,listvar=boston.c,
-listnomvar=names(boston.c),criteria=(boston.c$CHAS==1)) 
 
-# 3rd example
-data(eire)
-eire.contours<-polylist2list(eire.polys.utm)
-boxplotmap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$POPCHG,
-listvar=eire.df,listnomvar=names(eire.df),carte=eire.contours,
-xlab="Evolution rate of the population from 1921 to 1962",pch=7)
+# creation of a Spatial object
+boston.sp = SpatialPoints(cbind(boston.c$LON,boston.c$LAT))
+# ... and then by integrating other variables to create SpatialPointsDataFrame
+boston.spdf = SpatialPointsDataFrame(boston.sp, boston.c)
+
+# a simple use of boxplotmap
+obs<-boxplotmap(boston.spdf,"MEDV",criteria=(boston.c$CHAS==1))
 }
 
 \keyword{spatial}

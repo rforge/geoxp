@@ -1,7 +1,40 @@
-`boxplotmap` <-
-function(long,lat,var,listvar=NULL, listnomvar=NULL,carte=NULL,criteria=NULL,label="",
-cex.lab=1,pch=16,col="grey",xlab="",ylab="",axes=FALSE, lablong="", lablat="")
+`boxplotmap` <- function(sp.obj, name.var,
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
+xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 {
+# Verification of the Spatial Object sp.obj
+
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(name.var) & is.na(match(as.character(name.var),names(sp.obj)))) stop("name.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+var<-sp.obj@data[,name.var]
+
+# verify the type of the main variable
+if(!(is.integer(var) || is.double(var))) stop("the variable name.var should be a numeric variable")
+
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+# Code which was necessary in the previous version
+
+ # var=as.matrix(var)
+ # lat=as.matrix(lat)
+ # long=as.matrix(long)
+
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
+
 # initialisation
   nointer<-FALSE
   nocart<-FALSE

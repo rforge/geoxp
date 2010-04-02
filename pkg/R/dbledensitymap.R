@@ -1,8 +1,37 @@
-`dbledensitymap` <-
-function (long, lat, var1,var2,kernel='triweight',listvar=NULL, listnomvar=NULL,carte=NULL,
-criteria=NULL, label="", cex.lab=1, pch=16, col=c("grey","blue"), xlab=c("",""),
-ylab=c("density","density"),axes=FALSE, lablong="", lablat="")
+`dbledensitymap` <- function(sp.obj, names.var, kernel='triweight',
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16,
+col=c("grey","lightblue3"), xlab=c("",""), ylab="", axes=FALSE, lablong="", lablat="")
 {
+# Verification of the Spatial Object sp.obj
+
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+var1<-sp.obj@data[,names.var[1]]
+var2<-sp.obj@data[,names.var[2]]
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+# Code which was necessary in the previous version
+
+ # var=as.matrix(var)
+ # lat=as.matrix(lat)
+ # long=as.matrix(long)
+
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
+
   # initialisation
   obs<-vector(mode = "logical", length = length(long))
   graph1<-"Densityplot1" 
@@ -30,7 +59,7 @@ ylab=c("density","density"),axes=FALSE, lablong="", lablat="")
   polyX2 <- NULL
   method <- ""
   col2 <- "blue"
-  col3 <- col[1]
+  col3<-"lightblue3"
   pch2<-pch[1]
   labmod<-""
   labvar1<-c(xlab[1],ylab[1])
@@ -576,7 +605,7 @@ graphfunc <- function()
                      
             dev.new()
             graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-            obs=obs, num=5, graph=graphChoice, couleurs=col3,symbol=pch, labvar=c(varChoice1,varChoice2));    
+            obs=obs, num=5, graph=graphChoice, couleurs=col3, symbol=pch, labvar=c(varChoice1,varChoice2));
             
             carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
             label=label,cex.lab=cex.lab, symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,

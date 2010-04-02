@@ -1,8 +1,41 @@
-`clustermap` <-
-function(long, lat, dataset, clustnum, method="kmeans", type=NULL, centers=NULL, scale=FALSE,
-listvar=NULL, listnomvar=NULL, carte=NULL, criteria=NULL, xlab="Cluster", ylab="Count", label="",
-cex.lab=1, pch=16, col="blue", names.arg="", axes=FALSE, lablong="", lablat="")
+`clustermap` <- function(sp.obj, names.var, clustnum, method=c("kmeans","hclust"),type=NULL, centers=NULL, scale=FALSE,
+names.arg="", names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16,
+col="lightblue3", xlab="Cluster", ylab="Number", axes=FALSE, lablong="", lablat="")
+
 {
+# Verification of the Spatial Object sp.obj
+
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+dataset <- sp.obj@data[,names.var]
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+# Code which was necessary in the previous version
+
+ # var=as.matrix(var)
+ # lat=as.matrix(lat)
+ # long=as.matrix(long)
+
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+ # for colors in map and new grahics
+ ifelse(length(col)==1, col2<-"blue", col2<-col)
+ col3<-"lightblue3"
+ 
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
+
 
   # initialisation
   nointer<-FALSE
@@ -24,19 +57,19 @@ cex.lab=1, pch=16, col="blue", names.arg="", axes=FALSE, lablong="", lablat="")
 
   # Méthodes de classification
   if(length(type)==0)
-  {ifelse(method=="kmeans",type<-"Hartigan-Wong", type <-"ward")}
+  {ifelse(method[1]=="kmeans",type<-"Hartigan-Wong", type <-"ward")}
 
   # Réduction de la matrice des données
   if(scale && class(dataset)!="dist") dataset<-scale(dataset)
 
   # Etude des différentes possibilités
   if(class(dataset)!="dist")
-  {if(method=="hclust") dataset<-dist(dataset)}
+  {if(method[1]=="hclust") dataset<-dist(dataset)}
   else
-  {if(method=="kmeans") dataset<-as.matrix(dataset)}
+  {if(method[1]=="kmeans") dataset<-as.matrix(dataset)}
 
   # classification
-  if(method=="kmeans")
+  if(method[1]=="kmeans")
   {
     num.graph <- 4 
     ifelse(length(centers)==0,res <- kmeans(dataset,clustnum,algorithm=type),
@@ -58,7 +91,7 @@ cex.lab=1, pch=16, col="blue", names.arg="", axes=FALSE, lablong="", lablat="")
   dev.new()
   dev.new()
 
-  if(method=="hclust") dev.new()
+  if(method[1]=="hclust") dev.new()
 
 
 ####################################################
@@ -82,7 +115,7 @@ pointfunc<-function()
             quit<-TRUE
         carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
         lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,
-        method="Cluster",classe=vectclass,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,
+        method="Cluster",classe=vectclass,couleurs=col2,legmap=legmap,legends=legends,labmod=names.arg,
         cex.lab=cex.lab,axis=axes)
             next
         }   
@@ -92,7 +125,7 @@ pointfunc<-function()
 
         carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
         lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,
-        method="Cluster",classe=vectclass,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,
+        method="Cluster",classe=vectclass,couleurs=col2,legmap=legmap,legends=legends,labmod=names.arg,
         cex.lab=cex.lab,axis=axes)
         title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
     
@@ -101,7 +134,7 @@ pointfunc<-function()
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
          graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-         obs=obs, num=num.graph, graph=graphChoice, couleurs=col[1], labvar=c(varChoice1,varChoice2))       
+         obs=obs, num=num.graph, graph=graphChoice, couleurs=col3, labvar=c(varChoice1,varChoice2))
         }
 
 
@@ -146,7 +179,7 @@ if (length(polyX)>0)
 
     #graphiques
    carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
-   lablong=lablong, lablat=lablat, label=label, symbol=pch,couleurs=col,carte=carte,nocart=nocart,
+   lablong=lablong, lablat=lablat, label=label, symbol=pch,couleurs=col2,carte=carte,nocart=nocart,
    method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes,cex.lab=cex.lab)
    
    graphique(var1=vectclass, obs=obs, num=3,graph="Barplot", labvar=labvar, symbol=pch,labmod=names.arg,
@@ -155,7 +188,7 @@ if (length(polyX)>0)
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
          graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-         obs=obs, num=num.graph, graph=graphChoice, couleurs=col[1], labvar=c(varChoice1,varChoice2))       
+         obs=obs, num=num.graph, graph=graphChoice, couleurs=col3, labvar=c(varChoice1,varChoice2))
         }
 
 }
@@ -193,13 +226,13 @@ barfunc<-function()
         title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
        
         carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
-        lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,couleurs=col,
+        lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,couleurs=col2,
         method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
 
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
          graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-         obs=obs, num=num.graph, graph=graphChoice, couleurs=col[1], labvar=c(varChoice1,varChoice2))       
+         obs=obs, num=num.graph, graph=graphChoice, couleurs=col3, labvar=c(varChoice1,varChoice2))
         }      
     }
   }
@@ -212,7 +245,7 @@ graphfunc <- function()
 {
     if ((length(listvar) != 0) && (length(listnomvar) != 0))
     {
-       ifelse(method=="kmeans",dev.off(4),dev.off(5))
+       ifelse(method[1]=="kmeans",dev.off(4),dev.off(5))
         
         choix <<- selectgraph(listnomvar,listgraph)
         varChoice1 <<- choix$varChoice1
@@ -223,7 +256,7 @@ graphfunc <- function()
         {
          dev.new()
          graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-         obs=obs, num=num.graph, graph=graphChoice, couleurs=col[1], labvar=c(varChoice1,varChoice2))       
+         obs=obs, num=num.graph, graph=graphChoice, couleurs=col3, labvar=c(varChoice1,varChoice2))
         }
         else
         {
@@ -248,7 +281,7 @@ cartfunc <- function()
    {
    ifelse(!nocart,nocart<<-TRUE,nocart<<-FALSE)
    carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
-   lablong=lablong, lablat=lablat, label=label, cex.lab=cex.lab, symbol=pch,couleurs=col,carte=carte,
+   lablong=lablong, lablat=lablat, label=label, cex.lab=cex.lab, symbol=pch,couleurs=col2,carte=carte,
    nocart=nocart, method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)    
    }
    else
@@ -268,14 +301,14 @@ SGfunc<-function()
    
     carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
     lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,
-    couleurs=col,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
+    couleurs=col2,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
     
     graphique(var1=vectclass, obs=obs, num=3, graph="Barplot", labvar=labvar, symbol=pch,labmod=names.arg,couleurs=col)
     
      if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
          graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-         obs=obs, num=num.graph, graph=graphChoice, couleurs=col[1], labvar=c(varChoice1,varChoice2))       
+         obs=obs, num=num.graph, graph=graphChoice, couleurs=col3, labvar=c(varChoice1,varChoice2))
         }      
   }
 
@@ -301,7 +334,7 @@ fnointer<-function()
    ifelse(!nointer,nointer<<-TRUE,nointer<<-FALSE)
    carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
    lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,
-   couleurs=col,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)   
+   couleurs=col2,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
  }
  else
  {
@@ -327,7 +360,7 @@ fbubble<-function()
   
   carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
   lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,
-  couleurs=col,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes) 
+  couleurs=col2,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
  
 }
 
@@ -337,12 +370,12 @@ fbubble<-function()
 
 carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
 lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,
-couleurs=col,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
+couleurs=col2,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
     
 graphique(var1=as.vector(vectclass), obs=obs, num=3, graph="Barplot", labvar=labvar, symbol=pch,
 labmod=names.arg,couleurs=col)
 
-if(method=="hclust") 
+if(method[1]=="hclust")
 {dev.set(4)
 plot(res)
 }
@@ -362,11 +395,12 @@ if(interactive())
 
   dev.set(2)
   loc <- locator(1)
+  loc$name <- "Cluster"
   legends<<-list(legends[[1]],TRUE,legends[[3]],loc)
 
   carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
   lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,
-  couleurs=col,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
+  couleurs=col2,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
 
   graphique(var1=as.vector(vectclass), obs=obs, num=3, graph="Barplot", labvar=labvar, symbol=pch,
   labmod=names.arg,couleurs=col)
@@ -379,7 +413,7 @@ OnOK2 <- function()
 
   carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
   lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,
-  couleurs=col,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
+  couleurs=col2,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
     
   graphique(var1=as.vector(vectclass), obs=obs, num=3, graph="Barplot", labvar=labvar, 
   symbol=pch,labmod=names.arg,couleurs=col)

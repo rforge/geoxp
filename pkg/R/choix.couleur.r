@@ -225,7 +225,7 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
      legends<-list(legends[[1]],FALSE,legends[[3]],"")
      method <- ""
      col2 <- "blue"
-     col3 <- col[1]
+     col3 <- "lightblue3"
      pch2 <- pch[1]
      labmod <- ""
      }
