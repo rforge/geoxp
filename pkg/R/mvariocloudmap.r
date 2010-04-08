@@ -1,8 +1,33 @@
-`mvariocloudmap` <-
-function (long, lat, object, listvar=NULL, listnomvar=NULL,quantiles=NULL, criteria=NULL,
-carte = NULL, label = "",cex.lab=1,pch = 16,col="blue", xlab = "Pairwise spatial distances",
-ylab="Pairwise Mahalanobis distances", lablong = "", lablat = "", axes=FALSE)
+`mvariocloudmap` <- function(sp.obj, nb.obj, names.var, quantiles=NULL,
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
+xlab="Pairwise spatial distances", ylab="Pairwise Mahalanobis distances", axes=FALSE, lablong="", lablat="")
 {
+# Verification of the Spatial Object sp.obj
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+dataset <- sp.obj@data[,names.var]
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+# Code which was necessary in the previous version
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
+
+  # Spatial weight matrix
+   W<-nb2mat(nb.obj)
+   
  # initialisation
   xy<-cbind(long, lat)
   nointer<-FALSE
@@ -18,11 +43,11 @@ ylab="Pairwise Mahalanobis distances", lablong = "", lablat = "", axes=FALSE)
   graf<-"Neighbourplot1"
   graphics.off()
 
-   W<-nb2mat(object)
    
 # Transformation d'un data.frame en matrix
 
 if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(listvar)
+if((length(dataset)>0) && (dim(as.matrix(dataset))[2]==1)) dataset<-as.matrix(dataset)
 
 # ouverture des fenêtres graphiques
 dev.new()
@@ -31,14 +56,14 @@ fin <- tclVar(FALSE)
 
 # calcul des matrices theta et absvar
 
-n=nrow(listvar)
-covr=covMcd(listvar,alpha=0.75)
+n=nrow(dataset)
+covr=covMcd(dataset,alpha=0.75)
 cinv=solve(covr$cov)
 
 idx=matrix(1:n,n,n)
 se=as.vector(idx[lower.tri(idx)])
 dij=sqrt((rep(xy[-n,1],seq(n-1,1))-xy[se,1])^2+(rep(xy[-n,2],seq(n-1,1))-xy[se,2])^2)
-hlp=as.matrix(listvar[rep(1:(n-1),seq((n-1),1)),]-listvar[se,])
+hlp=as.matrix(dataset[rep(1:(n-1),seq((n-1),1)),]-dataset[se,])
 MDij=sqrt(rowSums((hlp%*%cinv)*hlp))
 
 indij=cbind(rep(1:(n-1),seq(n-1,1)),se)
@@ -54,10 +79,10 @@ absvar<-absvar+t(absvar)
 
 # calcul des distances de Mahalanobis par site
 
-rd <- sqrt(mahalanobis(listvar, center = covr$center, cov = covr$cov))
-xarw <- arw(listvar, covr$center, covr$cov, alpha = 0.025)
-  ifelse(xarw$cn != Inf, alphab <- sqrt(c(xarw$cn, qchisq(c(0.75, 0.5, 0.25), ncol(listvar)))),
-  alphab <- sqrt(qchisq(c(0.975, 0.75, 0.5, 0.25), ncol(listvar))))
+rd <- sqrt(mahalanobis(dataset, center = covr$center, cov = covr$cov))
+xarw <- arw(dataset, covr$center, covr$cov, alpha = 0.025)
+  ifelse(xarw$cn != Inf, alphab <- sqrt(c(xarw$cn, qchisq(c(0.75, 0.5, 0.25), ncol(dataset)))),
+  alphab <- sqrt(qchisq(c(0.975, 0.75, 0.5, 0.25), ncol(dataset))))
 
 
 chi2.quant<-rep(0,n)
@@ -425,7 +450,7 @@ fbubble<-function()
 ####################################################
 
 carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, 
-      symbol=pch,method="pairwise",axis=axes,legends=legends)
+      symbol=pch, carte=carte, method="pairwise",axis=axes,legends=legends)
 
    graphique(var1 = theta, var2 = absvar, obs = obs,num = 3, graph = "pairwise", labvar = labvar,
    couleurs=col,symbol = pch, quantiles = quantiles,alpha1 = alpha)

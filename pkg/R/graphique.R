@@ -124,7 +124,8 @@ else
     
     
     if (graph == "histo.nb") 
-     { 
+     {
+      if(is.null(bin)) bin<-"count"
       nblist<-unlist(var2)
         
       mnv <- min(nblist)
@@ -148,8 +149,20 @@ else
           absc <- c(absc, x1)
         }
         
+      sum.cpt<-sum(cpt)
       cpt <- c(cpt, 0)
-       
+      
+       if(bin[1]=="percent")
+        {cpt<-cpt/sum.cpt
+         if(labvar[2]=="") labvar[2]="percent"
+        }
+       else
+        {if(bin[1]=="density")
+          {cpt<-cpt/sum.cpt/h
+           if(labvar[2]=="") labvar[2]="density"
+          }
+        }
+          
       plot(absc, cpt, "n", xlim = c(mnv - h, mxv + h), ylim = c(0,max(cpt)),
       xlab = labvar[1], ylab = labvar[2])
       
@@ -173,6 +186,7 @@ else
             cnt <- length(which((vrob >= absc[1]) & (vrob <= absc[2])))
             cpt1 <- c(cpt1, cnt)
             
+          
             for (i in 2:nbcol) 
             {
               cnt<-length(which((vrob > absc[i]) & (vrob <= absc[i + 1]))) 
@@ -181,6 +195,15 @@ else
             
             cpt1 <- c(cpt1, 0)
             
+           if(bin[1]=="percent")
+            {cpt1<-cpt1/sum.cpt
+            }
+           else
+            {if(bin[1]=="density")
+             {cpt1<-cpt1/sum.cpt/h
+             }
+            }
+           
             for (i in 1:nbcol) 
             {
              rect(absc[i], 0, absc[i + 1], cpt1[i], density = 4,
@@ -927,7 +950,9 @@ else
       points(var1[!obs], var2[!obs], col = couleurs[obsq[!obs]], pch = symbol[obsq[!obs]],
       cex=cbuble[!obs])
      
-        if(length(which(var2==rep(1,length(var1)))==TRUE)==length(var1)) abline(lm(var2 ~ var1))
+
+        if(!is.null(bin))
+        {if(bin) abline(lm(var2 ~ var1)) }
 
         if (length(var1[obs]) != 0) 
         {
@@ -958,7 +983,8 @@ else
         points(var1[!obs], var2[!obs], col = couleurs[obsq[!obs]], pch = symbol[obsq[!obs]],
         cex=cbuble[!obs])
 
-        if(length(which(var2==rep(1,length(var1)))==TRUE)==length(var1)) abline(lm(var2 ~ var1))
+        if(!is.null(bin))
+         {if(bin) abline(lm(var2 ~ var1))}
         
         if (length(var1[obs]) != 0) 
         {

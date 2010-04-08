@@ -22,20 +22,15 @@ listvar<-sp.obj@data
 listnomvar<-names.attr
 
 # Code which was necessary in the previous version
-
- # var=as.matrix(var)
- # lat=as.matrix(lat)
- # long=as.matrix(long)
-
- if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
 
  # for identifyng the selected sites
 ifelse(identify, label<-row.names(listvar),label<-"")
 
   # initialisation
   obs<-vector(mode = "logical", length = length(long))
-  graph1<-"Densityplot1" 
-  graph2<-"Densityplot1"
+  graph1<-"Densityplot2"
+  graph2<-"Densityplot2"
   nointer<-FALSE
   nocart<-FALSE
   z<-NULL
@@ -45,9 +40,9 @@ ifelse(identify, label<-row.names(listvar),label<-"")
   legends<-list(FALSE,FALSE,"","")
   graphics.off()
 
-  alpha11<-20 
-  alpha21<-20 
-  
+  alpha11<-20
+  alpha21<-20
+
   graphChoice <- ""
   varChoice1 <- ""
   varChoice2 <- ""
@@ -79,25 +74,25 @@ fin <- tclVar(FALSE)
 # sélection d'un point
 ####################################################
 
-pointfunc<-function() 
+pointfunc<-function()
 {
    if((graph1=="Densityplot2")||(graph2=="Densityplot2"))
-    { 
+    {
      #SGfunc()
-      graph1<<-"Densityplot1" 
-      graph2<<-"Densityplot1" 
-      
+      graph1<<-"Densityplot1"
+      graph2<<-"Densityplot1"
+
       graphique(var1=var1, obs=obs, alpha1=alpha11,  num=3, graph=graph1, labvar=labvar1,
       couleurs=col[1],symbol=pch,kernel=kernel)
-     
+
       graphique(var1=var2, obs=obs, alpha1=alpha21,  num=4, graph=graph2, labvar=labvar2,
-      couleurs=col[2],symbol=pch,kernel=kernel);    
-      
-    } 
-    
+      couleurs=col[2],symbol=pch,kernel=kernel);
+
+    }
+
     quit <- FALSE
     loc <- NULL
-    
+
     dev.set(2)
     title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
@@ -106,10 +101,10 @@ pointfunc<-function()
         dev.set(2)
         loc<-locator(1)
 
-    graph1<<-"Densityplot1"  
-    graph2<<-"Densityplot1" 
+    graph1<<-"Densityplot1"
+    graph2<<-"Densityplot1"
 
-        if(is.null(loc)) 
+        if(is.null(loc))
         {
           quit<-TRUE
         carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
@@ -119,29 +114,35 @@ pointfunc<-function()
           next
         }
 
-        obs<<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point");         
+        obs<<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point");
 
         carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
         label=label,cex.lab=cex.lab, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
         lablong=lablong, lablat=lablat,symbol=pch2, couleurs=col2,method=method,
         classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-             
+
         # graphiques
       if (length(var1[obs]) > 1)
         {
          graphique(var1=var1, obs=obs, alpha1=alpha11,  num=3, graph=graph1, labvar=labvar1,
          couleurs=col[1],symbol=pch,kernel=kernel)
-     
+
          graphique(var1=var2, obs=obs, alpha1=alpha21,  num=4, graph=graph2, labvar=labvar2,
          couleurs=col[2],symbol=pch,kernel=kernel)
         }
+       else
+       {dev.set(3)
+       title(sub = "You have to choose at least two sites to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')
+       dev.set(4)
+       title(sub = "You have to choose at least two sites to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')
+     }
 
 
          if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
           {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-            obs=obs, num=5, graph=graphChoice, symbol=pch, labvar=c(varChoice1,varChoice2),couleurs=col3)        
-          }    
+            obs=obs, num=5, graph=graphChoice, symbol=pch, labvar=c(varChoice1,varChoice2),couleurs=col3)
+          }
     }
   }
 
@@ -149,35 +150,35 @@ pointfunc<-function()
 # sélection d'un polygone
 ####################################################
 
-polyfunc<-function() 
+polyfunc<-function()
 {
 
    if((graph1=="Densityplot2")||(graph2=="Densityplot2"))
-    { 
+    {
      #SGfunc()
-      graph1<<-"Densityplot1" 
-      graph2<<-"Densityplot1" 
-      
+      graph1<<-"Densityplot1"
+      graph2<<-"Densityplot1"
+
       graphique(var1=var1, obs=obs, alpha1=alpha11,  num=3, graph=graph1, labvar=labvar1,
       couleurs=col[1],symbol=pch,kernel=kernel)
-     
+
       graphique(var1=var2, obs=obs, alpha1=alpha21,  num=4, graph=graph2, labvar=labvar2,
-      couleurs=col[2],symbol=pch,kernel=kernel)    
-      
-    } 
-    
+      couleurs=col[2],symbol=pch,kernel=kernel)
+
+    }
+
     polyX <- NULL
     polyY <- NULL
     quit <- FALSE
 
     dev.set(2)
     title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-        
+
     while(!quit)
     {
         dev.set(2)
         loc<-locator(1)
-        if(is.null(loc)) 
+        if(is.null(loc))
         {
             quit<-TRUE
             next
@@ -198,24 +199,33 @@ if (length(polyX)>0)
     obs <<- selectmap(var1=long, var2=lat, obs=obs, Xpoly=polyX, Ypoly=polyY, method="poly")
 
 
-    graphique(var1=var1, obs=obs, alpha1=alpha11,  num=3, graph=graph1, labvar=labvar1,
-    couleurs=col[1],symbol=pch,kernel=kernel)
-     
-    graphique(var1=var2, obs=obs, alpha1=alpha21,  num=4, graph=graph2, labvar=labvar2,
-    couleurs=col[2],symbol=pch,kernel=kernel)
-        
+      if (length(var1[obs]) > 1)
+        {
+         graphique(var1=var1, obs=obs, alpha1=alpha11,  num=3, graph=graph1, labvar=labvar1,
+         couleurs=col[1],symbol=pch,kernel=kernel)
+
+         graphique(var1=var2, obs=obs, alpha1=alpha21,  num=4, graph=graph2, labvar=labvar2,
+         couleurs=col[2],symbol=pch,kernel=kernel)
+        }
+       else
+       {dev.set(3)
+       title(sub = "You have to choose at least two sites to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')
+       dev.set(4)
+       title(sub = "You have to choose at least two sites to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')
+     }
+
 
     carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
     label=label,cex.lab=cex.lab, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
     lablong=lablong, lablat=lablat,symbol=pch2, couleurs=col2,method=method,
     classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
-        
+
 
     if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
      {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-      obs=obs, num=5, graph=graphChoice, symbol=pch, labvar=c(varChoice1,varChoice2),couleurs=col3)        
-     }    
-}  
+      obs=obs, num=5, graph=graphChoice, symbol=pch, labvar=c(varChoice1,varChoice2),couleurs=col3)
+     }
+}
 
  }
 
@@ -230,49 +240,49 @@ inter1func<-function()
 #    quit <- FALSE;
 
   if(graph1=="Densityplot1")
-   { 
+   {
     SGfunc()
-    graph1<<-"Densityplot2"  
-    graph2<<-"Densityplot1" 
+    graph1<<-"Densityplot2"
+    graph2<<-"Densityplot1"
    }
-   
+
     polyX <- NULL
     n.inter<-length(polyX2)
-    
+
     while (length(polyX)<2)
     {
       dev.set(3)
-      title(sub = "Click two times to select an interval", cex.sub = 0.8, font.sub = 3,col.sub='red')  
+      title(sub = "Click two times to select an interval", cex.sub = 0.8, font.sub = 3,col.sub='red')
       loc<-locator(1)
       polyX <- c(polyX, loc[1])
     }
-    
+
     polyX2[[n.inter+1]]<<-polyX
 
-    obs<<-selectstat(var1=var1,obs=obs,Xpoly=polyX[1], Ypoly=polyX[2],method="Densityplot") 
-        
+    obs<<-selectstat(var1=var1,obs=obs,Xpoly=polyX[1], Ypoly=polyX[2],method="Densityplot")
+
     # graphiques
 
          graphique(var1=var1, obs=obs, alpha1=alpha11,   num=3, graph=graph1, Xpoly=polyX2,
          labvar=labvar1, couleurs=col[1], kernel=kernel)
-    
+
        if (length(var1[obs]) > 1)
-        {         
+        {
          graphique(var1=var2, obs=obs, alpha1=alpha21,  num=4, graph=graph2,
          labvar=labvar2, couleurs=col[2], kernel=kernel)
         }
-     
+
         carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
         label=label,cex.lab=cex.lab, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
         lablong=lablong, lablat=lablat,symbol=pch2, couleurs=col2,method=method,
         classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
-        
+
 
     if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
       {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-       obs=obs, num=5, graph=graphChoice, symbol=pch, labvar=c(varChoice1,varChoice2),couleurs=col3)        
-      }  
-      
+       obs=obs, num=5, graph=graphChoice, symbol=pch, labvar=c(varChoice1,varChoice2),couleurs=col3)
+      }
+
   }
 
 ####################################################
@@ -282,46 +292,46 @@ inter1func<-function()
 inter2func<-function()
 {
   if(graph2=="Densityplot1")
-   { 
+   {
     SGfunc()
-    graph1<<-"Densityplot1"  
-    graph2<<-"Densityplot2" 
+    graph1<<-"Densityplot1"
+    graph2<<-"Densityplot2"
    }
 
     polyX <- NULL
     n.inter<-length(polyX2)
-    
+
     while (length(polyX)<2)
     {
       dev.set(4)
       loc<-locator(1)
-      title(sub = "Click two times to select an interval", cex.sub = 0.8, font.sub = 3,col.sub='red')  
+      title(sub = "Click two times to select an interval", cex.sub = 0.8, font.sub = 3,col.sub='red')
       polyX <- c(polyX, loc[1])
     }
-    
+
     polyX2[[n.inter+1]]<<-polyX
-    
-    obs<<-selectstat(var1=var2,obs=obs,Xpoly=polyX[1], Ypoly=polyX[2],method="Densityplot") 
-        
+
+    obs<<-selectstat(var1=var2,obs=obs,Xpoly=polyX[1], Ypoly=polyX[2],method="Densityplot")
+
     # graphiques
      graphique(var1=var2, obs=obs, alpha1=alpha21,  num=4, graph=graph2, Xpoly=polyX2,
      labvar=labvar2, couleurs=col[2], kernel=kernel)
- 
+
      if (length(var2[obs]) > 1)
-     {       
+     {
      graphique(var1=var1, obs=obs, alpha1=alpha11,  num=3, graph=graph1,
      labvar=labvar1, couleurs=col[1],kernel=kernel)
      }
-     
+
      carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
      label=label,cex.lab=cex.lab, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
      lablong=lablong, lablat=lablat,symbol=pch2, couleurs=col2,method=method,
      classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
-        
+
     if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
       {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-       obs=obs, num=5, graph=graphChoice, symbol=pch, labvar=c(varChoice1,varChoice2),couleurs=col3)        
-      }   
+       obs=obs, num=5, graph=graphChoice, symbol=pch, labvar=c(varChoice1,varChoice2),couleurs=col3)
+      }
 
  }
 
@@ -330,15 +340,15 @@ inter2func<-function()
 # Choisir une valeur sur le 1er graphique
 ####################################################
 
-choixvalue1 <- function() 
+choixvalue1 <- function()
 {
   if(graph1=="Densityplot1")
-   { 
+   {
     SGfunc()
-    graph1<<-"Densityplot2"  
-    graph2<<-"Densityplot1" 
+    graph1<<-"Densityplot2"
+    graph2<<-"Densityplot1"
    }
-   
+
   tt1<-tktoplevel()
   Name <- tclVar("1st value")
   Name2 <- tclVar("2nd value")
@@ -347,47 +357,47 @@ choixvalue1 <- function()
   tkgrid(tklabel(tt1,text="Please enter values"),entry.Name,entry.Name2)
 
   OnOK <- function()
-  { 
+  {
 	 value1 <- tclvalue(Name)
 	 value2 <- tclvalue(Name2)
 	 n.inter<-length(polyX2)
 	 tkdestroy(tt1)
-	 
+
    if(is.na(as.numeric(value1))||is.na(as.numeric(value2)))
     {
         tkmessageBox(message="Sorry, but you have to choose decimal values",icon="warning",type="ok");
     }
       else
     {
-    
+
     polyX2[[n.inter+1]]<<- c(as.numeric(value1),as.numeric(value2))
-    
+
     obs<<-selectstat(var1=var1,obs=obs,Xpoly=as.numeric(value1), Ypoly=as.numeric(value2),method="Densityplot")
-        
+
     # graphiques
     graphique(var1=var1, obs=obs, alpha1=alpha11,   num=3, graph=graph1, Xpoly=polyX2,
     labvar=labvar1, couleurs=col[1], kernel=kernel)
-  
+
     if (length(var1[obs]) > 1)
-     {           
+     {
     graphique(var1=var2, obs=obs, alpha1=alpha21,  num=4, graph=graph2,
     labvar=labvar2, couleurs=col[2], kernel=kernel)
     }
     else
     {dev.set(4)
-     title(sub = "You have to choose one more site to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')  
-    }    
-    
+     title(sub = "You have to choose one more site to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    }
+
     carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
     label=label,cex.lab=cex.lab, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
     lablong=lablong, lablat=lablat,symbol=pch2, couleurs=col2,method=method,
-    classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)     
+    classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
 
     if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
       {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-       obs=obs, num=5, graph=graphChoice, symbol=pch, labvar=c(varChoice1,varChoice2),couleurs=col3)        
-      }  
-    }   
+       obs=obs, num=5, graph=graphChoice, symbol=pch, labvar=c(varChoice1,varChoice2),couleurs=col3)
+      }
+    }
   }
 
   OK.but <-tkbutton(tt1,text="   OK   ",command=OnOK)
@@ -401,15 +411,15 @@ choixvalue1 <- function()
 # Choisir une valeur sur le deuxième graphique
 ####################################################
 
-choixvalue2 <- function() 
+choixvalue2 <- function()
 {
   if(graph2=="Densityplot1")
-   { 
+   {
     SGfunc()
-    graph1<<-"Densityplot1"  
-    graph2<<-"Densityplot2" 
+    graph1<<-"Densityplot1"
+    graph2<<-"Densityplot2"
    }
-     
+
   tt1<-tktoplevel()
   Name <- tclVar("1st value")
   Name2 <- tclVar("2nd value")
@@ -419,47 +429,47 @@ choixvalue2 <- function()
 
 
   OnOK <- function()
-  { 
+  {
 	 value1 <- tclvalue(Name)
 	 value2 <- tclvalue(Name2)
 	 n.inter<-length(polyX2)
 	 tkdestroy(tt1)
-	 
+
    if(is.na(as.numeric(value1))||is.na(as.numeric(value2)))
     {
         tkmessageBox(message="Sorry, but you have to choose decimal values",icon="warning",type="ok")
     }
    else
     {
-    
+
     polyX2[[n.inter+1]]<<- c(as.numeric(value1),as.numeric(value2))
-    
-    obs<<-selectstat(var1=var2,obs=obs,Xpoly=as.numeric(value1), Ypoly=as.numeric(value2),method="Densityplot") 
-        
+
+    obs<<-selectstat(var1=var2,obs=obs,Xpoly=as.numeric(value1), Ypoly=as.numeric(value2),method="Densityplot")
+
     # graphiques
      graphique(var1=var2, obs=obs, alpha1=alpha21,  num=4, graph=graph2, Xpoly=polyX2,
      labvar=labvar2, couleurs=col[2], kernel=kernel)
-  
+
     if (length(var1[obs]) > 1)
-     {       
+     {
      graphique(var1=var1, obs=obs, alpha1=alpha11,  num=3, graph=graph1,
      labvar=labvar1, couleurs=col[1],kernel=kernel)
      }
      else
      {dev.set(3)
-      title(sub = "You have to choose one more site to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')  
-     } 
-     
+      title(sub = "You have to choose one more site to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')
+     }
+
      carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
      label=label,cex.lab=cex.lab, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
      lablong=lablong, lablat=lablat,symbol=pch2, couleurs=col2,method=method,
      classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
-        
+
     if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
       {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-       obs=obs, num=5, graph=graphChoice, symbol=pch, labvar=c(varChoice1,varChoice2),couleurs=col3)        
-      }   
-    }   
+       obs=obs, num=5, graph=graphChoice, symbol=pch, labvar=c(varChoice1,varChoice2),couleurs=col3)
+      }
+    }
   }
 
 OK.but <-tkbutton(tt1,text="   OK   ",command=OnOK)
@@ -471,20 +481,20 @@ tkfocus(tt1)
 ####################################################
 # modification du alpha pour la courbe de densité
 ####################################################
-  
+
 
 refresh1.code<-function(...)
 {
- alpha11<<-slider1(no=1) 
- if(graph1=="Densityplot1") 
+ alpha11<<-slider1(no=1)
+ if(graph1=="Densityplot1")
  {     if (length(var2[obs]) > 1)
        {graphique(var1=var1, obs=obs, alpha1=alpha11, num=3, graph=graph1, labvar=labvar1, couleurs=col[1],kernel=kernel)
        }
        else
        {dev.set(3)
-       title(sub = "You have to choose at least two sites to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')  
+       title(sub = "You have to choose at least two sites to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')
        }
-  }     
+  }
  else
  {graphique(var1=var1, obs=obs,alpha1=alpha11,  num=3, graph="Densityplot2", Xpoly=polyX2,
   labvar=labvar1, couleurs=col[1],kernel=kernel)}
@@ -494,20 +504,20 @@ refresh1.code<-function(...)
 ####################################################
 # modification du alpha pour la courbe de densité
 ####################################################
-  
+
 refresh2.code<-function(...)
 {
- alpha21<<-slider2(no=1) 
- if(graph2=="Densityplot1") 
+ alpha21<<-slider2(no=1)
+ if(graph2=="Densityplot1")
   {   if (length(var2[obs]) > 1)
       {graphique(var1=var2, obs=obs, alpha1=alpha21, num=4, graph=graph2, labvar=labvar2,
        couleurs=col[2],kernel=kernel)
       }
       else
       {dev.set(4)
-       title(sub = "You have to choose at least two sites to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')  
+       title(sub = "You have to choose at least two sites to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')
       }
-  } 
+  }
  else
   {graphique(var1=var2, obs=obs,alpha1=alpha21, num=4, graph="Densityplot2", Xpoly=polyX2,
    labvar=labvar2, couleurs=col[2],kernel=kernel)}
@@ -518,14 +528,14 @@ refresh2.code<-function(...)
 # rafraichissement des graphiques
 ####################################################
 
-SGfunc<-function() 
+SGfunc<-function()
 {
-    obs<<-vector(mode = "logical", length = length(long));   
-    polyX2 <<- NULL 
-     
-    graphique(var1=var2, obs=obs, alpha1=alpha21,   num=4, graph="Densityplot1", 
+    obs<<-vector(mode = "logical", length = length(long));
+    polyX2 <<- NULL
+
+    graphique(var1=var2, obs=obs, alpha1=alpha21,   num=4, graph="Densityplot1",
     labvar=labvar2, couleurs=col[2], kernel=kernel)
-    
+
     graphique(var1=var1, obs=obs, alpha1=alpha11,   num=3, graph="Densityplot1", labvar=labvar1,
     couleurs=col[1], kernel=kernel)
 
@@ -533,11 +543,11 @@ SGfunc<-function()
     label=label,cex.lab=cex.lab, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
     lablong=lablong, lablat=lablat,symbol=pch2, couleurs=col2,method=method,
     classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
-        
+
     if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
       {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-       obs=obs, num=5, graph=graphChoice, symbol=pch, labvar=c(varChoice1,varChoice2),couleurs=col3)        
-      }   
+       obs=obs, num=5, graph=graphChoice, symbol=pch, labvar=c(varChoice1,varChoice2),couleurs=col3)
+      }
 }
 
 
@@ -545,7 +555,7 @@ SGfunc<-function()
 # quitter l'application
 ####################################################
 
-quitfunc<-function() 
+quitfunc<-function()
 {
   tclvalue(fin)<-TRUE
   graphics.off()
@@ -566,7 +576,7 @@ cartfunc <- function()
     }
    else
    {
-    tkmessageBox(message="Spatial contours have not been given",icon="warning",type="ok")    
+    tkmessageBox(message="Spatial contours have not been given",icon="warning",type="ok")
    }
 }
 
@@ -577,7 +587,7 @@ cartfunc <- function()
 ####################################################
 
 graphfunc <- function()
-{ 
+{
    if ((length(listvar) != 0) && (length(listnomvar) != 0))
     {
         dev.off(5)
@@ -585,45 +595,45 @@ graphfunc <- function()
         varChoice1 <<- choix$varChoice1
         varChoice2 <<- choix$varChoice2
         graphChoice <<- choix$graphChoice
-           
+
         if ((graphChoice != "") && (varChoice1 != ""))
         {
-          if (((graphChoice == "Histogram")&&(!is.numeric(listvar[,which(listnomvar == varChoice1)])))||((graphChoice == "Scatterplot")&&((!is.numeric(listvar[,which(listnomvar == varChoice1)]))||(!is.numeric(listvar[,which(listnomvar == varChoice2)]))))) 
+          if (((graphChoice == "Histogram")&&(!is.numeric(listvar[,which(listnomvar == varChoice1)])))||((graphChoice == "Scatterplot")&&((!is.numeric(listvar[,which(listnomvar == varChoice1)]))||(!is.numeric(listvar[,which(listnomvar == varChoice2)])))))
            {
             tkmessageBox(message="Variables choosed are not in a good format",icon="warning",type="ok");
            }
           else
            {
             res1<-choix.couleur(graphChoice,listvar,listnomvar,varChoice1,legends,col,pch)
-            
+
             method <<- res1$method
             col2 <<- res1$col2
             col3 <<- res1$col3
             pch2 <<- res1$pch2
             legends <<- res1$legends
             labmod <<- res1$labmod
-                     
+
             dev.new()
             graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
             obs=obs, num=5, graph=graphChoice, couleurs=col3, symbol=pch, labvar=c(varChoice1,varChoice2));
-            
+
             carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
             label=label,cex.lab=cex.lab, symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
             lablong=lablong, lablat=lablat,method=method,classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
             }
-       }   
+       }
    }
    else
    {
     tkmessageBox(message="Variables (listvar) and their names (listnomvar) must have been given",icon="warning",type="ok");
-   }  
+   }
 }
 
 ####################################################
 # quitter l'application
 ####################################################
 
-quitfunc<-function() 
+quitfunc<-function()
 {
   tclvalue(fin)<-TRUE
   tkdestroy(tt)
@@ -634,20 +644,20 @@ quitfunc<-function()
 # Open a no interactive selection
 ####################################################
 
-fnointer<-function() 
+fnointer<-function()
 {
  if (length(criteria) != 0)
  {
    ifelse(!nointer,nointer<<-TRUE,nointer<<-FALSE)
    carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
    label=label,cex.lab=cex.lab, symbol=pch2, couleurs=col2, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
-   lablong=lablong, lablat=lablat,method=method,classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod) 
+   lablong=lablong, lablat=lablat,method=method,classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
  }
  else
  {
   tkmessageBox(message="Criteria has not been given",icon="warning",type="ok")
  }
- 
+
 }
 
 ####################################################
@@ -657,22 +667,22 @@ fnointer<-function()
 fbubble<-function()
 {
   res2<-choix.bubble(buble,listvar,listnomvar,legends)
-  
+
   buble <<- res2$buble
   legends <<- res2$legends
   z <<- res2$z
   legmap <<- res2$legmap
-  
+
   carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
   label=label,cex.lab=cex.lab, symbol=pch2, couleurs=col2, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
-  lablong=lablong, lablat=lablat,method=method,classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)  
+  lablong=lablong, lablat=lablat,method=method,classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
 
 }
 
 ####################################################
 # Représentation graphique
 ####################################################
-        
+
 graphique(var1=var2, obs=obs, alpha1=alpha21, num=4, graph="Densityplot1", labvar=labvar2,
 couleurs=col[2],kernel=kernel)
 
@@ -785,5 +795,5 @@ tkwait.variable(fin)
 ####################################################
 
 return(obs)
-  }
+}
 

@@ -1,9 +1,37 @@
-`pcamap` <-
-function(long,lat,dataset,name.dataset=NULL,direct=c(1,2),weight=rep(1/nrow(dataset),length=nrow(dataset)),
-metric=diag(ncol(dataset)), center=NULL, reduce=TRUE,qualproj=FALSE,
-listvar=NULL, listnomvar=NULL,criteria=NULL,carte=NULL,label="",cex.lab=1, pch=16, col="grey", 
-axes=FALSE, xlab=as.character(direct[1]), ylab=as.character(direct[2]), lablong="", lablat="")
+`pcamap` <- function(sp.obj, names.var, direct=c(1,2),weight=rep(1/nrow(sp.obj),length=nrow(sp.obj)),
+metric=diag(length(names.var)), center=NULL, reduce=TRUE, qualproj=FALSE,
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
+xlab=paste(direct[1]), ylab=paste(direct[2]), axes=FALSE, lablong="", lablat="")
 {
+# Verification of the Spatial Object sp.obj
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+dataset <- sp.obj@data[,names.var]
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+name.dataset <- names(sp.obj@data[,names.var])
+
+# Code which was necessary in the previous version
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+ # for colors in map and new grahics
+  col2 <- "blue"
+  col3 <- col[1]
+  
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
+
   #initialisation
   obs<-vector(mode = "logical", length = length(long))
   graphics.off()
@@ -22,8 +50,6 @@ axes=FALSE, xlab=as.character(direct[1]), ylab=as.character(direct[2]), lablong=
   listgraph <- c("Histogram","Barplot","Scatterplot")
   method<- ""
   labmod <- ""
-  col2 <- "blue"
-  col3 <- col[1]
   pch2 <- pch[1]
  
   # Ouverture des fenêtres graphiques              

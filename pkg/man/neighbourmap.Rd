@@ -9,24 +9,23 @@ links this scatterplot with a map.
 }
 
 \usage{
-neighbourmap(long, lat, var, W, id=FALSE, listvar=NULL, listnomvar=NULL, carte=NULL,
-criteria=NULL, label="", cex.lab=1, pch=16, col="blue", xlab="",ylab="",
-axes=FALSE, lablong="", lablat="") 
+neighbourmap(sp.obj, name.var, nb.obj, lin.reg=TRUE,
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
+xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
- \item{long}{a vector x of size n}
-  \item{lat}{a vector y of size n}
-  \item{var}{a vector of numeric values of size n}
-  \item{W}{A spatial weigth matrix of size \eqn{n \times n}{n x n}}
-  \item{id}{If TRUE, drawing the linear curve y=x}
-  \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
-  \item{listnomvar}{a list with names of variables \code{listvar}}
+  \item{sp.obj}{object of class extending Spatial-class}
+  \item{name.var}{character; attribute name or column number in attribute table}
+  \item{nb.obj}{object of class nb}
+  \item{lin.reg}{If TRUE, drawing the linear curve y=x}
+  \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
+  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}  \item{label}{a list of character of size n with name of site. Names are printed on map after a selection}
+  \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
   \item{pch}{16 by default, symbol for selected points}
-  \item{col}{"blue" by default, color of the points on the neighbor plot}
+  \item{col}{"lightblue3" by default, color of bars on the histogram}
   \item{xlab}{a title for the graphic x-axis}
   \item{ylab}{a title for the graphic y-axis}
   \item{axes}{a boolean with TRUE for drawing axes on the map}
@@ -43,27 +42,50 @@ When user selects sites on the graph or on the map, he cannot add a selection by
 Returns a matrix of size \eqn{n \times n}{n x n} of boolean with TRUE if pair (i,j) was in the last selection.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2009), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}\cr \cr
+
+Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer.
+}
 
 \author{Aragon Y., Thomas-Agnan C., Ruiz-Gazen A., Laurent T., Robidou L.}
 
 \keyword{spatial}
 
 \examples{
-# data oldcol
+###
+# columbus
+example(columbus)
 
-columbus <- readShapePoly(system.file("etc/shapes/columbus.shp",
-package="spdep")[1])
+# example of use of neighbourmap
+obs<-neighbourmap(columbus, "CRIME", col.gal.nb,
+criteria=(columbus@data$CRIME>mean(columbus@data$CRIME)))
 
-list.OLD <- spdf2list(columbus)
-contours.OLD <- list.OLD$poly
-x.OLD <- list.OLD$X
-y.OLD <- list.OLD$Y
+###
+# data immob
+data(immob)
 
-W <- makeneighborsw(x.OLD , y.OLD,method="neighbor",4)
-obs<-neighbourmap(x.OLD , y.OLD,columbus@data$CRIME, W,carte=contours.OLD,
-criteria=(columbus@data$CRIME>mean(columbus@data$CRIME)),listvar=columbus@data,
-listnomvar=names(columbus@data),id=TRUE,col="grey",pch=4)
+# change names of individuals
+row.names(immob) <- immob$Nom
+
+# immob is a data.frame object. We have to create
+# a Spatial object, by using first the longitude and latitude
+# to create Spatial Points object ...
+immob.sp = SpatialPoints(cbind(immob$longitude,immob$latitude))
+# ... and then by integrating other variables to create SpatialPointsDataFrame
+immob.spdf = SpatialPointsDataFrame(immob.sp, immob)
+# For more details, see vignette('sp', package="sp")
+
+# optional : we add some contours that don't correspond to the spatial unit
+# but are nice for mapping
+midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
+cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
+
+# A spatial weight matrix based on triangulation Delaunay
+W.nb<-tri2nb(cbind(immob$longitude,immob$latitude))
+
+# example of use of neighbourmap
+neighbourmap(immob.spdf,"prix.vente", W.nb, identify=TRUE, cex.lab=0.5,
+carte=cont_midiP)
 }
 
 \seealso{\code{\link{moranplotmap}},\code{\link{makeneighborsw}},\code{\link{normw}},\code{\link{nonormmoran}} }

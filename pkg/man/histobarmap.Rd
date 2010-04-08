@@ -4,44 +4,48 @@
 \title{Histogram, barplot and map}
 
 \description{
-The function \code{histobarmap()} draws a bar plot (vertical bar) of the given variable \code{var1},
-a histogram of the given variable \code{var2} and a map with sites of coordinates (\code{long},\code{lat}).}
+The function \code{histobarmap()} draws a bar plot (vertical bar) of the given variable
+\code{names.var[1]}, a histogram of the given variable \code{names.var[2]} and a map with
+sites of coordinates \code{coordinates(sp.obj)}.}
 
 \usage{
-histobarmap(long,lat,var1,var2,criteria=NULL,carte=NULL, label = "",cex.lab=1,
-pch = 16, col= "lightblue", nbcol = 10,type = c("count","percent", "density"), names.arg="", xlab=c("",""), ylab=c("",""),
-listvar=NULL, listnomvar=NULL, axes=FALSE,lablong="", lablat="")
+histobarmap(sp.obj, names.var, nbcol = 10, type = "count",
+names.arg = "", names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE,
+cex.lab=0.8, pch=16, col="lightblue3", xlab=c("barplot","histogram"), ylab=rep("count",2),
+axes=FALSE, lablong="", lablat="")
+
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{long}{a vector x of size n}
-  \item{lat}{a vector y of size n}
-  \item{var1}{a vector of factor of size n}
-  \item{var2}{a vector of numerical values of size n}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}  \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
-  \item{label}{a list of character of size n with name of site. Names are printed on map after a selection}
-  \item{cex.lab}{character size of label}
-  \item{pch}{16 by default, symbol for selected points}
-  \item{col}{"grey" by default, color of bars on the histogram}
+  \item{sp.obj}{object of class extending Spatial-class}
+  \item{names.var}{a vector of 2 characters; first character corrseponds to the name of a factor and second character corresponds to a numeric value}
   \item{nbcol}{number of cells for histogram (10 by default)}
-  \item{type}{Character string indicating type of histogram to be drawn. "percent" and "count" give relative frequency and frequency histograms, "density" produces a density scale histogram.}
-  \item{names.arg}{names of factors of \code{var1}}
-  \item{xlab}{a list of title for the two x-axis graphics}
-  \item{ylab}{a list of title for the two y-axis graphics}
-  \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
-  \item{listnomvar}{a list with names of variables \code{listvar}}
+  \item{type}{Character string indicating type of histogram to be drawn. "percent" and "count" give relative frequency and frequency histograms.}
+  \item{names.arg}{a vector of level names (for factor)}
+  \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
+  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
+  \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
+  \item{cex.lab}{character size of label}
+  \item{pch}{a vector of symbol which must be equal to the number of group else all sites are printed in pch[1]}
+  \item{col}{a vector of colors which must be equal to the number of group else all sites and all box are printed in col[1]}
+  \item{xlab}{a vector of names for x-title of the barplot and histogram}
+  \item{ylab}{a vector of names for y-title of the barplot and histogram}
   \item{axes}{a boolean with TRUE for drawing axes on the map}
   \item{lablong}{name of the x-axis that will be printed on the map}
   \item{lablat}{name of the y-axis that will be printed on the map}
 }
 \details{
-Each site is associated to a factor of \code{var1} and to a value of \code{var2}.
-There is interactivity between the three windows created : the sites selected by a bar on the bar plot or on the histogram are represented on the map in red and the value and factor of sites selected on the map are represented in red on the bar plot and on the histogram.   
+Each site is associated to a factor of \code{names.var[1]} and to a value of
+\code{names.var[2]}. There is interactivity between the three windows created :
+the sites selected by a bar on the bar plot or on the histogram are represented on the
+map in red and the value and factor of sites selected on the map are represented in red
+on the bar plot and on the histogram.
 }
 
 \value{A vector of boolean of size n. TRUE if the site was in the last selection.}
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2009), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
 
 \author{Thomas-Agnan C., Aragon Y.,  Ruiz-Gazen A., Laurent T., Robidou L.}
 
@@ -50,23 +54,23 @@ There is interactivity between the three windows created : the sites selected by
 
 
 \examples{
+###
 # Data Colombus
 example(columbus)
-coords <- coordinates(columbus)
-cont<-spdf2list(columbus)$poly
-obs<-histobarmap(coords[,1], coords[,2],columbus@data$CP,
-columbus@data$HOVAL,label=columbus@data$NEIGNO, carte=cont,
-listvar=columbus@data,listnomvar=names(columbus@data),col=colors()[100:101],
-xlab=c("CP","Hoval"),ylab=c("Count","Count"),names.arg=c("A","B"),pch=2)
 
-# Data eire
-data(eire)
-eire.contours<-polylist2list(eire.polys.utm)
-histobarmap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$pale,eire.df$A,carte=eire.contours,
-listvar=eire.df,listnomvar=names(eire.df),
+# an example of use
+obs<-histobarmap(columbus,c("CP","HOVAL"),nbcol=8, type="percent",
+names.arg=c("A","B"), xlab=c("CP","Hoval"), ylab=rep("percent",2))
+
+######
+# data eire
+eire <- readShapePoly(system.file("etc/shapes/eire.shp", package="spdep")[1],
+ID="names", proj4string=CRS("+proj=utm +zone=30 +units=km"))
+
+# example of use
+histobarmap(eire, c("pale","A"),names.arg=c("Ouside Pale","Pale"),
 xlab=c("Appartenance to the region of Pale","Average number of people with blood A"),
-names.arg=c("Hors Pale","Pale"),
-col=colors()[101:102],label=as.character(1:26),cex.lab=0.7,pch=c(3,7))
+col=colors()[101:102],identify=TRUE)
 }
 
 \keyword{spatial}

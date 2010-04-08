@@ -1,7 +1,32 @@
-histnbmap<-function (object, coords = NULL, longlat = NULL,sup=FALSE, nbcol=10,
-listvar=NULL,listnomvar=NULL,carte=NULL,criteria=NULL,label="",col="grey",pch=16, 
-xlab="", ylab="", cex.lab=1, axes=FALSE, lablong="",lablat="")
+histnbmap<- function(sp.obj, nb.obj, longlat = NULL, nbcol=10, type = c("count","percent", "density"),
+sup=FALSE, criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
+xlab="", ylab="count", axes=FALSE, lablong="", lablat="")
 {
+# Verification of the Spatial Object sp.obj
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+
+# we propose to refind the same arguments used in first version of GeoXp
+coords<-coordinates(sp.obj)
+
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))=="DataFrame")
+{listvar<-sp.obj@data
+listnomvar<-names(sp.obj@data)
+}
+else
+{listvar<-NULL
+listnomvar<-NULL
+}
+
+# Code which was necessary in the previous version
+object<-nb.obj
+
+ if(is.null(carte) & substr(class.obj,1,15)=="SpatialPolygons") carte<-spdf2list(sp.obj)$poly
+
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
+
 # initialisation
   nointer<-FALSE
   nocart<-FALSE
@@ -139,7 +164,7 @@ pointfunc<-function()
         criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart)
         title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
     
-        graphique(var1=nb,var2=dlist, obs=obs, num=3, graph="histo.nb",nbcol=nbcol, W=W,
+        graphique(var1=nb,var2=dlist, obs=obs, num=3, bin=type, graph="histo.nb",nbcol=nbcol, W=W,
         labvar=labvar, symbol=pch,couleurs=col)
 
     }
@@ -190,7 +215,7 @@ if (length(polyX)>0)
     method="Neighbourplot3", W=W,axis=axes,cex.lab=cex.lab,legmap=legmap,legends=legends,buble=buble,
     criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart)
       
-    graphique(var1=nb,var2=dlist, obs=obs, num=3, graph="histo.nb",nbcol=nbcol, W=W,
+    graphique(var1=nb,var2=dlist, obs=obs, num=3,bin=type, graph="histo.nb",nbcol=nbcol, W=W,
     labvar=labvar, symbol=pch,couleurs=col); #   obs <<- matrix(FALSE, nrow=length(long), ncol=length(long));
 
 }
@@ -230,7 +255,7 @@ barfunc<-function()
    method="Neighbourplot3", W=W,axis=axes,cex.lab=cex.lab,legmap=legmap,legends=legends,buble=buble,
    criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart)
       
-   graphique(var1=nb,var2=dlist, obs=obs, num=3, graph="histo.nb",nbcol=nbcol, W=W,
+   graphique(var1=nb,var2=dlist, obs=obs, num=3,bin=type, graph="histo.nb",nbcol=nbcol, W=W,
    labvar=labvar, symbol=pch,couleurs=col)
    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
           
@@ -311,7 +336,7 @@ SGfunc<-function()
     method="Neighbourplot3", W=W,axis=axes,cex.lab=cex.lab,legmap=legmap,legends=legends,buble=buble,
     criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart)
       
-    graphique(var1=nb,var2=dlist, obs=obs, num=3, graph="histo.nb",nbcol=nbcol, W=W,
+    graphique(var1=nb,var2=dlist, obs=obs, num=3,bin=type, graph="histo.nb",nbcol=nbcol, W=W,
     labvar=labvar, symbol=pch,couleurs=col)
 }
   
@@ -334,7 +359,7 @@ carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label, 
 method="Neighbourplot3", W=W,axis=axes,legmap=legmap,legends=legends,buble=buble,
 criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart,cex.lab=cex.lab)
      
-graphique(var1=nb,var2=dlist, obs=obs, num=3, graph="histo.nb",nbcol=nbcol, W=W,
+graphique(var1=nb,var2=dlist, obs=obs, num=3,bin=type, graph="histo.nb",nbcol=nbcol, W=W,
 labvar=labvar, symbol=pch,couleurs=col)
 
 ####################################################

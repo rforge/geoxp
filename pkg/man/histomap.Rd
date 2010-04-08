@@ -75,7 +75,7 @@ immob.spdf = SpatialPointsDataFrame(immob.sp, immob)
 # optional : we add some contours that don't correspond to the spatial unit
 # but are nice for mapping
 midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
-cont_midiP<-spdf2list(midiP)$poly
+cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
 
 # A basic call of histomap function
 histomap(immob.spdf,"prix.vente", carte= cont_midiP, identify=TRUE, cex.lab=0.6)

@@ -4,7 +4,8 @@
 \title{Selection of a point or polygon on a scatterplot}
 
 \description{
-The function \code{selectmap()} is used to select a point or a polygon on the map or on a scatterplot. Called by any function which draws a scatterplot.
+The function \code{selectmap()} is used to select a point or a polygon on the map or
+on a scatterplot. Called by any function which draws a scatterplot.
 }
 
 \usage{
@@ -26,7 +27,7 @@ moranplotmap.r,... This is not an interactive function.}
 A vector of boolean of size n. TRUE if a site has been selected, FALSE otherwise.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2009), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
 
 \author{Thomas-Agnan C., Aragon Y.,  Ruiz-Gazen A., Laurent T., Robidou L.}
 

@@ -1,8 +1,37 @@
-`neighbourmap` <-
-function(long, lat, var, W, id=FALSE, listvar=NULL, listnomvar=NULL, carte=NULL,
-criteria=NULL, label="", cex.lab=1, pch=16, col="blue", xlab="",ylab="",
-axes=FALSE, lablong="", lablat="") 
+`neighbourmap` <-function(sp.obj, name.var, nb.obj, lin.reg=TRUE,
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
+xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 {
+# Verification of the Spatial Object sp.obj
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(name.var) & is.na(match(as.character(name.var),names(sp.obj)))) stop("name.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+var<-sp.obj@data[,name.var]
+
+# verify the type of the main variable
+if(!(is.integer(var) || is.double(var))) stop("the variable name.var should be a numeric variable")
+
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+# Code which was necessary in the previous version
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
+
+# spatial weight matrix
+W<-nb2mat(nb.obj)
+
 #initialisation
  obs <- matrix(FALSE, nrow=length(long), ncol=length(long))
  obs2 <- matrix(FALSE, nrow=length(long), ncol=length(long));
@@ -69,7 +98,7 @@ pointfunc<-function()
       title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
        
       graphique(var1=var, obs=obs, num=3, graph="Neighbourplot", labvar=labvar,
-      couleurs=col, symbol=pch, opt1=id, W=W)  
+      couleurs=col, symbol=pch, opt1=lin.reg, W=W)
     }
 }
      
@@ -119,7 +148,7 @@ if (length(polyX)>0)
       label=label, cex.lab=cex.lab)      
       
       graphique(var1=var, obs=obs, num=3, graph="Neighbourplot", labvar=labvar,
-      couleurs=col, symbol=pch, opt1=id, W=W)  
+      couleurs=col, symbol=pch, opt1=lin.reg, W=W)
  #   obs <<- matrix(FALSE, nrow=length(long), ncol=length(long));
 
 }
@@ -147,7 +176,7 @@ voisfunc <- function()
         {
             quit<-TRUE
             graphique(var1=var, obs=obs, num=3, graph="Neighbourplot", labvar=labvar,
-            couleurs=col, symbol=pch, opt1=id , W=W)   
+            couleurs=col, symbol=pch, opt1=lin.reg , W=W)
             next
         }
  
@@ -161,7 +190,7 @@ voisfunc <- function()
       label=label, cex.lab=cex.lab)      
       
       graphique(var1=var, obs=obs, num=3, graph="Neighbourplot", labvar=labvar,
-      couleurs=col, symbol=pch, opt1=id , W=W) 
+      couleurs=col, symbol=pch, opt1=lin.reg , W=W)
       title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
   
     }
@@ -222,7 +251,7 @@ polyscatfunc <- function()
   label=label, cex.lab=cex.lab)      
       
   graphique(var1=var, obs=obs, num=3, graph="Neighbourplot", labvar=labvar,
-  couleurs=col, symbol=pch, opt1=id , W=W)  
+  couleurs=col, symbol=pch, opt1=lin.reg , W=W)
   }    
 }
 
@@ -264,7 +293,7 @@ SGfunc<-function()
   label=label, cex.lab=cex.lab)  
   
   graphique(var1=var, obs=obs, num=3, graph="Neighbourplot", labvar=labvar,
-  couleurs=col, symbol=pch, opt1=id , W=W)  
+  couleurs=col, symbol=pch, opt1=lin.reg , W=W)
 }
 
 ####################################################
@@ -328,7 +357,7 @@ quitfunc<-function()
    label=label, cex.lab=cex.lab)      
    
    graphique(var1=var, obs=obs, num=3, graph="Neighbourplot", labvar=labvar,
-   couleurs=col, symbol=pch, opt1=id, W=W) 
+   couleurs=col, symbol=pch, opt1=lin.reg, W=W)
    
 ####################################################
 # création de la boite de dialogue

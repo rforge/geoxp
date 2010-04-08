@@ -1,6 +1,11 @@
-makeneighborsw <- function(xc,yc,method="neighbor",m=1,d,cum=TRUE)
-{ 
-  # condition
+makeneighborsw <- function(coords,method="neighbor",m=1,d,cum=TRUE)
+{
+ # initialisation
+ if(ncol(coords)!=2) stop("coords should have 2 columns")
+  xc<-coords[,1]
+  yc<-coords[,2]
+
+ # condition
   if(length(xc)!=length(yc))
   stop("Number of coords not equal")
 

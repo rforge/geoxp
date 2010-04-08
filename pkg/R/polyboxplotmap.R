@@ -1,8 +1,36 @@
- polyboxplotmap<-
-function (long, lat, var1, var2, varwidth=FALSE,listvar = NULL, listnomvar = NULL,
-carte = NULL, criteria = NULL, label = "", cex.lab=1, names.arg = "", xlab = "",
-ylab= "count", pch = 16, col = "grey", axes = FALSE, lablong = "", lablat = "")
+ polyboxplotmap<-function(sp.obj, names.var, varwidth=FALSE, names.arg = "",
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8,
+pch=16, col="lightblue3",xlab="", ylab="count", axes=FALSE, lablong="", lablat="")
+
 {
+# Verification of the Spatial Object sp.obj
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+var1<-sp.obj@data[,names.var[1]]
+var2<-sp.obj@data[,names.var[2]]
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+ # for colors in map and new grahics
+ ifelse(length(col)==1, col2<-"blue", col2<-col)
+ col3<-"lightblue3"
+ 
+# Code which was necessary in the previous version
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
 # initialisation
   nointer <- FALSE
   nocart <- FALSE
@@ -222,6 +250,8 @@ classe=var1,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,axis=axe
             tkmessageBox(message = msg)
             dev.set(2)
             loc <- locator(1)
+            loc$name <- names(sp.obj[,names.var[1]])
+            print(names.var[1])
             legends <<- list(legends[[1]], TRUE, legends[[4]], loc)
             carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
             lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,method="Cluster",

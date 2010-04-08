@@ -1,8 +1,36 @@
-`histobarmap` <-
-function(long,lat,var1,var2,criteria=NULL,carte=NULL,label = "",cex.lab=1, pch = 16, col= "lightblue",
-nbcol = 10,type = c("count","percent", "density"),names.arg="", xlab=c("",""), ylab=c("",""), listvar=NULL, listnomvar=NULL,
-axes=FALSE,lablong="", lablat="")
+`histobarmap` <- function(sp.obj, names.var, nbcol = 10, type = "count",
+names.arg = "", names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE,
+cex.lab=0.8, pch=16, col="lightblue3", xlab=c("barplot","histogram"), ylab=rep("count",2),
+axes=FALSE, lablong="", lablat="")
 {
+# Verification of the Spatial Object sp.obj
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+var1<-sp.obj@data[,names.var[1]]
+var2<-sp.obj@data[,names.var[2]]
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+ # for colors in map and new grahics
+ ifelse(length(col)==1, col2<-"blue", col2<-col)
+ col3<-"lightblue3"
+
+# Code which was necessary in the previous version
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
 
 # initialisation
    nointer<-FALSE
@@ -53,21 +81,21 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
             {
               quit <- TRUE
               carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
-              cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col,method="Cluster",classe=var1,legmap=legmap,
+              cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
               legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
               next
             }
            obs <<- selectmap(var1 = long, var2 = lat, obs = obs,Xpoly = loc[1], Ypoly = loc[2], method = "point")
            
            carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
-           cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col,method="Cluster",classe=var1,legmap=legmap,
+           cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2, method="Cluster",classe=var1,legmap=legmap,
            legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
            title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
     
            graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot",labvar = labvar1, symbol = pch, 
-           labmod = names.arg,couleurs=col)
+           labmod = names.arg, couleurs=col, bin=type)
            
-           graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol,bin=type, labvar = labvar2,couleurs=col[1])
+           graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol, bin=type, labvar = labvar2,couleurs=col[1])
 
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
@@ -113,13 +141,14 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
         obs <<- selectmap(var1=long, var2=lat, obs=obs, Xpoly=polyX, Ypoly=polyY, method="poly")
 
            carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
-           cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col,method="Cluster",classe=var1,legmap=legmap,
+           cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
            legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
            
            graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot",labvar = labvar1, symbol = pch, 
-           labmod = names.arg,couleurs=col)
+           labmod = names.arg, couleurs=col, bin=type)
            
-           graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol,bin=type, labvar = labvar2,couleurs=col[1])
+           graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol, bin=type,
+           labvar = labvar2,couleurs=col[1])
 
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
@@ -149,21 +178,22 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
             {
               quit <- TRUE
               graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot",labvar = labvar1, symbol = pch, 
-              labmod = names.arg,couleurs=col)
+              labmod = names.arg, bin=type,couleurs=col)
               next
             }
 
            obs<<-selectstat(var1=var1,obs=obs,Xpoly=loc[1], Ypoly=loc[2],method="Barplot");    
 
            carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
-           cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col,method="Cluster",classe=var1,legmap=legmap,
+           cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
            legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
            
            graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot",labvar = labvar1, symbol = pch, 
-           labmod = names.arg,couleurs=col)
+           labmod = names.arg, couleurs=col, bin=type)
            title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
     
-           graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol,bin=type, labvar = labvar2,couleurs=col[1])
+           graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol, bin=type,
+           labvar = labvar2,couleurs=col[1])
            
           if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
           {
@@ -192,20 +222,21 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
             if (is.null(loc)) 
             {
               quit <- TRUE
-              graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol,bin=type, labvar = labvar2,couleurs=col[1])
+              graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol, bin=type, labvar = labvar2,couleurs=col[1])
               next
             }
 
            obs<<-selectstat(var1=var2,obs=obs,Xpoly=loc[1], Ypoly=loc[2],method="Histogram", nbcol=nbcol);   
 
            carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
-           cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col,method="Cluster",classe=var1,legmap=legmap,
+           cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
            legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
            
            graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot",labvar = labvar1, symbol = pch, 
-           labmod = names.arg,couleurs=col)
+           labmod = names.arg, bin=type, couleurs=col)
            
-           graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol,bin=type, labvar = labvar2,couleurs=col[1])
+           graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram", nbcol = nbcol, bin=type,
+           labvar = labvar2,couleurs=col[1])
            title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
     
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
@@ -256,7 +287,7 @@ cartfunc <- function()
    {
     ifelse(!nocart,nocart<<-TRUE,nocart<<-FALSE)
     carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
-    cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col,method="Cluster",classe=var1,legmap=legmap,
+    cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
     legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
    }
    else
@@ -274,13 +305,14 @@ SGfunc <- function()
    obs <<- vector(mode = "logical", length = length(long))
      
    carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
-   cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col,method="Cluster",classe=var1,legmap=legmap,
+   cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
    legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
          
    graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot",labvar = labvar1, symbol = pch, 
-   labmod = names.arg,couleurs=col)
+   labmod = names.arg, bin=type, couleurs=col)
            
-   graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol,bin=type, labvar = labvar2,couleurs=col[1])
+   graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram", nbcol = nbcol, bin=type,
+   labvar = labvar2,couleurs=col[1])
 
    if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
     {
@@ -310,7 +342,7 @@ fnointer<-function()
  {
   ifelse(!nointer,nointer<<-TRUE,nointer<<-FALSE)
   carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
-  lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,couleurs=col,
+  lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,couleurs=col2,
   method="Cluster",classe=var,legmap=legmap,legends=legends,labmod=names.arg,axis=axes,cex.lab=cex.lab)     
  }
  else
@@ -335,7 +367,7 @@ fbubble<-function()
   legmap <<- res2$legmap
   
 carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
-cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col,method="Cluster",classe=var1,legmap=legmap,
+cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
 legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
  
 }
@@ -345,13 +377,14 @@ legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
 ####################################################
            
 carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
-cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col,method="Cluster",classe=var1,legmap=legmap,
+cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
 legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
            
-graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot",labvar = labvar1, symbol = pch, 
-labmod = names.arg,couleurs=col)
+graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot", bin=type, labvar = labvar1,
+symbol = pch, labmod = names.arg,couleurs=col)
            
-graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol, bin=type, labvar = labvar2,couleurs=col[1])
+graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol, bin=type,
+labvar = labvar2, couleurs=col[1])
 
 ####################################################
 # création de la boite de dialogue to create legens
@@ -367,10 +400,11 @@ if(interactive())
 
   dev.set(2)
   loc <- locator(1)
+  loc$name <- names(sp.obj[,names.var[1]])
   legends<<-list(legends[[1]],TRUE,legends[[3]],loc)
 
   carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
-  cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col,method="Cluster",classe=var1,legmap=legmap,
+  cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
   legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
         
  }
@@ -381,7 +415,7 @@ if(interactive())
   tkdestroy(tt1)	
 
   carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
-  cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col,method="Cluster",classe=var1,legmap=legmap,
+  cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
   legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")        
  }
 

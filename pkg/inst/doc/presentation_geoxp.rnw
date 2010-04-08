@@ -983,7 +983,7 @@ contours.OLD <- list.OLD$poly
 x.OLD <- list.OLD$X
 y.OLD <- list.OLD$Y
 
-W <- makeneighborsw(x.OLD , y.OLD,method="neighbor",4)
+W <- makeneighborsw(cbind(x.OLD , y.OLD),method="neighbor",4)
 obs<-neighbourmap(x.OLD , y.OLD, columbus@data$CRIME, W,
 carte=contours.OLD,criteria=(columbus@data$CRIME>mean(columbus@data$CRIME)),
 listvar=columbus@data, listnomvar=names(columbus@data),
@@ -1001,7 +1001,7 @@ y.OLD <- list.OLD$Y
 long<-x.OLD
 lat<-y.OLD
 var<-columbus@data$CRIME
-W <- makeneighborsw(x.OLD , y.OLD,method="neighbor",4)
+W <- makeneighborsw(cbind(x.OLD , y.OLD), method="neighbor",4)
 id=TRUE
 listvar=columbus@data
 listnomvar=names(columbus@data)
@@ -1093,7 +1093,7 @@ contours.OLD <- list.OLD$poly
 x.OLD <- list.OLD$X
 y.OLD <- list.OLD$Y
 
-W <- makeneighborsw(x.OLD , y.OLD,method="neighbor",4)
+W <- makeneighborsw(cbind(x.OLD , y.OLD), method="neighbor",4)
 obs<-neighbourmap(x.OLD , y.OLD, x.OLD, W,carte=contours.OLD,
 criteria=(columbus@data$CRIME>mean(columbus@data$CRIME)),
 listvar=columbus@data, listnomvar=names(columbus@data),
@@ -1111,7 +1111,7 @@ y.OLD <- list.OLD$Y
 long<-x.OLD
 lat<-y.OLD
 var<-x.OLD
-W <- makeneighborsw(x.OLD , y.OLD,method="neighbor",4)
+W <- makeneighborsw(cbind(x.OLD , y.OLD), method="neighbor",4)
 id=TRUE
 listvar=columbus@data
 listnomvar=names(columbus@data)
@@ -1204,7 +1204,7 @@ that these are mainly located in the North.
 
 \begin{verbatim}
 data(baltimore)
-W <- makeneighborsw(baltimore$X,baltimore$Y,method="neighbor",4)
+W <- makeneighborsw(cbind(baltimore$X,baltimore$Y),method="neighbor",4)
 moranplotmap(baltimore$X,baltimore$Y,baltimore$PRICE,W,
 label=baltimore$STATION,criteria=(baltimore$PRICE>mean(baltimore$PRICE)),
 listvar=baltimore,listnomvar=names(baltimore),flower=TRUE,
@@ -1214,7 +1214,7 @@ locmoran=TRUE,cex.lab=0.7,pch=16)
 \begin{footnotesize}
 <<echo=FALSE,eval=TRUE>>=
 data(baltimore)
-W <- makeneighborsw(baltimore$X,baltimore$Y,method="neighbor",4)
+W <- makeneighborsw(cbind(baltimore$X,baltimore$Y),method="neighbor",4)
 long=baltimore$X
 lat=baltimore$Y
 var=baltimore$PRICE

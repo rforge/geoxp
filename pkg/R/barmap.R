@@ -19,7 +19,6 @@ lat<-coordinates(sp.obj)[,2]
 
 var<-sp.obj@data[,name.var]
 
-
 listvar<-sp.obj@data
 listnomvar<-names.attr
 
@@ -353,7 +352,7 @@ msg <- paste("Click on the map to indicate the location of the upper left corner
 
 dev.set(2)
 loc <- locator(1)
-loc$name <- names(listvar[,name.var])
+loc$name <- names(sp.obj[,name.var])
 legends<<-list(legends[[1]],TRUE,legends[[3]],loc)
 
 carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,

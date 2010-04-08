@@ -1,8 +1,31 @@
-`misolationmap` <-
-function (long, lat, object,propneighb=0.4,chisqqu=0.975, listvar=NULL, listnomvar=NULL, criteria=NULL,
-carte = NULL, label = "",cex.lab=1,pch = 16,col="blue", xlab = "degree of isolation",
-ylab="Pairwise Mahalanobis distances", lablong = "", lablat = "", axes=FALSE)
-{
+`misolationmap` <- function(sp.obj, nb.obj, names.var, propneighb=0.4,chisqqu=0.975,
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
+xlab="degree of isolation", ylab="Pairwise Mahalanobis distances", axes=FALSE, lablong="", lablat="")
+
+{ # Verification of the Spatial Object sp.obj
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+dataset <- sp.obj@data[,names.var]
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+# Code which was necessary in the previous version
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
+
+
  # initialisation
   xy<-cbind(long, lat)
   nointer<-FALSE
@@ -23,11 +46,12 @@ ylab="Pairwise Mahalanobis distances", lablong = "", lablat = "", axes=FALSE)
   
   graphics.off()
 
-   W<-nb2mat(object)
+   W<-nb2mat(nb.obj)
    Wref<-W
+   
 # Transformation d'un data.frame en matrix
-
 if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(listvar)
+if((length(dataset)>0) && (dim(as.matrix(dataset))[2]==1)) dataset<-as.matrix(dataset)
 
 # ouverture des fenêtres graphiques
 dev.new()
@@ -36,13 +60,13 @@ fin <- tclVar(FALSE)
 
 # calcul des matrices theta et absvar
 
-n=nrow(listvar)
-p=ncol(listvar)
+n=nrow(dataset)
+p=ncol(dataset)
 require(robustbase) # for robust Mahalanobis distance
 
-covr=covMcd(listvar,alpha=0.75)
+covr=covMcd(dataset,alpha=0.75)
 cinv=solve(covr$cov)
-MDglobal=sqrt(mahalanobis(listvar, covr$center, cinv, inverted=TRUE))
+MDglobal=sqrt(mahalanobis(dataset, covr$center, cinv, inverted=TRUE))
 
 
 # TRUE/FALSE for non-outlying/outlying:
@@ -51,7 +75,7 @@ MDglobalTF <- (MDglobal<qchi)
 
 idx=matrix(1:n,n,n)
 se=as.vector(idx[lower.tri(idx)])
-hlp=as.matrix(listvar[rep(1:(n-1),seq((n-1),1)),]-listvar[se,])
+hlp=as.matrix(dataset[rep(1:(n-1),seq((n-1),1)),]-dataset[se,])
 MDij=sqrt(rowSums((hlp%*%cinv)*hlp))
 
 MDpair=matrix(0,n,n)
@@ -67,13 +91,13 @@ theta<-matrix(0,n,n)
 absvar<-matrix(0,n,n)
 
 for (i in 1:n){
-  MDpairN[[i]] <- MDpair[i,object[[i]]]
+  MDpairN[[i]] <- MDpair[i,nb.obj[[i]]]
   nn=max(1,round(length(MDpairN[[i]])*propneighb)) # number of neighbors in tolerance ellipse
   nval=MDpairN[[i]][order(MDpairN[[i]])][nn]  # value of largest neighbor to be included
   chibound[i]=pchisq(nval^2,p,MDglobal[i]^2)
   
-  theta[i,object[[i]]]<-chibound[i]
-  absvar[i,object[[i]]]<-MDpair[i,object[[i]]]
+  theta[i,nb.obj[[i]]]<-chibound[i]
+  absvar[i,nb.obj[[i]]]<-MDpair[i,nb.obj[[i]]]
 
 }
 
@@ -91,10 +115,10 @@ idxg<-sort(chibound,index.return=TRUE)
 
 # calcul des distances de Mahalanobis par site
 
-rd <- sqrt(mahalanobis(listvar, center = covr$center, cov = covr$cov))
-xarw <- arw(listvar, covr$center, covr$cov, alpha = 0.025)
-  ifelse(xarw$cn != Inf, alphab <- sqrt(c(xarw$cn, qchisq(c(0.75, 0.5, 0.25), ncol(listvar)))),
-  alphab <- sqrt(qchisq(c(0.975, 0.75, 0.5, 0.25), ncol(listvar))))
+rd <- sqrt(mahalanobis(dataset, center = covr$center, cov = covr$cov))
+xarw <- arw(dataset, covr$center, covr$cov, alpha = 0.025)
+  ifelse(xarw$cn != Inf, alphab <- sqrt(c(xarw$cn, qchisq(c(0.75, 0.5, 0.25), ncol(dataset)))),
+  alphab <- sqrt(qchisq(c(0.975, 0.75, 0.5, 0.25), ncol(dataset))))
 
 
 chi2.quant<-rep(0,n)

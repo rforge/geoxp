@@ -1,11 +1,8 @@
-`histomap` <-
-function(sp.obj, name.var, nbcol=10, type = c("count","percent", "density"),
+`histomap` <- function(sp.obj, name.var, nbcol=10, type = c("count","percent", "density"),
 names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
 xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 {
-
 # Verification of the Spatial Object sp.obj
-
 class.obj<-class(sp.obj)[1]
 
 if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
@@ -27,11 +24,6 @@ listvar<-sp.obj@data
 listnomvar<-names.attr
 
 # Code which was necessary in the previous version
-
- # var=as.matrix(var)
- # lat=as.matrix(lat)
- # long=as.matrix(long)
-
  if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
 
  # for identifyng the selected sites
@@ -467,5 +459,5 @@ tkwait.variable(fin)
 ####################################################
 
 return(obs)
-  }
+}
 

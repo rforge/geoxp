@@ -1,8 +1,33 @@
-`plot3dmap` <-
-function(long,lat,var1,var2,var3,box=TRUE,listvar=NULL, listnomvar=NULL, criteria=NULL,
-carte=NULL, label="",cex.lab=1, pch=16, col="blue", xlab="",ylab="",zlab="",
-axes=FALSE,lablong="",lablat="")
+`plot3dmap` <- function(sp.obj, names.var, box=TRUE,
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8,
+pch=16, col="lightblue3",xlab="", ylab="", zlab="", axes=FALSE, lablong="", lablat="")
 {
+# Verification of the Spatial Object sp.obj
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+var1<-sp.obj@data[,names.var[1]]
+var2<-sp.obj@data[,names.var[2]]
+var3<-sp.obj@data[,names.var[3]]
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+
+# Code which was necessary in the previous version
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
 
 ####################################################
 # initialisation
@@ -28,8 +53,9 @@ choix<-""
 method <- ""
 listgraph <- c("Histogram","Barplot","Scatterplot")
 labmod <- ""
-col2 <- "blue"
-col3 <- col[1]
+ # for colors in map and new grahics
+ col2<-"blue"
+ col3<-col[1]
 pch2 <- pch[1]
 
 
@@ -49,14 +75,14 @@ pointfunc<-function()
  {
     quit <- FALSE
     
-    dev.set(3)
+    dev.set(2)
     title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
      {
       #sélection des points
 
-       dev.set(3)
+       dev.set(2)
        loc<-locator(1)
        
          if(is.null(loc))
@@ -98,7 +124,7 @@ pointfunc<-function()
       lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
       title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
     
-        if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
+        if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) >= 2))
         {
             graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
             obs=obs, num=3, graph=graphChoice, couleurs=col3,symbol=pch, labvar=c(varChoice1,varChoice2))
@@ -175,7 +201,7 @@ polyfunc<-function()
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
       lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
   
-        if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
+        if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) >= 2))
         {
          graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
          obs=obs, num=3, graph=graphChoice, couleurs=col3,symbol=pch, labvar=c(varChoice1,varChoice2))
@@ -226,7 +252,7 @@ graphfunc <- function()
            }
           else
            {
-            res1<-choix.couleur(graphChoice,listvar,listnomvar,varChoice1,legends,col)
+            res1<-choix.couleur(graphChoice,listvar,listnomvar,varChoice1,legends,col,pch)
             
             method <<- res1$method
             col2 <<- res1$col2
@@ -267,7 +293,7 @@ SGfunc<-function()
  symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
  lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
   
- if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
+ if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) >= 2))
   {
    graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
    obs=obs, num=3, graph=graphChoice, couleurs=col3,symbol=pch, labvar=c(varChoice1,varChoice2))

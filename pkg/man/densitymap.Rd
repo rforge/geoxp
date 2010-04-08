@@ -3,27 +3,26 @@
 
 \title{Kernel density estimates and map}
 \description{
-The function \code{densitymap} draws kernel density estimates of the variable \code{var} with 'bkde.R'
-and a map with sites of coordinate (\code{long},\code{lat}). Each site is associated to a value of \code{var} and there is interactivity between the two windows.
+The function \code{densitymap} draws kernel density estimates of the variable \code{name.var} with 'bkde.R'
+and a map with sites of coordinate \code{coordinates(sp.obj)}. Each site is associated to a value of \code{name.var} and there is interactivity between the two windows.
 }
 \usage{
-densitymap(long, lat, var, kernel='triweight',listvar=NULL, listnomvar=NULL,
-carte=NULL, criteria=NULL,label="",cex.lab=1, pch=16, col="blue", xlab="",
-ylab="", axes=FALSE, lablong="", lablat="")
+densitymap(sp.obj, name.var, kernel='triweight',
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16,
+col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 }
 
 \arguments{
-  \item{long}{a vector x of size n}
-  \item{lat}{a vector y of size n}
-  \item{var}{a vector of numeric values of size n}
+  \item{sp.obj}{object of class extending Spatial-class}
+  \item{name.var}{character; attribute name or column number in attribute table}
   \item{kernel}{Smoothing kernel (see help(bkde) for list of options)}
-  \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
-  \item{listnomvar}{a list with names of variables \code{listvar}}
+   \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
+  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}  \item{label}{vector of character of size n with names of sites}
-  \item{cex.lab}{character size of label on map}
+  \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
+  \item{cex.lab}{character size of label}
   \item{pch}{16 by default, symbol for selected points}
-  \item{col}{"blue" by default, color of the density curve}  
+  \item{col}{"lightblue3" by default, color of bars on the histogram}
   \item{xlab}{a title for the graphic x-axis}
   \item{ylab}{a title for the graphic y-axis}
   \item{axes}{a boolean with TRUE for drawing axes on the map}
@@ -32,14 +31,14 @@ ylab="", axes=FALSE, lablong="", lablat="")
 }
 
 \details{
-The user can choose an interval on the density curve by mouse clicking on the graph on the extremities of interval or by specifying directly values. The sites selected by an interval are then represented on the map in red. 
-The selection of sites on the map by `points' or `polygon' results in the drawing of the kernel densities of the subdistributions corresponding to this subset of sites. 
-Finally, the user can modify the bandwith parameter with a cursor in the tcltk 
+The user can choose an interval on the density curve by mouse clicking on the graph on the extremities of interval or by specifying directly values. The sites selected by an interval are then represented on the map in red.
+The selection of sites on the map by `points' or `polygon' results in the drawing of the kernel densities of the subdistributions corresponding to this subset of sites.
+Finally, the user can modify the bandwith parameter with a cursor in the tcltk
 window (parameter \eqn{\alpha}{alpha}). \eqn{\alpha}{alpha} is the smoothing parameter for the kernel smooth : it represents the mean percentage of sample points involved in the local averaging (example : \eqn{\alpha=20}{alpha=20} means that on average, \eqn{n \times 0.2}{n x 0.2} points are in any interval of length 2h where h is the usual bandwidth).}
 
 \value{A vector of boolean of size n. TRUE if the site was in the last selection.}
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2009), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
 
 Venables, W. N. and Ripley, B. D. (2002) \emph{Modern Applied Statistics with S}. New York: Springer. \cr \cr
 
@@ -50,33 +49,47 @@ Wand M.P. et Jones M.C. (1995), \emph{Kernel Smoothing}, Chapman \& Hall.}
 \seealso{\code{\link{histomap}}, \code{\link{histobarmap}}, \code{\link{scattermap}}, \code{\link{densitymap}}}
 
 \examples{
+
+######
+# data oldcol
+example(columbus)
+
+# columbus is included in the Spatial-Class object
+# a very simple use of histomap :
+histomap(columbus,"CRIME")
+
+######
 # data on price indices of real estate in France
 data(immob)
+row.names(immob)<-immob$Nom
+
+# immob is a data.frame object. We have to create
+# a Spatial object, by using first the longitude and latitude
+# to create Spatial Points object ...
+immob.sp = SpatialPoints(cbind(immob$longitude,immob$latitude))
+# ... and then by integrating other variables to create SpatialPointsDataFrame
+immob.spdf = SpatialPointsDataFrame(immob.sp, immob)
+# For more details, see vignette('sp', package="sp")
+
+# optional : we add some contours that don't correspond to the spatial unit
+# but are nice for mapping
 midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
-cont_midiP<-spdf2list(midiP)$poly
-densitymap(immob$longitude,immob$latitude,immob$prix.vente,
-carte=cont_midiP,listvar=immob,listnomvar=names(immob),
-xlab="Average price per square meter",label=immob$Nom,cex.lab=0.7,col='purple',pch=15)
+cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
 
-# data olcol
+# A basic call of densitymap function
+densitymap(immob.spdf,"prix.vente", carte= cont_midiP, identify=TRUE,
+xlab="housing price by square meter", cex.lab=0.6)
+
+####
+# data columbus
 example(columbus)
-coords <- coordinates(columbus)
-cont<-spdf2list(columbus)$poly
 
-densitymap(coords[,1], coords[,2],columbus@data$CRIME,listvar=columbus@data,
-carte=cont, listnomvar=names(columbus@data),
-criteria=(columbus@data$CRIME>mean(columbus@data$CRIME)))
-
-# data eire
-data(eire)
-eire.contours<-polylist2list(eire.polys.utm)
-densitymap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$A,
-carte=eire.contours,listvar=eire.df,listnomvar=names(eire.df),
-xlab="Individuals rate of blood A",ylab="density")
-
+densitymap(columbus,"CRIME", col="pink",identify=TRUE,
+criteria=(columbus@data$CRIME>mean(columbus@data$CRIME)),
+pch=12,axes=TRUE,lablong="long.",lablat="lat.")
 }
 
 \keyword{spatial}
 \keyword{smooth}
 \keyword{univar}
-\keyword{multivariate} 
+\keyword{multivariate}

@@ -76,6 +76,7 @@ if ((method == "Cluster")||(method == "Quadrant")||(method == "Neighbourplot1"))
    
  }
 
+
 ####################################################
 # Initialisation des bubbles
 ####################################################

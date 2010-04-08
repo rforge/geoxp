@@ -1,7 +1,32 @@
-`scattermap` <-
-function(long,lat,var1,var2,listvar=NULL, listnomvar=NULL,reg.line=TRUE,quantiles=NULL,criteria=NULL,
-carte=NULL,label="",cex.lab=1, pch=16, xlab="",ylab="", col="grey", axes=FALSE, lablong="", lablat="")
+`scattermap` <- function(sp.obj, names.var, lin.reg=TRUE, quantiles=NULL,
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8,
+pch=16, col="lightblue3",xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 {
+# Verification of the Spatial Object sp.obj
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+var1<-sp.obj@data[,names.var[1]]
+var2<-sp.obj@data[,names.var[2]]
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+
+# Code which was necessary in the previous version
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
+
 # initialisation
 nointer<-FALSE
 nocart<-FALSE
@@ -41,7 +66,7 @@ dev.new()
 fin <- tclVar(FALSE)
 
 # au sujet des quantiles conditionnels    
-if (reg.line || length(quantiles)!=0)
+if (lin.reg || length(quantiles)!=0)
 {
     u1 <- sort(var1)
     u1 <- as.vector(u1)
@@ -101,7 +126,7 @@ pointfunc<-function()
             {
               quit<-TRUE
               graphique(var1=var1, var2=var2, obs=obs, num=3, graph="Scatterplot", labvar=labvar, symbol=pch, couleurs=col,
-              opt1=reg.line, quantiles=quantiles, alpha1=alpha)    
+              opt1=lin.reg, quantiles=quantiles, alpha1=alpha)
               next
             }
             obs<<-selectmap(var1=var1,var2=var2,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point");
@@ -111,7 +136,7 @@ pointfunc<-function()
 
       
       graphique(var1=var1, var2=var2, obs=obs, num=3, graph="Scatterplot", labvar=labvar, symbol=pch, couleurs=col,
-      opt1=reg.line, quantiles=quantiles, alpha1=alpha)     
+      opt1=lin.reg, quantiles=quantiles, alpha1=alpha)
       
       carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
@@ -217,7 +242,7 @@ polyfunc<-function()
 
     #graphiques
       graphique(var1=var1, var2=var2, obs=obs, num=3, graph="Scatterplot", labvar=labvar, symbol=pch, couleurs=col,
-      opt1=reg.line, quantiles=quantiles, alpha1=alpha)     
+      opt1=lin.reg, quantiles=quantiles, alpha1=alpha)
       
       carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
@@ -329,7 +354,7 @@ SGfunc<-function()
 
  # graphiques
   graphique(var1=var1, var2=var2, obs=obs, num=3, graph="Scatterplot", labvar=labvar, symbol=pch, couleurs=col,
-  opt1=reg.line, quantiles=quantiles, alpha1=alpha)     
+  opt1=lin.reg, quantiles=quantiles, alpha1=alpha)
       
   carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
   symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
@@ -361,7 +386,7 @@ refresh.code<-function(...)
 {
   alpha<<-slider1(no=1) 
   graphique(var1=var1, var2=var2, obs=obs, num=3, graph="Scatterplot", labvar=labvar, symbol=pch, couleurs=col,
-  opt1=reg.line, quantiles=quantiles, alpha1=alpha)     
+  opt1=lin.reg, quantiles=quantiles, alpha1=alpha)
   }
 
 
@@ -408,7 +433,7 @@ fbubble<-function()
 ####################################################
 
  graphique(var1=var1, var2=var2, obs=obs, num=3, graph="Scatterplot", labvar=labvar, symbol=pch, couleurs=col,
- opt1=reg.line, quantiles=quantiles, alpha1=alpha)     
+ opt1=lin.reg, quantiles=quantiles, alpha1=alpha)
       
  carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
  symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,

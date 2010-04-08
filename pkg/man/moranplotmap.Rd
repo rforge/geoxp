@@ -3,45 +3,45 @@
 \title{Moran scatterplot and map}
 \description{
 The function \code{moranplotmap()} draws a moran plot, used to detect spatial
-autocorrelation in the variable var. On the x-axis, is represented \eqn{var-\bar{var}}{var-bar(var)}
-and on the y-axis \eqn{W(var-\bar{var})}{W(var-bar(var))}, where W is the spatial weight matrix.
+autocorrelation in the variable var. On the x-axis, is represented \eqn{x-\bar{x}}{x-bar(x)}
+and on the y-axis \eqn{W(x-\bar{x})}{W(x-bar(x))}, where W is the spatial weight matrix.
 It also calcultes Moran's I statistic (see nonnormoran.r) and
 give a p-value associated to the autocorrelation test (gaussian version and permutation version). }
 
 \usage{
-moranplotmap(long, lat, var, W, flower=FALSE, locmoran=FALSE, listvar=NULL, listnomvar=NULL,
-carte=NULL, criteria=NULL, label="", cex.lab=1, col="blue",pch=16, xlab=expression((X-bar(X))),
-ylab=expression(W(X-bar(X))), axes=FALSE, lablong="", lablat="",
-names.arg=c("H.-H.","L.-H.","L.-L.","H.-L."))
+moranplotmap(sp.obj, name.var, listw.obj, flower=FALSE, locmoran=FALSE,
+names.arg=c("H.-H.","L.-H.","L.-L.","H.-L."), names.attr=names(sp.obj), criteria=NULL,
+carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
+xlab=expression((X-bar(X))), ylab=expression(W(X-bar(X))), axes=FALSE, lablong="", lablat="")
 }
+
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{long}{a vector x of size n}
-  \item{lat}{a vector y of size n}
-  \item{var}{a vector of numeric values of size n}
-  \item{W}{A spatial weigth matrix of size \eqn{n \times n}{n x n}}
+  \item{sp.obj}{object of class extending Spatial-class}
+  \item{name.var}{character; attribute name or column number in attribute table}
+  \item{listw.obj}{object of class listw}
   \item{flower}{if TRUE, link neighbouring sites }
   \item{locmoran}{if TRUE, print local Moran's I statistic on the Moran plot}
-  \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
-  \item{listnomvar}{a list with names of variables listvar}
+  \item{names.arg}{names of quadrants of the Moran plot}
+  \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
+  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}  \item{label}{a list of character of size n with name of site. Names are printed on map after a selection}
+  \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
-  \item{col}{"blue" by default, color of bars on the histogram}
   \item{pch}{16 by default, symbol for selected points}
+  \item{col}{"lightblue3" by default, color of bars on the histogram}
   \item{xlab}{a title for the graphic x-axis}
   \item{ylab}{a title for the graphic y-axis}
   \item{axes}{a boolean with TRUE for drawing axes on the map}
   \item{lablong}{name of the x-axis that will be printed on the map}
   \item{lablat}{name of the y-axis that will be printed on the map}
-  \item{names.arg}{names of quadrants of the Moran plot}
 }
 \details{
 For the permutation test, for each drawing the values of the variable $var$ are
 randomly assigned to the sites. We then calculate Moran'I statistic associated to each drawing and we give the frequency of drawings when Moran'I statistic is lower or equal to the
 observed Moran'I statistic. Moreover, the function gives the opportunity to link neighbouring sites and gives Local Moran's I statistic.
 For a site i:
-\deqn{I_i=(var_i-\bar{var})\sum_{j}W_{ij}(var_j-\bar{var})}{I_i=(var_i-bar(var))sum_jW_ij(var_j-bar(var))}
+\deqn{I_i=(x_i-\bar{x})\sum_{j}W_{ij}(x_j-\bar{x})}{I_i=(x_i-bar(x))sum_jW_ij(x_j-bar(x))}
 with j not equal to i.}
 
 \note{
@@ -53,7 +53,9 @@ the regression line is only drawn in the case of W normalized.}
 Returns \code{obs}, vector of size n of boolean with selected sites, and Moran'I statistic \code{MORAN}.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2009), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+
+Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer. \cr \cr
 
 Jim Lesage, ``Spatial Econometrics Toolbox'', \url{http://www.spatial-econometrics.com/}}
 
@@ -62,13 +64,40 @@ Jim Lesage, ``Spatial Econometrics Toolbox'', \url{http://www.spatial-econometri
 \keyword{spatial}
 
 \examples{
+##
 # data baltimore
 data(baltimore)
-W <- makeneighborsw(baltimore$X,baltimore$Y,method="neighbor",4)
-moranplotmap(baltimore$X,baltimore$Y,baltimore$PRICE,W,label=baltimore$STATION,
-criteria=(baltimore$PRICE>mean(baltimore$PRICE)),listvar=baltimore,
-listnomvar=names(baltimore),flower=TRUE,locmoran=TRUE,cex.lab=0.7,pch=5)
 
+# SpatialPoints
+baltimore.sp <- SpatialPoints(cbind(baltimore$X,baltimore$Y))
+# SpatialPointsDataFrame
+baltimore.spdf<-SpatialPointsDataFrame(baltimore.sp,baltimore)
+
+# Spatial Weight Matrix
+W.nb <- knn2nb(knearneigh(baltimore.sp, k=4))
+# We choose a row standardized spatial weight matrix :
+W.listw <- nb2listw(W.nb,style="W")
+
+
+# moranplotmap with some options
+moranplotmap(baltimore.spdf, "PRICE", W.listw ,
+flower=TRUE, locmoran=TRUE,criteria=(columbus$CP==1),
+identify=TRUE)
+
+##
+# data columbus
+example(columbus)
+
+# use of moranplotmap with spatial weight matrix col.gal.nb :
+# 1. row-standardized
+I.1<-moranplotmap(columbus,"HOVAL",nb2listw(col.gal.nb,style="W"))$MORAN
+
+# 2. basic binary
+I.2<-moranplotmap(columbus,"HOVAL",nb2listw(col.gal.nb,style="B"))$MORAN
+
+# 3. globally standardized
+I.3<-moranplotmap(columbus,"HOVAL",nb2listw(col.gal.nb,style="C"))$MORAN
 }
+
 
 \seealso{\code{\link{neighbourmap}},\code{\link{makeneighborsw}},\code{\link{normw}},\code{\link{nonormmoran}} }

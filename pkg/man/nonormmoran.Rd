@@ -26,6 +26,11 @@ let \eqn{M=(I-X(X'X)^{-1}X')}{M=(I-X(X'X)^(-1)X')}
 
 In the case of W is normed, $s=n$ else $s$ is the number of nonzero links}
 
+\note{
+This function is closed to the function lm.morantest included in the spdep package.
+nonnormmoran is less confortable to use because it didn't take into account S4 classes.
+}
+
 \value{
 (nobs,nvar,morani,imean,istat,ivar,prob) where `nobs' is the number of observations,
 `nvar', the number of explanatory variables, `morani' is the Moran's $I$ statistic estimate, 
@@ -39,13 +44,22 @@ In the case of W is normed, $s=n$ else $s$ is the number of nonzero links}
 \keyword{spatial}
 
 \examples{
+###
 # data baltimore
 data(baltimore)
-W <- makeneighborsw(baltimore$X,baltimore$Y,method="neighbor",4)
-# W is not normed
-nonormmoran(baltimore$PRICE,baltimore[,14:15],W)
-# W is normed
-nonormmoran(baltimore$PRICE,baltimore[,14:15],normw(W))
+
+# a spatial weight matrix constructed in the matrix format
+W <- makeneighborsw(cbind(baltimore$X,baltimore$Y),method="neighbor",4)
+
+# when W is not normed ...
+nonormmoran(baltimore$PRICE,cbind(rep(1,nrow(baltimore)),baltimore[,14:15]),W)
+# when W is normed ...
+nonormmoran(baltimore$PRICE,cbind(rep(1,nrow(baltimore)),baltimore[,14:15]),normw(W))
+
+# If we compare to the function lm.morantest
+baltimore.lm<-lm(PRICE~0+LOTSZ+SQFT,data=baltimore)
+
+lm.morantest(baltimore.lm, mat2listw(W))
 }
 
 \seealso{\code{\link{moranplotmap}},\code{\link{neighbourmap}},\code{\link{makeneighborsw}},\code{\link{normw}} }

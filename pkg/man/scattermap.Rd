@@ -4,74 +4,89 @@
 \title{Interactive scatterplot and map}
 
 \description{
-The function \code{scattermap} draws a scatterplot of the given variables (\code{var1},\code{var2}) and a map with sites
-of coordinates (\code{long},\code{lat}). Boxplots of each variable \code{var1} and \code{var2} are represented below the x-axis and y-axis.}
+The function \code{scattermap} draws a scatterplot of the given variables included
+in \code{names.var} and a map with sites
+of coordinates \code{coordinates(sp.obj}. Boxplots of each variable
+\code{names.var[1]} and \code{names.var[2]} are represented below the x-axis and y-axis.}
 
 \usage{
-scattermap(long,lat,var1,var2,listvar=NULL, listnomvar=NULL,reg.line=TRUE,quantiles=NULL,
-criteria=NULL, carte=NULL,label="",cex.lab=1, pch=16, xlab="",ylab="", col="grey",
-axes=FALSE, lablong="", lablat="")
+scattermap(sp.obj, names.var, lin.reg=TRUE, quantiles=NULL,
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8,
+pch=16, col="lightblue3",xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{long}{a vector x of size n}
-  \item{lat}{a vector y of size n}
-  \item{var1}{a vector of numeric values of size n}
-  \item{var2}{a vector of numeric values of size n}
-  \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
-  \item{listnomvar}{a list with names of variables \code{listvar}}
-  \item{reg.line}{If TRUE, drawing of the linear predictor for `response' in linear model}
-  \item{quantiles}{a list of order of conditionnal quantile regression spline }
+  \item{sp.obj}{object of class extending Spatial-class}
+  \item{names.var}{a vector of character : 1st name corresponds to the x-variable,
+  2nd name corresponds to the y-variable}
+  \item{lin.reg}{If TRUE, drawing of the linear predictor for `response' in linear model}
+  \item{quantiles}{a list of order of conditionnal quantile regression spline}
+  \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
   \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
-  \item{label}{a list of character of size n with name of site. Names are printed on map after a selection}
+  \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
   \item{pch}{16 by default, symbol for selected points}
+  \item{col}{"lightblue3" by default, color of bars on the histogram}
   \item{xlab}{a title for the graphic x-axis}
   \item{ylab}{a title for the graphic y-axis}
-  \item{col}{"grey" by default, color of the points of the scatter plot}
-  \item{axes}{a boolean with True for drawing axes on the map}
+  \item{axes}{a boolean with TRUE for drawing axes on the map}
   \item{lablong}{name of the x-axis that will be printed on the map}
   \item{lablat}{name of the y-axis that will be printed on the map}
 }
-\details{Each site is associated to a value of \code{var1} and a value of \code{var2}.
-There is an interactivity between the two windows: the sites selected by `point' or `polygon' on the scatterplot are 
-represented on the map in red; sites selected on the map are then represented in red on the scatterplot. Users have 
-the possibility to draw linear predictor for `response' in linear model (option \code{reg.line}) or conditionnal quantile regression spline
-(option \code{quantiles}).}
+\details{Each site is associated to a value of \code{names.var[1]} and a value of
+\code{names.var[2]}. There is an interactivity between the two windows: the sites selected
+by `point' or `polygon' on the scatterplot are represented on the map in red; sites selected
+on the map are then represented in red on the scatterplot. Users have
+the possibility to draw linear predictor for `response' in linear model (option \code{lin.reg})
+ or conditionnal quantile regression spline (option \code{quantiles}).}
 
 \value{A vector of boolean of size n. TRUE if the site was in the last selection.}
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2009), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}\cr \cr
+
+Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer.
+}
 
 \author{Thomas-Agnan C., Aragon Y., Ruiz-Gazen A., Laurent T., Robidou L.}
 
 \seealso{\code{\link{dblehistomap}}, \code{\link{histobarmap}}, \code{\link{scattermap}}, \code{\link{densitymap}}}
 
 \examples{
+######
 # data on price indices of real estate in France
 data(immob)
+row.names(immob)<-immob$Nom
+
+# immob is a data.frame object. We have to create
+# a Spatial object, by using first the longitude and latitude
+# to create Spatial Points object ...
+immob.sp = SpatialPoints(cbind(immob$longitude,immob$latitude))
+# ... and then by integrating other variables to create SpatialPointsDataFrame
+immob.spdf = SpatialPointsDataFrame(immob.sp, immob)
+# For more details, see vignette('sp', package="sp")
+
+# optional : we add some contours that don't correspond to the spatial unit
+# but are nice for mapping
 midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
-cont_midiP<-spdf2list(midiP)$poly
-scattermap(immob$longitude,immob$latitude,immob$prix.vente,
-immob$prix.location,carte= cont_midiP,listvar=immob,
-listnomvar=names(immob),pch=5,xlab="Prix de vente",ylab="Prix de location",
-col="purple",quantiles=0.5)
+cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
 
-# data baltimore
-data(baltimore)
-scattermap(baltimore$X,baltimore$Y,baltimore$PRICE,baltimore$SQFT,
-listvar=baltimore, listnomvar=names(baltimore),xlab="SQFT",ylab="PRICE",
-criteria=(baltimore$CITCOU==1),axes=TRUE,lablong="X",lablat="Y",
-reg.line=TRUE)
+# a example of use
+scattermap(immob.spdf,c("prix.vente","prix.location"),quantiles=0.5,
+carte= cont_midiP, xlab="Prix de vente",ylab="Prix de location",
+identify=TRUE, cex.lab=0.6)
 
-# Data Eire
-data(eire)
-eire.contours<-polylist2list(eire.polys.utm)
 
-scattermap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$ROADACC,
-eire.df$OWNCONS, listvar=eire.df,listnomvar=names(eire.df),carte=eire.contours,
-xlab="Routes",ylab="Taux de consomation",reg.line=TRUE,quantiles=0.95)
+
+######
+# data eire
+eire <- readShapePoly(system.file("etc/shapes/eire.shp", package="spdep")[1],
+ID="names", proj4string=CRS("+proj=utm +zone=30 +units=km"))
+
+
+# example of use of scattermap
+scattermap(eire, c("ROADACC","OWNCONS"),lin.reg=TRUE,quantiles=0.95,
+xlab="Roads",ylab="Consomation Rate",col="purple")
 }
 
 \keyword{regression}

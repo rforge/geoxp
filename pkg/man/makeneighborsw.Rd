@@ -5,12 +5,11 @@
 The function \code{makeneighborsw()} create a spatial weight matrix based on a given number of nearest neighbors
 (option "neighbor" by default), based on a threshold distance (option method="distance") or both these 2 methods.}
 \usage{
-makeneighborsw(xc,yc,method="neighbor",m=1,d,cum=TRUE)
+makeneighborsw(coords,method="neighbor",m=1,d,cum=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{xc}{a vector x of size n}
-  \item{yc}{a vector y of size n}
+  \item{coords}{a matrix of spatial coordinates}
   \item{method}{"neighbor" by default, "distance" or "both"}  
   \item{m}{ number of nearest neighbors}
   \item{d}{threshold point}
@@ -38,10 +37,22 @@ else
 \cr 
 In the case of method="both" W must verify the two first conditions.}
 
+\note{
+This function is not optimised for large dataset. User could find similar functions in
+the package \code{spdep} (\code{dnearneigh} and \code{knearneigh}). However, these functions
+don't offer the possibility to use the two criteria in the same time.  Moreover, an
+inconvenient of \code{makeneighborsw} is that the result is included in a matrix object
+whereas most of functions of GeoXp use the \code{nb} structure for spatial weight matrix.
+An issue is to use the \code{mat2listw} function and then selecting the \code{nb} part, like the
+in the examples. }
+
 \value{
 A spatial weight matrix of size \eqn{n \times n}{n x n}}
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2009), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} }
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+
+Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer.
+}
 
 \author{Aragon Y., Thomas-Agnan C., Ruiz-Gazen A., Laurent T., Robidou L.}
 
@@ -50,19 +61,24 @@ A spatial weight matrix of size \eqn{n \times n}{n x n}}
 \seealso{\code{\link{moranplotmap}},\code{\link{normw}}}
 
 \examples{
+##
 # data auckland
 data(auckland)
-x.ext <- auckland$Easting[1:10]
-y.ext <- auckland$Northing[1:10] 
-#plot(x.ext,y.ext,type='p')
-#text(x.ext,y.ext,as.character(1:10))
+coords <- cbind(auckland$Easting[1:10],auckland$Northing[1:10])
 
 # matrix based on 5 nearest neighbors
-W<-makeneighborsw(x.ext,y.ext,method="neighbor",m=3)
+W<-makeneighborsw(coords,method="neighbor",m=3)
 
 # matrix based on a threshold distance
-W1<-makeneighborsw(x.ext,y.ext,method="distance",d=20)
+W1<-makeneighborsw(coords,method="distance",d=20)
 
 # matrix based on the two methods
-W2<-makeneighborsw(x.ext,y.ext,method="both",m=3,d=20)
+W2<-makeneighborsw(coords,method="both",m=3,d=20)
+
+# representation of the 3 spatial weight matrices
+op<-par(mfrow=c(2,2))
+plot(mat2listw(W),coords,col="lightblue1",main="neighbor")
+plot(mat2listw(W1),coords,col="lightblue2",main="distance")
+plot(mat2listw(W2),coords,col="lightblue3",main="both")
+par(op)
 } 

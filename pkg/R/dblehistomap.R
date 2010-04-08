@@ -1,8 +1,32 @@
-`dblehistomap` <-
-function(long, lat, var1, var2,listvar=NULL, listnomvar=NULL, nbcol=c(10,10),
-type = c("count","percent", "density"),carte = NULL,criteria=NULL, pch = 16, col=c("grey","lightblue"), xlab = c("",""),
-ylab=c("count","count"), label = "",cex.lab=1,axes=FALSE, lablong="", lablat="")
+`dblehistomap` <- function(sp.obj, names.var, nbcol=c(10,10), type = c("count","percent", "density"),
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16,
+col=c("grey","lightblue3"), xlab=c("",""), ylab=c("count","count"), axes=FALSE, lablong="", lablat="")
 {
+# Verification of the Spatial Object sp.obj
+
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+var1<-sp.obj@data[,names.var[1]]
+var2<-sp.obj@data[,names.var[2]]
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+# Code which was necessary in the previous version
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
+
 # initialisation
   nointer<-FALSE
   nocart<-FALSE
@@ -25,7 +49,7 @@ ylab=c("count","count"), label = "",cex.lab=1,axes=FALSE, lablong="", lablat="")
   polyX2 <- NULL
   method <- ""
   col2 <- "blue"
-  col3 <- col[1]
+  col3 <- "lightblue3"
   pch2<-pch[1]
   labmod<-""
   labvar1<-c(xlab[1],ylab[1])
@@ -39,39 +63,39 @@ ylab=c("count","count"), label = "",cex.lab=1,axes=FALSE, lablong="", lablat="")
   dev.new()
   dev.new()
   dev.new()
-    
+
 ####################################################
 # sélection d'un point
 ####################################################
 
-pointfunc <- function() 
+pointfunc <- function()
  {
   quit <- FALSE
- 
+
   dev.set(2)
   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
-  while (!quit) 
+  while (!quit)
    {
      dev.set(2)
      loc <- locator(1)
-     if (is.null(loc)) 
+     if (is.null(loc))
       {
        quit <- TRUE
       carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-      lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
+      lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
           next
       }
-    obs <<- selectmap(var1 = long, var2 = lat, obs = obs, 
+    obs <<- selectmap(var1 = long, var2 = lat, obs = obs,
     Xpoly = loc[1], Ypoly = loc[2], method = "point")
- 
+
     graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1],bin=type, labvar = labvar1, couleurs=col[1])
     graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2],bin=type, labvar = labvar2, couleurs=col[2])
-  
+
     carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
     symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-    lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
+    lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
     title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
      if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
@@ -92,14 +116,14 @@ pointfunc <- function()
         polyX <- NULL
         polyY <- NULL
         quit <- FALSE
-        
-        dev.set(2)   
+
+        dev.set(2)
         title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-        
+
         while (!quit) {
             dev.set(2)
             loc <- locator(1)
-            if (is.null(loc)) 
+            if (is.null(loc))
             {
               quit <- TRUE
               next
@@ -114,16 +138,16 @@ pointfunc <- function()
       if (length(polyX)>0)
       {
         lines(polyX, polyY)
-        obs <<- selectmap(var1 = long, var2 = lat, obs = obs, 
+        obs <<- selectmap(var1 = long, var2 = lat, obs = obs,
             Xpoly = polyX, Ypoly = polyY, method = "poly")
-  
+
   graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1],bin=type, labvar = labvar1, couleurs=col[1])
     graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2],bin=type, labvar = labvar2, couleurs=col[2])
-  
+
     carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
     symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-    lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
-  
+    lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
+
      if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
        {
         graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
@@ -138,34 +162,34 @@ pointfunc <- function()
 ####################################################
 
 
-    bar1func <- function() 
+    bar1func <- function()
     {
         SGfunc()
         quit <- FALSE
-      
+
         dev.set(3)
         title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
         while (!quit) {
             dev.set(3)
             loc <- locator(1)
-            if (is.null(loc)) 
+            if (is.null(loc))
             {
               quit <- TRUE
               graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1],bin=type, labvar = labvar1, couleurs=col[1])
               next
             }
             obs <<- selectstat(var1 = var1, obs = obs, Xpoly = loc[1],Ypoly = loc[2], method = "Histogram", nbcol = nbcol[1])
- 
+
      graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1],bin=type, labvar = labvar1, couleurs=col[1])
      title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
- 
+
      graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2],bin=type, labvar = labvar2, couleurs=col[2])
-  
+
      carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
      symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-     lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
-  
+     lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
+
       if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
        {
         graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
@@ -180,39 +204,39 @@ pointfunc <- function()
 ####################################################
 
 
-    bar2func <- function() 
+    bar2func <- function()
     {
         SGfunc()
         quit <- FALSE
-     
-       dev.set(4)      
+
+       dev.set(4)
        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
- 
+
         while (!quit)
          {
             dev.set(4)
             loc <- locator(1)
-            if (is.null(loc)) 
+            if (is.null(loc))
             {
               quit <- TRUE
               graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2],bin=type, labvar = labvar2, couleurs=col[2])
-              next                                                     
+              next
             }
             obs <<- selectstat(var1 = var2, obs = obs, Xpoly = loc[1],Ypoly = loc[2], method = "Histogram", nbcol = nbcol[2])
- 
+
     graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1],bin=type, labvar = labvar1, couleurs=col[1])
     graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2],bin=type, labvar = labvar2, couleurs=col[2])
     title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-   
+
     carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
     symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-    lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
-  
+    lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
+
      if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
        {
         graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
         obs=obs, num=5, graph=graphChoice, couleurs=col3,symbol=pch, labvar=c(varChoice1,varChoice2));
-       } 
+       }
      }
   }
 
@@ -224,7 +248,7 @@ pointfunc <- function()
 ####################################################
 
 graphfunc <- function()
-{ 
+{
    if ((length(listvar) != 0) && (length(listnomvar) != 0))
     {
         dev.off(5)
@@ -232,54 +256,54 @@ graphfunc <- function()
         varChoice1 <<- choix$varChoice1
         varChoice2 <<- choix$varChoice2
         graphChoice <<- choix$graphChoice
-           
+
         if ((graphChoice != "") && (varChoice1 != ""))
         {
-          if (((graphChoice == "Histogram")&&(!is.numeric(listvar[,which(listnomvar == varChoice1)])))||((graphChoice == "Scatterplot")&&((!is.numeric(listvar[,which(listnomvar == varChoice1)]))||(!is.numeric(listvar[,which(listnomvar == varChoice2)]))))) 
+          if (((graphChoice == "Histogram")&&(!is.numeric(listvar[,which(listnomvar == varChoice1)])))||((graphChoice == "Scatterplot")&&((!is.numeric(listvar[,which(listnomvar == varChoice1)]))||(!is.numeric(listvar[,which(listnomvar == varChoice2)])))))
            {
             tkmessageBox(message="Variables choosed are not in a good format",icon="warning",type="ok")
            }
           else
            {
             res1<-choix.couleur(graphChoice,listvar,listnomvar,varChoice1,legends,col,pch)
-            
+
             method <<- res1$method
             col2 <<- res1$col2
             col3 <<- res1$col3
             pch2 <<- res1$pch2
             legends <<- res1$legends
             labmod <<- res1$labmod
-                     
+
             dev.new()
             graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-            obs=obs, num=5, graph=graphChoice, couleurs=col3,symbol=pch, labvar=c(varChoice1,varChoice2))    
-            
+            obs=obs, num=5, graph=graphChoice, couleurs=col3,symbol=pch, labvar=c(varChoice1,varChoice2))
+
             carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
             symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-            lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
+            lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
            }
-       }   
+       }
    }
    else
    {
     tkmessageBox(message="Variables (listvar) and their names (listnomvar) must have been given",icon="warning",type="ok")
-   }  
+   }
 }
 ####################################################
 # contour des unités spatiales
 ####################################################
 cartfunc <- function()
-{  
+{
  if (length(carte) != 0)
    {
     ifelse(!nocart,nocart<<-TRUE,nocart<<-FALSE)
     carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
     symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-    lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
+    lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
    }
    else
    {
-    tkmessageBox(message="Spatial contours have not been given",icon="warning",type="ok")    
+    tkmessageBox(message="Spatial contours have not been given",icon="warning",type="ok")
    }
 }
 
@@ -289,7 +313,7 @@ cartfunc <- function()
 ####################################################
 # rafraichissement des graphiques
 ####################################################
-SGfunc<-function() 
+SGfunc<-function()
 {
     obs<<-vector(mode = "logical", length = length(long));
 
@@ -297,11 +321,11 @@ SGfunc<-function()
 
      graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1],bin=type, labvar = labvar1, couleurs=col[1])
      graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2],bin=type, labvar = labvar2, couleurs=col[2])
-  
+
      carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
      symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-     lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
-  
+     lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
+
       if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
        {
         graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
@@ -316,7 +340,7 @@ SGfunc<-function()
 # quitter l'application
 ####################################################
 
-quitfunc <- function() 
+quitfunc <- function()
  {
     tclvalue(fin) <- TRUE
     tkdestroy(tt)
@@ -327,20 +351,20 @@ quitfunc <- function()
 # Open a no interactive selection
 ####################################################
 
-fnointer<-function() 
+fnointer<-function()
 {
  if (length(criteria) != 0)
  {
   ifelse(!nointer,nointer<<-TRUE,nointer<<-FALSE)
   carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
   symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-  lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
+  lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
  }
  else
  {
   tkmessageBox(message="Criteria has not been given",icon="warning",type="ok")
  }
- 
+
 }
 ####################################################
 # Bubble
@@ -349,31 +373,31 @@ fnointer<-function()
 fbubble<-function()
 {
   res2<-choix.bubble(buble,listvar,listnomvar,legends)
-  
+
   buble <<- res2$buble
   legends <<- res2$legends
   z <<- res2$z
   legmap <<- res2$legmap
-  
+
   carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
   symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-  lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
+  lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
 
 }
 
 
 ####################################################
-# graphiques 
+# graphiques
 ####################################################
 
 
   carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
   symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-  lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
-  
+  lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
+
      graphique(var1 = var1, obs = obs, num = 3, graph = "Histogram",nbcol = nbcol[1], bin=type, labvar = labvar1, couleurs=col[1])
      graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol[2], bin=type, labvar = labvar2, couleurs=col[2])
- 
+
 ####################################################
 # création de la boite de dialogue
 ####################################################

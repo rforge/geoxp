@@ -1,9 +1,34 @@
-`driftmap` <-
-function(long, lat, var, interpol=TRUE, nuage=FALSE,
-listvar=NULL, listnomvar=NULL, carte=NULL, xlab="", col=c("blue","red","blue","pink"),
-pch=c(16,16,16,16), lty=c(1,2),cex=0.7,label=NULL,
-cex.lab=1,axes=FALSE)
+`driftmap` <- function(sp.obj, name.var, interpol=TRUE, nuage=TRUE, lty=1:2, cex=0.7,
+names.attr=names(sp.obj), carte=NULL, identify=FALSE, cex.lab=0.8, pch=rep(16,3),
+col=c("lightblue3", "black", "red"), xlab="", axes=FALSE)
 {
+# Verification of the Spatial Object sp.obj
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(name.var) & is.na(match(as.character(name.var),names(sp.obj)))) stop("name.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+var<-sp.obj@data[,name.var]
+
+# verify the type of the main variable
+if(!(is.integer(var) || is.double(var))) stop("the variable name.var should be a numeric variable")
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+# Code which was necessary in the previous version
+
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
+
 # initialisation
   labvar<-xlab
   nocart<-FALSE
@@ -11,7 +36,7 @@ cex.lab=1,axes=FALSE)
   z<-NULL
   legmap<-NULL
   legends<-list(FALSE,FALSE,"","")
-  
+
   ifelse(interpol, ligne<-"l", ligne<-"p")
   obs<-vector(mode = "logical", length = length(long))
   obs[1:length(obs)]<-TRUE
@@ -24,17 +49,17 @@ cex.lab=1,axes=FALSE)
   method <- ""
   listgraph <- c("Histogram","Barplot","Scatterplot")
   labmod <- ""
-  col2 <- col[3]
+  col2 <- "blue"
   col3 <- col[1]
   pch2 <- pch[3]
-  
+
 
 # initialisation des paramètres modifiables
   theta=0
   nbrow=10
   nbcol=10
-  
-# Ouverture des fenêtres graphiques  
+
+# Ouverture des fenêtres graphiques
 graphics.off()
 dev.new()
 dev.new()
@@ -46,7 +71,7 @@ dev.new()
 # Changement d'angle
 ####################################################
 
-choixangle <- function() 
+choixangle <- function()
 {
 tt1<-tktoplevel()
 Name <- tclVar("0")
@@ -55,10 +80,10 @@ tkgrid(tklabel(tt1,text="Please enter a angle in degree"),entry.Name)
 
 
 OnOK <- function()
-{ 
+{
 	theta <- tclvalue(Name)
 	tkdestroy(tt1)
-       
+
    if (is.na(as.numeric(theta))||(as.numeric(theta)<0))
      {
       tkmessageBox(message="Sorry, but you have to choose a positive number",icon="warning",type="ok");
@@ -85,11 +110,11 @@ tkfocus(tt1)
 # sélection d'un point
 ####################################################
 
-pointfunc<-function() 
+pointfunc<-function()
  {
     quit <- FALSE
 
-    dev.set(2)  
+    dev.set(2)
     title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
@@ -98,16 +123,16 @@ pointfunc<-function()
 
        dev.set(2)
        loc<-locator(1)
-       
+
          if(is.null(loc))
            {
             quit<-TRUE
            carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,label=label,
            symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-           cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
+           cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
              next
            }
-      
+
        obs<<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point")
 
        if (length(which(obs==TRUE))==0)
@@ -117,11 +142,11 @@ pointfunc<-function()
        {
       # graphiques
        graphique.drift()
-    
+
       carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,label=label,
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-      cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
-    
+      cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
+
       title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
@@ -129,7 +154,7 @@ pointfunc<-function()
             graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
             obs=obs, num=4, graph=graphChoice, couleurs=col3,symbol=pch, labvar=c(varChoice1,varChoice2))
         }
-        
+
        }
      }
   }
@@ -139,19 +164,19 @@ pointfunc<-function()
 # sélection d'un polygone
 ####################################################
 
-polyfunc<-function() 
+polyfunc<-function()
 {
     polyX <- NULL
     polyY <- NULL
     quit <- FALSE
                 dev.set(2)
            title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-     
+
     while(!quit)
     {
         dev.set(2)
         loc<-locator(1)
-        if(is.null(loc)) 
+        if(is.null(loc))
         {
             quit<-TRUE
             next
@@ -172,7 +197,7 @@ polyfunc<-function()
       lines(polyX,polyY)
 
       obs <<- selectmap(var1=long, var2=lat, obs=obs, Xpoly=polyX, Ypoly=polyY, method="poly")
-      
+
       if (length(which(obs==TRUE))==0)
       {SGfunc()
       tkmessageBox(message="You have to select at least 1 site to calculate mean and median",icon="warning",type="ok")
@@ -181,17 +206,17 @@ polyfunc<-function()
       {
       # graphiques
        graphique.drift()
-    
+
       carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,label=label,
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-      cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
-  
+      cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
+
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
             graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
             obs=obs, num=4, graph=graphChoice, couleurs=col3,symbol=pch, labvar=c(varChoice1,varChoice2))
         }
-        
+
       }
      }
 }
@@ -200,19 +225,19 @@ polyfunc<-function()
 # contour des unités spatiales
 ####################################################
 cartfunc <- function()
-{ 
+{
  if (length(carte) != 0)
-   {  
+   {
     ifelse(!nocart,nocart<<-TRUE,nocart<<-FALSE)
     carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,label=label,
     symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-    cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
-      
+    cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
+
     graphique.drift()
    }
    else
    {
-    tkmessageBox(message="Spatial contours have not been given",icon="warning",type="ok")    
+    tkmessageBox(message="Spatial contours have not been given",icon="warning",type="ok")
    }
 }
 
@@ -223,15 +248,15 @@ cartfunc <- function()
 fbubble<-function()
 {
   res2<-choix.bubble(buble,listvar,listnomvar,legends)
-  
+
   buble <<- res2$buble
   legends <<- res2$legends
   z <<- res2$z
   legmap <<- res2$legmap
-  
+
   carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,label=label,
   symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-  cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])  
+  cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
 
 }
 
@@ -240,7 +265,7 @@ fbubble<-function()
 ####################################################
 
 graphfunc <- function()
-{ 
+{
    if ((length(listvar) != 0) && (length(listnomvar) != 0))
     {
         dev.off(4)
@@ -248,47 +273,47 @@ graphfunc <- function()
         varChoice1 <<- choix$varChoice1
         varChoice2 <<- choix$varChoice2
         graphChoice <<- choix$graphChoice
-           
+
         if ((graphChoice != "") && (varChoice1 != ""))
         {
-          if (((graphChoice == "Histogram")&&(!is.numeric(listvar[,which(listnomvar == varChoice1)])))||((graphChoice == "Scatterplot")&&((!is.numeric(listvar[,which(listnomvar == varChoice1)]))||(!is.numeric(listvar[,which(listnomvar == varChoice2)]))))) 
+          if (((graphChoice == "Histogram")&&(!is.numeric(listvar[,which(listnomvar == varChoice1)])))||((graphChoice == "Scatterplot")&&((!is.numeric(listvar[,which(listnomvar == varChoice1)]))||(!is.numeric(listvar[,which(listnomvar == varChoice2)])))))
            {
             tkmessageBox(message="Variables choosed are not in a good format",icon="warning",type="ok")
            }
           else
            {
             res1<-choix.couleur(graphChoice,listvar,listnomvar,varChoice1,legends,col,pch)
-            
+
             method <<- res1$method
             col2 <<- res1$col2
             col3 <<- res1$col3
             pch2 <<- res1$pch2
             legends <<- res1$legends
             labmod <<- res1$labmod
-         
+
          if((length(pch2)==1)) pch2<<-pch[3]
-                     
+
             dev.new()
             graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-            obs=obs, num=4, graph=graphChoice, couleurs=col3,symbol=pch, labvar=c(varChoice1,varChoice2))    
-            
+            obs=obs, num=4, graph=graphChoice, couleurs=col3,symbol=pch, labvar=c(varChoice1,varChoice2))
+
       carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,label=label,
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-      cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])  
+      cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
            }
-       }   
+       }
    }
    else
    {
     tkmessageBox(message="Variables (listvar) and their names (listnomvar) must have been given",icon="warning",type="ok")
-   }  
+   }
 }
 
 ####################################################
 # Choisir numbre of grids
 ####################################################
 
-choixgrid <- function() 
+choixgrid <- function()
 {
 tt1<-tktoplevel()
 Name1 <- tclVar("10")
@@ -301,11 +326,11 @@ tkgrid(tklabel(tt1,text="Enter number of columns"),entry.Name2)
 
 
 OnOK <- function()
-{ 
+{
 	nbrow <<- tclvalue(Name1)
 	nbcol <<- tclvalue(Name2)
 	tkdestroy(tt1)
-       
+
    if (is.na(as.numeric(nbrow ))||(as.numeric(nbrow)<2)||(as.numeric(nbcol)<2))
      {
       tkmessageBox(message="Sorry, but you have to choose a number upper than 2",icon="warning",type="ok");
@@ -341,11 +366,11 @@ nvlong <- nvlecoord[,1]
 nvlat <- nvlecoord[,2]
 var<-var[obs]
 
-x.lim=c(min(coords[,1],na.rm=TRUE),max(coords[,1],na.rm=TRUE)) 
+x.lim=c(min(coords[,1],na.rm=TRUE),max(coords[,1],na.rm=TRUE))
 y.lim=c(min(coords[,2],na.rm=TRUE),max(coords[,2],na.rm=TRUE))
- 
+
 asp=1/cos((mean(y.lim) * pi)/180)
-if(asp>1.40||asp<0.6) asp=1 
+if(asp>1.40||asp<0.6) asp=1
 
 # création de la fenêtre graphique
 # x11(width=7, height=7);
@@ -380,15 +405,15 @@ millig <- NULL
    yind <- c(yind,min(nvlat)+h2*j)
    millig <- c(millig,(yind[j]+yind[j+1])/2)
   }
-  
+
 yind <- c(yind,max(nvlat))
 millig <- c(millig,(yind[nbrow]+yind[nbrow+1])/2)
 
 ###########################################
-# calcul de la moyenne et de la médiane 
+# calcul de la moyenne et de la médiane
 ###########################################
 
-# pour chaque colonne 
+# pour chaque colonne
 medcol <- NULL
 moycol <- NULL
 colvide <- rep(FALSE,nbcol)
@@ -424,7 +449,7 @@ ifelse(limmax[nbrow]>0,limmax[nbrow]<-2*limmax[nbrow],limmax[nbrow]<-limmax[nbro
 
 for (i in 1:nbrow)
 {
-  ens <- var[which((nvlat >= yind[i]) & (nvlat < limmax[i]))]  
+  ens <- var[which((nvlat >= yind[i]) & (nvlat < limmax[i]))]
     # si la ligne est vide
     if (length(ens) != 0)
     {
@@ -440,7 +465,7 @@ for (i in 1:nbrow)
 }
 
 ###########################################
-# dessin de la carte 
+# dessin de la carte
 ###########################################
 
 par(pty="s",mar=c(2,2,1,1))
@@ -459,13 +484,13 @@ if (nocart)
 #    limy <- c(min(nvcarte[,2]), max(nvcarte[,2]));
 
     plot(range(nvlong),range(nvlat),"n", asp=asp)
-    
+
     segments(abs1,ord1,abs2,ord2)
-    points(nvlong,nvlat,col=col[3],pch=pch[3], cex=cex)
+    points(nvlong,nvlat,col=col2,pch=pch[1], cex=cex)
 }
 else
 {
-    plot(nvlong,nvlat,col=col[3],pch=pch[3],asp=asp,cex=cex,xlim=range(nvlong),ylim=range(nvlat))
+    plot(nvlong,nvlat,col=col2,pch=pch[1],asp=asp,cex=cex,xlim=range(nvlong),ylim=range(nvlat))
 }
 
 # dessin de la grille
@@ -483,7 +508,7 @@ for (i in 1:(nbrow+1))
 
 
 ###########################################
-# dessin des graphiques 
+# dessin des graphiques
 ###########################################
 
 # lignes
@@ -492,19 +517,19 @@ par(mar=c(2,0,1,1))
 if (!nuage)
 {
  plot(var,nvlat,"n",xlim=c(min(moylig[!ligvide],medlig[!ligvide]),max(moylig[!ligvide],medlig[!ligvide])),
-  ylim=range(nvlat),yaxt="n")  
+  ylim=range(nvlat),yaxt="n")
 }
 else
 {
- plot(var,nvlat,col=col[4],pch=pch[4],cex=cex,xlim=range(var),ylim=range(nvlat),yaxt="n")
+ plot(var,nvlat,col=col[1],pch=pch[1],cex=cex,xlim=range(var),ylim=range(nvlat),yaxt="n")
 }
 
 
-    points(moylig[!ligvide],millig[!ligvide],col=col[1],pch=pch[1])
-    points(moylig[!ligvide],millig[!ligvide],col=col[1],pch=pch[1],type=ligne,lty=lty[1])
-    
-    points(medlig[!ligvide],millig[!ligvide],col=col[2],pch=pch[2])
-    points(medlig[!ligvide],millig[!ligvide],col=col[2],pch=pch[2],type=ligne,lty=lty[2])
+    points(moylig[!ligvide],millig[!ligvide],col=col[2],pch=pch[2])
+    points(moylig[!ligvide],millig[!ligvide],col=col[2],pch=pch[2],type=ligne,lty=lty[1])
+
+    points(medlig[!ligvide],millig[!ligvide],col=col[3],pch=pch[3])
+    points(medlig[!ligvide],millig[!ligvide],col=col[3],pch=pch[3],type=ligne,lty=lty[2])
 
 # colonnes
 par(mar=c(0,2,1,1))
@@ -512,21 +537,21 @@ par(mar=c(0,2,1,1))
 if (!nuage)
 {
  plot(nvlong,var,"n",ylim=c(min(moycol[!colvide],medcol[!colvide]),max(moycol[!colvide],medlig[!colvide])),
-  xlim=range(nvlong),xaxt="n",yaxt="n")  
- axis(side=4) 
+  xlim=range(nvlong),xaxt="n",yaxt="n")
+ axis(side=4)
 }
 else
 {
- plot(nvlong,var,col=col[4],pch=pch[4],cex=cex,ylim=range(var),xlim=range(nvlong),xaxt="n",yaxt="n")
+ plot(nvlong,var,col=col[1],pch=pch[1],cex=cex,ylim=range(var),xlim=range(nvlong),xaxt="n",yaxt="n")
  axis(side=4)
 }
 
- points(milcol[!colvide],moycol[!colvide],col=col[1],pch=pch[1])
- points(milcol[!colvide],moycol[!colvide],col=col[1],pch=pch[1],type=ligne,lty=lty[1])
- 
- points(milcol[!colvide],medcol[!colvide],col=col[2],pch=pch[2])
- points(milcol[!colvide],medcol[!colvide],col=col[2],pch=pch[2],type=ligne,lty=lty[2])
- 
+ points(milcol[!colvide],moycol[!colvide],col=col[2],pch=pch[2])
+ points(milcol[!colvide],moycol[!colvide],col=col[2],pch=pch[2],type=ligne,lty=lty[1])
+
+ points(milcol[!colvide],medcol[!colvide],col=col[3],pch=pch[3])
+ points(milcol[!colvide],medcol[!colvide],col=col[3],pch=pch[3],type=ligne,lty=lty[2])
+
 ###########################################
 # précision des indications
 ###########################################
@@ -547,7 +572,7 @@ x<-nvlecoord.arrox[,1]
 y<-nvlecoord.arrox[,2]
 
 # drawing polygons
-for (i in 1:15) 
+for (i in 1:15)
 {
 x1 <- c(x[i],x[i+1],loc[1])
 y1 <- c(y[i],y[i+1],loc[2])
@@ -569,7 +594,7 @@ text(new.let,b,cex=cex.lab)
 
 # légende
 
-legend(-1.75,1.75, c("Mean","Median"), col=col, pch=pch,lty=lty, cex=cex.lab)
+legend(-1.75,1.75, c("Mean","Median"), col=col[c(2,3)], pch=pch[c(2,3)],lty=lty, cex=cex.lab)
 
 # nom de la variable étudiée
 if (labvar != "")
@@ -599,24 +624,24 @@ if (labvar != "")
 # rafraichissement des graphiques
 ####################################################
 
-SGfunc<-function() 
+SGfunc<-function()
 {
  obs<<-vector(mode = "logical", length = length(long))
  obs[1:length(obs)]<<-TRUE
-  
+
  # graphiques
  graphique.drift()
- 
+
  carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,label=label,
  symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
- cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])  
+ cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
 
  if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
   {
    graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
    obs=obs, num=4, graph=graphChoice, couleurs=col3,symbol=pch, labvar=c(varChoice1,varChoice2))
   }
-          
+
 }
 
 ####################################################
@@ -625,7 +650,7 @@ SGfunc<-function()
 
 graphique.drift()
 carte(long=long, lat=lat, obs=obs,label=label,symbol=pch[3],carte=carte,nocart=nocart,
-cex.lab=cex.lab,method="") 
+cex.lab=cex.lab,method="",axis=axes)
 
 ####################################################
 # création de la boite de dialogue
@@ -677,7 +702,7 @@ labelText6 <- tclVar("Draw spatial contours")
 label6 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText6))
 tkconfigure(label6, textvariable=labelText6)
 tkgrid(label6,columnspan=2)
-    
+
 nocou1.but <- tkbutton(tt, text="  On/Off  ", command=cartfunc);
 tkgrid(nocou1.but,columnspan=2)
 tkgrid(tklabel(tt,text="    "))
@@ -720,7 +745,6 @@ tkgrid(tklabel(tt,text="    "))
 ####################################################
 
 tkwait.variable(fin)
-}
-
+ }
 }
 

@@ -1,9 +1,9 @@
 \name{normw}
 \alias{normw}
 
-\title{Normalize a spatial weight matrix}
+\title{Row-normalize a spatial weight matrix}
 \description{
-The function \code{normw()} normalizes a spatial weight matrix}
+The function \code{normw()} row-normalizes a spatial weight matrix}
 
 \usage{
 normw(w)
@@ -20,7 +20,7 @@ normw(w)
 A matrix of size \eqn{n \times n}{n x n}
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2009), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} }
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} }
 
 \author{Aragon Y., Thomas-Agnan C., Ruiz-Gazen A., Robidou L.}
 
@@ -29,14 +29,16 @@ A matrix of size \eqn{n \times n}{n x n}
 \seealso{\code{\link{neighbourmap}}, \code{\link{moranplotmap}},\code{\link{makeneighborsw}}}
 
 \examples{
+###
 # data auckland
 data(auckland)
 x.ext <- auckland$Easting[1:10]
 y.ext <- auckland$Northing[1:10] 
-#plot(x.ext,y.ext,type='p')
-#text(x.ext,y.ext,as.character(1:10))
 
-# matrix based on 5 nearest neighbors
-W<-makeneighborsw(x.ext,y.ext,method="neighbor",m=3)
-W2<-normw(W)
+# matrix based on 3 nearest neighbors
+W1<-makeneighborsw(cbind(x.ext,y.ext),method="both",m=3,d=20)
+W2<-normw(W1)
+
+apply(W1[1:10,],1,sum)
+apply(W2[1:10,],1,sum)
 } 

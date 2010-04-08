@@ -44,7 +44,7 @@ In option, possibility to choose the classification method.
 \value{
 A vector of boolean of size n (TRUE if the site was in the last selection) and a vector of size n whith the number of cluster for each site
 }
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2009), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
 
 Murtagh, F (1985). \emph{Multidimensional Clustering Algorithms}. \cr \cr
 

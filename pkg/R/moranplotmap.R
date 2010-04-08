@@ -1,8 +1,43 @@
 `moranplotmap` <-
-function (long, lat, var, W, flower=FALSE, locmoran=FALSE, listvar=NULL, listnomvar=NULL,carte=NULL,
-criteria=NULL, label="", cex.lab=1, col="blue",pch=16, xlab=expression((X-bar(X))),ylab=expression(W(X-bar(X))),
-axes=FALSE, lablong="", lablat="",names.arg=c("H.-H.","L.-H.","L.-L.","H.-L."))
+function(sp.obj, name.var, listw.obj, flower=FALSE, locmoran=FALSE, names.arg=c("H.-H.","L.-H.","L.-L.","H.-L."),
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
+xlab=expression((X-bar(X))), ylab=expression(W(X-bar(X))), axes=FALSE, lablong="", lablat="")
 {
+# Verification of the Spatial Object sp.obj
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(name.var) & is.na(match(as.character(name.var),names(sp.obj)))) stop("name.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+var<-sp.obj@data[,name.var]
+
+# verify the type of the main variable
+if(!(is.integer(var) || is.double(var))) stop("the variable name.var should be a numeric variable")
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+# Code which was necessary in the previous version
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
+
+# We create a spatial weight matrix by using a matrix object
+  n <- nrow(sp.obj)
+  W<-matrix(0,n,n)
+  W.sn<-listw2sn(listw.obj)
+  W[as.matrix(W.sn[,1:2])]<-W.sn[,3]
+
+# Is W normalized ?
+  is.norm<-all(apply(W,1,sum)==rep(1,n))
+
 
 #initialisation
   obs<-vector(mode = "logical", length = length(long))
@@ -49,12 +84,11 @@ choix.col<-FALSE
 
 graph <- "Moran"
 col2 <- rep(col[1],4)
+col3 <- rep("blue",4)
 pch2 <- rep(pch[1],4)
 
 
-#Normalize w
-#W<-normw(W)
-ifelse(apply(W,1,sum)==rep(1,length(long)),is.norm<-TRUE,is.norm<-FALSE)
+
 # calcul du I de Moran
 var <- var - mean(var)
 wvar <- W%*%var
@@ -102,7 +136,7 @@ pointfunc<-function()
             {
               quit<-TRUE
               carte(long=long, lat=lat, obs=obs,  carte=carte,nocart=nocart, classe=obsq,
-              couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+              couleurs=col3, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
               nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
               label=label, cex.lab=cex.lab, labmod=names.arg)   
               next
@@ -116,9 +150,9 @@ pointfunc<-function()
             if(is.null(loc)) 
             {
               quit<-TRUE
-              graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2, 
+              graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2,
               symbol=pch2, locmoran=locmoran,obsq=obsq, cex.lab=cex.lab,buble=buble2, cbuble=z2, 
-              legmap=legmap2, legends=legends2 )       
+              legmap=legmap2, legends=legends2, bin=is.norm)
               next
             }
             obs<<-selectmap(var1=var,var2=wvar,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point")
@@ -126,13 +160,13 @@ pointfunc<-function()
         
         #graphiques
         carte(long=long, lat=lat, obs=obs,  carte=carte,nocart=nocart, classe=obsq,
-        couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+        couleurs=col3, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
         nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
         label=label, cex.lab=cex.lab, labmod=names.arg)      
 
-        graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2, 
+        graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2,
         symbol=pch2, locmoran=locmoran,obsq=obsq, cex.lab=cex.lab,buble=buble2, cbuble=z2, 
-        legmap=legmap2, legends=legends2 ) 
+        legmap=legmap2, legends=legends2, bin=is.norm)
       
       if(maptest) 
       { dev.set(2)
@@ -158,7 +192,7 @@ pointfunc<-function()
 
 pt1func <- function()
 {
-  ifelse(flower,method <<- "Neighbourplot1", method <<- "")
+  ifelse(flower,method <<- "Neighbourplot1", method <<- "Quadrant")
   graph <<- "Moran" 
   maptest <<- TRUE  
   pointfunc()
@@ -170,7 +204,7 @@ pt1func <- function()
 
 pt2func <- function()
 {    
-  ifelse(flower,method <<- "Neighbourplot1", method <<- "")
+  ifelse(flower,method <<- "Neighbourplot1", method <<- "Quadrant")
   graph <<- "Moran" 
   maptest <<- FALSE  
   pointfunc()
@@ -240,13 +274,13 @@ polyfunc<-function()
 
     #graphiques
         carte(long=long, lat=lat, obs=obs,  carte=carte,nocart=nocart, classe=obsq,
-        couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+        couleurs=col3, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
         nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
         label=label, cex.lab=cex.lab, labmod=names.arg)        
 
-        graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2, 
+        graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2,
         symbol=pch2, locmoran=locmoran,obsq=obsq, cex.lab=cex.lab,buble=buble2, cbuble=z2, 
-        legmap=legmap2, legends=legends2 )   
+        legmap=legmap2, legends=legends2, bin=is.norm)
         
      if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
@@ -309,12 +343,12 @@ quadfunc <- function()
     obs[which(obsq == num)] <<- !obs[which(obsq == num)]
 
     carte(long=long, lat=lat, obs=obs, classe=obsq,  carte=carte,nocart=nocart, labmod=names.arg,
-    couleurs=col2,symbol=pch2, method="Quadrant",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,
+    couleurs=col3,symbol=pch2, method="Quadrant",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,
     legends=legends,axis=axes,lablong=lablong, lablat=lablat, label=label, cex.lab=cex.lab) 
 
-    graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2, 
+    graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2,
     symbol=pch2, locmoran=locmoran,obsq=obsq, cex.lab=cex.lab,buble=buble2, cbuble=z2, 
-    legmap=legmap2, legends=legends2 )   
+    legmap=legmap2, legends=legends2, bin=is.norm)
     
     if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
      {
@@ -367,26 +401,34 @@ quad4func <- function()
 {
     if(!choix.col)
     {choix.col<<-TRUE
+     method <<- "Quadrant"
      res1<-choix.couleur("Moran",col=col[1],pch=pch[1],legends=legends)     
-     ifelse(length(res1$col2)==4,col2 <<- res1$col2,col2 <<- rep(col[1],4))
+     if(length(res1$col2)==4)
+      {col2 <<- res1$col2
+       col3 <<- col2 }
+      else
+      {col2 <<- rep(col[1],4)
+       col3 <<- rep("blue",4) }
+      
      ifelse(length(res1$pch2)==4,pch2 <<- res1$pch2,pch2 <<- rep(pch[1],4))
      legends <<- res1$legends
      }
     else
     {choix.col<<-FALSE
      col2 <<- rep(col[1],4)
+     col3 <<- rep("blue",4)
      pch2 <<- rep(pch[1],4)
      legends <<- list(legends[[1]],FALSE,legends[[3]],"")
     }
-     
+
 carte(long=long, lat=lat, obs=obs, carte=carte,nocart=nocart, classe=obsq,
-couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+couleurs=col3, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
 nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
 label=label, cex.lab=cex.lab,labmod=names.arg)     
 
-graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2, 
+graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2,
 symbol=pch2, locmoran=locmoran,obsq=obsq, cex.lab=cex.lab,buble=buble2, cbuble=z2, 
-legmap=legmap2, legends=legends2 )   
+legmap=legmap2, legends=legends2, bin=is.norm)
         
   }
 
@@ -429,7 +471,7 @@ cartfunc <- function()
    {
     ifelse(!nocart,nocart<<-TRUE,nocart<<-FALSE)
     carte(long=long, lat=lat, obs=obs, carte=carte,nocart=nocart, classe=obsq,
-    couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+    couleurs=col3, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
     nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
     label=label, cex.lab=cex.lab,labmod=names.arg)        
    }
@@ -450,13 +492,13 @@ SGfunc<-function()
     obs<<-vector(mode = "logical", length = length(long));
 
 carte(long=long, lat=lat, obs=obs, carte=carte,nocart=nocart, classe=obsq,
-couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+couleurs=col3, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
 nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
 label=label, cex.lab=cex.lab,labmod=names.arg)     
 
-graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2, 
+graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2,
 symbol=pch2, locmoran=locmoran,obsq=obsq, cex.lab=cex.lab,buble=buble2, cbuble=z2, 
-legmap=legmap2, legends=legends2 )   
+legmap=legmap2, legends=legends2, bin=is.norm)
     
    if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
@@ -485,7 +527,7 @@ fnointer<-function()
  {
  ifelse(!nointer,nointer<<-TRUE,nointer<<-FALSE)
  carte(long=long, lat=lat, obs=obs, carte=carte,nocart=nocart, classe=obsq,
- couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+ couleurs=col3, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
  nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
  label=label, cex.lab=cex.lab,labmod=names.arg)       
  }
@@ -511,7 +553,7 @@ fbubble<-function()
   legmap <<- res2$legmap
   
 carte(long=long, lat=lat, obs=obs, carte=carte,nocart=nocart, classe=obsq,
-couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+couleurs=col3, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
 nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
 label=label, cex.lab=cex.lab,labmod=names.arg)    
  
@@ -531,9 +573,9 @@ lisa<-function()
   z2 <<- res3$z
   legmap2 <<- res3$legmap
   
-graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2, 
+graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2,
 symbol=pch2, locmoran=locmoran,obsq=obsq, cex.lab=cex.lab,buble=buble2, cbuble=z2, 
-legmap=legmap2, legends=legends2 )   
+legmap=legmap2, legends=legends2, bin=is.norm)
  
 }
 
@@ -581,12 +623,12 @@ permutation<-function()
 }
 
 carte(long=long, lat=lat, obs=obs, carte=carte,nocart=nocart, classe=classe,
-couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+couleurs=col3, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
 nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
 label=label, cex.lab=cex.lab)     
 
-graphique(var1=var, var2=wvar, obs=obs, num=3, graph="Moran", labvar=labvar, couleurs=col2, symbol=pch2, 
-locmoran=locmoran,obsq=obsq,buble=buble2, cbuble=z2, legmap=legmap2, legends=legends2 )
+graphique(var1=var, var2=wvar, obs=obs, num=3, graph="Moran", labvar=labvar, couleurs=col2, symbol=pch2,
+locmoran=locmoran,obsq=obsq,buble=buble2, cbuble=z2, legmap=legmap2, legends=legends2, bin=is.norm)
         
 
 ####################################################

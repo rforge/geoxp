@@ -15,7 +15,7 @@ col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="")
   \item{sp.obj}{object of class extending Spatial-class}
   \item{name.var}{character; attribute name or column number in attribute table}
   \item{type}{Character string indicating type of histogram to be drawn. "percent" and "count" give relative frequency and frequency histograms.}
-  \item{names.arg}{names of factors of \code{name.var}}
+  \item{names.arg}{a vector of level names}
   \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
   \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}

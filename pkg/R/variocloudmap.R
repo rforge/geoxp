@@ -1,8 +1,35 @@
-`variocloudmap` <-
-function (long, lat, var, bin=NULL,quantiles=NULL,listvar=NULL, listnomvar=NULL,criteria=NULL,
-carte = NULL, label = "", cex.lab=1, pch = 16, col="grey", xlab = "", ylab="", axes=FALSE, 
-lablong = "", lablat = "",xlim=NULL,ylim=NULL) 
+`variocloudmap` <- function(sp.obj, name.var, bin=NULL, quantiles=NULL,
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8,
+pch=16, col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="",
+xlim=NULL, ylim=NULL)
 {
+# Verification of the Spatial Object sp.obj
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(name.var) & is.na(match(as.character(name.var),names(sp.obj)))) stop("name.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+var<-sp.obj@data[,name.var]
+
+# verify the type of the main variable
+if(!(is.integer(var) || is.double(var))) stop("the variable name.var should be a numeric variable")
+
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+# Code which was necessary in the previous version
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
+
 # initialisation
   nointer<-FALSE
   nocart<-FALSE
@@ -20,6 +47,8 @@ lablong = "", lablat = "",xlim=NULL,ylim=NULL)
   obs <- matrix(FALSE, nrow = length(long), ncol = length(long))
   graphics.off()
 
+  directionnel<-FALSE
+  
 # Ouverture des fenêtres graphiques
   dev.new()
   dev.new()
@@ -289,22 +318,26 @@ fbubble<-function()
 
 choixangle <- function() 
 {
- SGfunc()
- tt1<-tktoplevel()
- Name <- tclVar("0.5")
- entry.Name <-tkentry(tt1,width="3",textvariable=Name)
- tkgrid(tklabel(tt1,text="Please enter a decimal x between 0 and 1 (angle=x.Pi)"),entry.Name)
 
- OnOK <- function()
- { 
-	angle <<- tclvalue(Name)
-	tkdestroy(tt1)
+ directionnel<-!directionnel
+ 
+ if(directionnel)
+  {SGfunc()
+  tt1<-tktoplevel()
+  Name <- tclVar("0.5")
+  entry.Name <-tkentry(tt1,width="3",textvariable=Name)
+  tkgrid(tklabel(tt1,text="Please enter a decimal x between 0 and 1 (angle=x.Pi)"),entry.Name)
+
+  OnOK <- function()
+   {
+  	angle <<- tclvalue(Name)
+   	tkdestroy(tt1)
        
-   if (is.na(as.numeric(angle))||(as.numeric(angle)>1)||(as.numeric(angle)<0))
+    if (is.na(as.numeric(angle))||(as.numeric(angle)>1)||(as.numeric(angle)<0))
     {
      tkmessageBox(message="Sorry, but you have to choose a decimal number between 0 and 1 (exemple : 0.5)",icon="warning",type="ok");
     }
-   else
+    else
     {msg <- paste("You choose",angle,"pi")
 	   tkmessageBox(message=msg)
     
@@ -338,32 +371,26 @@ choixangle <- function()
    }
 }
 
-
-
 OK.but <-tkbutton(tt1,text="   OK   ",command=OnOK)
 #tkbind(entry.Name, "<Return>",OnOK)
 tkgrid(OK.but)
 tkfocus(tt1)
-
 }
-
-####################################################
-# Return to Isotropy Variogram Cloud
-####################################################
-
-
-OnOK2 <- function()
+else
 {
      SGfunc()
-     
+
      dist <<- sqrt((long1 - long2)^2 + (lat1 - lat2)^2)
      dif <<-  (v1 - v2)^2/2
      dif2 <<-  (abs(v1 - v2))^(1/2)
 
-     graphique(var1 = dist, var2 = dif, var3=dif2, obs = obs,opt1=opt1,opt2=opt2, num = 3, 
-     graph = "Variocloud", labvar = labvar, symbol = pch, couleurs=col, quantiles = quantiles, 
+     graphique(var1 = dist, var2 = dif, var3=dif2, obs = obs,opt1=opt1,opt2=opt2, num = 3,
+     graph = "Variocloud", labvar = labvar, symbol = pch, couleurs=col, quantiles = quantiles,
      alpha1 = alpha, bin=bin, xlim=xlim, ylim=ylim)
 }
+
+}
+
 
 ####################################################
 # Représentation Graphique
@@ -426,9 +453,10 @@ tkconfigure(label73, textvariable=labelText73)
 tkgrid(label73,columnspan=2)
 
 
-vari3.but <- tkbutton(tt, text="     On     ", command=choixangle);
-finish.but<-tkbutton(tt,text="     Off     ",command=OnOK2)
-tkgrid(vari3.but,finish.but)
+vari3.but <- tkbutton(tt, text="  On/Off  ", command=choixangle);
+#finish.but<-tkbutton(tt,text="     Off     ",command=OnOK2)
+tkgrid(vari3.but,columnspan=2)
+#tkgrid(vari3.but,finish.but)
 tkgrid(tklabel(tt,text="    "))
 
 

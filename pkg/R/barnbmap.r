@@ -19,12 +19,8 @@ else
 {listvar<-NULL
 listnomvar<-NULL
 }
+
 # Code which was necessary in the previous version
-
- # var=as.matrix(var)
- # lat=as.matrix(lat)
- # long=as.matrix(long)
-
 object<-nb.obj
 
  if(is.null(carte) & substr(class.obj,1,15)=="SpatialPolygons") carte<-spdf2list(sp.obj)$poly

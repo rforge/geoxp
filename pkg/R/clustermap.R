@@ -22,11 +22,6 @@ listvar<-sp.obj@data
 listnomvar<-names.attr
 
 # Code which was necessary in the previous version
-
- # var=as.matrix(var)
- # lat=as.matrix(lat)
- # long=as.matrix(long)
-
  if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
 
  # for colors in map and new grahics
