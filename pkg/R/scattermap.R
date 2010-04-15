@@ -10,6 +10,22 @@ if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.
 if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
 if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
 
+
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())) # new environment
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
+
 # we propose to refind the same arguments used in first version of GeoXp
 long<-coordinates(sp.obj)[,1]
 lat<-coordinates(sp.obj)[,2]
@@ -84,6 +100,7 @@ if (lin.reg || length(quantiles)!=0)
 
 }
 
+names.slide=c("Reg. Smooth. Spline Parameter")
 
 ####################################################
 # sélection d'un point
@@ -95,11 +112,13 @@ pointfunc<-function()
 
      if(maptt) 
       { dev.set(2)
-        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+        title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
       }
      else
      { dev.set(3)
-       title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+       title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+       title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
      }
      
     while(!quit)
@@ -144,11 +163,13 @@ pointfunc<-function()
   
      if(maptt) 
       { dev.set(2)
-        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+        title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
       }
      else
      { dev.set(3)
-       title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+       title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+       title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
      }
      
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
@@ -191,11 +212,13 @@ polyfunc<-function()
 
      if(maptt) 
       { dev.set(2)
-        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+        title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
       }
      else
      { dev.set(3)
-       title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+       title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+       title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
      }
      
     while(!quit)
@@ -371,12 +394,22 @@ SGfunc<-function()
 # quitter l'application
 ####################################################
 
-quitfunc<-function() 
+quitfunc<-function()
 {
-  tclvalue(fin)<<-TRUE
-  tkdestroy(tt)
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+   # assign("obs", row.names(sp.obj)[obs], envir = .GlobalEnv)
 }
 
+quitfunc2<-function()
+{
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+    print("Results have been saved in last.select object")
+    assign("last.select", which(obs), envir = .GlobalEnv)
+}
 
 ####################################################
 # modification du alpha de l'estimateur
@@ -384,7 +417,7 @@ quitfunc<-function()
   
 refresh.code<-function(...)
 {
-  alpha<<-slider1(no=1) 
+  alpha<<-slider1(names.slide=names.slide,no=1)
   graphique(var1=var1, var2=var2, obs=obs, num=3, graph="Scatterplot", labvar=labvar, symbol=pch, couleurs=col,
   opt1=lin.reg, quantiles=quantiles, alpha1=alpha)
   }
@@ -477,7 +510,7 @@ tkgrid(tklabel(tt,text="    "))
 
 if (length(quantiles)!=0)
 {
-    slider1(tt,refresh.code,c("Reg. Smooth. Spline Parameter"),c(borne1),c(borne2),c((borne2-borne1)/300),c(alpha))
+    slider1(tt,refresh.code,names.slide=names.slide,borne1,borne2,(borne2-borne1)/300,alpha)
   }
 
 
@@ -531,21 +564,19 @@ tkgrid(autre.but,columnspan=2)
 tkgrid(tklabel(tt,text="    "))
 
 
-labelText5 <- tclVar("Exit")
+labelText5 <- tclVar("  Exit  ")
 label5 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText5))
 tkconfigure(label5, textvariable=labelText5)
 tkgrid(label5,columnspan=2)
 
-quit.but <- tkbutton(tt, text="     OK     ", command=quitfunc);
-tkgrid(quit.but,columnspan=2)
+
+quit.but <- tkbutton(tt, text="Save results", command=quitfunc2);
+quit.but2 <- tkbutton(tt, text="Don't save results", command=quitfunc);
+tkgrid(quit.but2,quit.but)
 tkgrid(tklabel(tt,text="    "))
-
-tkwait.variable(fin)
 }
-
-
 ####################################################
+return(invisible())
 
-return(obs)
-  }
+}
 

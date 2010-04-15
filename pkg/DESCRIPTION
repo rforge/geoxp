@@ -3,7 +3,7 @@ Type: Package
 Title: Interactive exploratory spatial data analysis
 Encoding: latin1
 Version: 1.5.0
-Date: 2010-04-10
+Date: 2010-04-15
 Author: Yves Aragon, Thibault Laurent, Lauriane Robidou, Anne
         Ruiz-Gazen, Christine Thomas-Agnan
 Maintainer: Thibault Laurent <thibault.laurent@univ-tlse1.fr>
@@ -25,5 +25,5 @@ Description: GeoXp is a tool for researchers in spatial statistics,
         to make the most of the multidimensionality of the data, GeoXp
         includes some dimension reduction techniques such as PCA.
 License: GPL (>= 2)
-URL: \url{ http://w3.univ-tlse1.fr/GREMAQ/Statistique/SP_etheme3.pdf }
+URL: \url{http://w3.univ-tlse1.fr/GREMAQ/Statistique/SP_etheme3.pdf}
 

@@ -10,6 +10,21 @@ if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.
 if(!is.numeric(name.var) & is.na(match(as.character(name.var),names(sp.obj)))) stop("name.var is not included in the data.frame of sp.obj")
 if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
 
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())) # new environment
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
+
 # we propose to refind the same arguments used in first version of GeoXp
 long<-coordinates(sp.obj)[,1]
 lat<-coordinates(sp.obj)[,2]
@@ -26,7 +41,7 @@ listnomvar<-names.attr
 # Code which was necessary in the previous version
  if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
 
- # for identifyng the selected sites
+# for identifying the selected sites
 ifelse(identify, label<-row.names(listvar),label<-"")
 
 ####################################################
@@ -62,7 +77,7 @@ graphics.off()
 dev.new()
 dev.new()
 
-fin <- tclVar(FALSE)
+#fin <- tclVar(FALSE)
 
 
 ####################################################
@@ -73,7 +88,8 @@ pointfunc<-function()
  {
     quit <- FALSE
     dev.set(2)
-    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
      {
@@ -85,9 +101,9 @@ pointfunc<-function()
          if(is.null(loc))
            {
             quit<-TRUE
-      carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
-      symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-      lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
+           carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
+           symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
+           lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
             next
            }
 
@@ -100,7 +116,8 @@ pointfunc<-function()
       carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
       lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
-      title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+      title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+      title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
@@ -122,9 +139,12 @@ polyfunc<-function()
     polyY <- NULL
     quit <- FALSE
 
+    dev.set(2)
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
     while(!quit)
     {
-        dev.set(2)
         loc<-locator(1)
         if(is.null(loc))
         {
@@ -135,8 +155,6 @@ polyfunc<-function()
         polyX <- c(polyX, loc[1])
         polyY <- c(polyY, loc[2])
         lines(polyX,polyY)
-        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-
     }
 
     polyX <- c(polyX, polyX[1])
@@ -151,12 +169,11 @@ polyfunc<-function()
       obs <<- selectmap(var1=long, var2=lat, obs=obs, Xpoly=polyX, Ypoly=polyY, method="poly")
 
       # graphiques
-
-      graphique(var1=var, obs=obs, num=3, graph="Histogram", nbcol=nbcol,bin=type, labvar=labvar, symbol=pch, couleurs=col)
-
       carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
       lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
+
+      graphique(var1=var, obs=obs, num=3, graph="Histogram", nbcol=nbcol,bin=type, labvar=labvar, symbol=pch, couleurs=col)
 
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
@@ -176,7 +193,8 @@ barfunc<-function()
     quit <- FALSE
 
     dev.set(3)
-    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
 
     while(!quit)
@@ -195,7 +213,8 @@ barfunc<-function()
       # graphiques
 
       graphique(var1=var, obs=obs, num=3, graph="Histogram", nbcol=nbcol,bin=type, labvar=labvar, symbol=pch, couleurs=col)
-      title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+      title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+      title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
       carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
@@ -306,8 +325,19 @@ SGfunc<-function()
 
 quitfunc<-function()
 {
-    tclvalue(fin)<<-TRUE
-    tkdestroy(tt);
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+   # assign("obs", row.names(sp.obj)[obs], envir = .GlobalEnv)
+}
+
+quitfunc2<-function()
+{
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+    print("Results have been saved in last.select object")
+    assign("last.select", which(obs), envir = .GlobalEnv)
 }
 
 ####################################################
@@ -389,7 +419,6 @@ tkgrid(barre.but,columnspan=2)
 tkgrid(tklabel(tt,text="    "))
 
 
-
 label1 <- tclVar("To stop selection, leave the cursor on the active graph, click on the right button of the mouse and stop")
 label11 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(label1))
 tkconfigure(label11, textvariable=label1)
@@ -415,7 +444,6 @@ tkgrid(label6,columnspan=2)
 nocou1.but <- tkbutton(tt, text="  On/Off  ", command=cartfunc);
 tkgrid(nocou1.but,columnspan=2)
 tkgrid(tklabel(tt,text="    "))
-
 
 
 labelText9 <- tclVar("Bubbles")
@@ -451,13 +479,13 @@ label5 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelTe
 tkconfigure(label5, textvariable=labelText5)
 tkgrid(label5,columnspan=2)
 
-quit.but <- tkbutton(tt, text="     OK     ", command=quitfunc);
-tkgrid(quit.but,columnspan=2)
+
+quit.but <- tkbutton(tt, text="Save results", command=quitfunc2);
+quit.but2 <- tkbutton(tt, text="Don't save results", command=quitfunc);
+tkgrid(quit.but2,quit.but)
 tkgrid(tklabel(tt,text="    "))
-tkwait.variable(fin)
 }
 ####################################################
-
-return(obs)
+return(invisible())
 }
 

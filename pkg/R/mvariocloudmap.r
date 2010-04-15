@@ -10,6 +10,21 @@ if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.
 if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
 if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
 
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())) # new environment
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
+
 # we propose to refind the same arguments used in first version of GeoXp
 long<-coordinates(sp.obj)[,1]
 lat<-coordinates(sp.obj)[,2]
@@ -41,6 +56,8 @@ ifelse(identify, label<-row.names(listvar),label<-"")
   obs <- matrix(FALSE, nrow = length(long), ncol = length(long))
   obs2 <- matrix(FALSE, nrow = length(long), ncol = length(long))
   graf<-"Neighbourplot1"
+  names.slide=c("Quantile smooth spline parameter")
+  
   graphics.off()
 
    
@@ -127,7 +144,8 @@ pointfunca<-function()
     quit <- FALSE
 
     dev.set(2)
-    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
     {
@@ -149,8 +167,9 @@ pointfunca<-function()
    carte(long = long, lat = lat, obs = obs,buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,
    nocart=nocart, lablong = lablong,lablat = lablat,label = label,cex.lab=cex.lab, symbol = pch,method = "pairwise",
    axis=axes,legmap=legmap,legends=legends)
-   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
- 
+   title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
    #     carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=16,
    #     method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,buble=buble,criteria=criteria,
    #     nointer=nointer,cbuble=z,carte=carte,nocart=nocart,couleurs="blue",classe=card(object),cex.lab=cex.lab)
@@ -179,7 +198,8 @@ polyfunca<-function()
     quit <- FALSE
   
    dev.set(2)
-   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+   title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
     {
@@ -238,8 +258,9 @@ if (length(polyX)>0)
   
   
   dev.set(3)
-  title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-  
+  title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+  title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
   while (!quit) 
   {
     dev.set(3)
@@ -260,7 +281,8 @@ if (length(polyX)>0)
    obs2<<-obs
    graphique(var1 = theta, var2 = absvar, obs = obs2,num = 3, graph = "pairwise", labvar = labvar,
    couleurs=col,symbol = pch, quantiles = quantiles,alpha1 = alpha)
-   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+   title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
    carte(long = long, lat = lat, obs = obs,buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,
    nocart=nocart, lablong = lablong,lablat = lablat,label = label,cex.lab=cex.lab, symbol = pch,method = "pairwise",
@@ -286,7 +308,8 @@ if (length(polyX)>0)
   polyY <- NULL
  
   dev.set(3)
-  title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+  title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+  title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
    while (!quit) 
     {
@@ -371,13 +394,23 @@ SGfunc<-function()
 # quitter l'application
 ####################################################
 
-quitfunc<-function() 
+quitfunc<-function()
 {
-    tclvalue(fin)<<-TRUE
-#    graphics.off();
-    tkdestroy(tt);
-  }
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+   # assign("obs", row.names(sp.obj)[obs], envir = .GlobalEnv)
+}
 
+quitfunc2<-function()
+{
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+    print("Results have been saved in last.select object")
+    obs[lower.tri(obs)]<-FALSE
+    assign("last.select", which(obs,arr.ind=TRUE), envir = .GlobalEnv)
+}
 
 
 ####################################################
@@ -438,7 +471,7 @@ fbubble<-function()
 
     refresh.code <- function(...)
      {
-        alpha <<- slider1(no = 1)
+        alpha <<- slider1(names.slide=names.slide,no = 1)
 
         graphique(var1 = theta, var2 = absvar, obs = obs2, num = 3,
         graph = "pairwise",couleurs=col, labvar = labvar, symbol = pch,
@@ -492,8 +525,8 @@ tkgrid(tklabel(tt,text="    "))
 
    if(length(quantiles)!=0)
 {
-        slider1(tt, refresh.code, c("Quantile smooth spline parameter"), 
-            c(borne1), c(borne2), c((borne2 - borne1)/100), c(alpha))
+        slider1(tt, refresh.code, names.slide=names.slide,
+            borne1, borne2, (borne2 - borne1)/100, alpha)
    
 }
 
@@ -535,20 +568,19 @@ tkgrid(bubble.but,columnspan=2)
 tkgrid(tklabel(tt,text="    "))
 
 
-labelText5 <- tclVar("Exit")
+labelText5 <- tclVar("  Exit  ")
 label5 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText5))
 tkconfigure(label5, textvariable=labelText5)
 tkgrid(label5,columnspan=2)
 
-quit.but <- tkbutton(tt, text="     OK     ", command=quitfunc);
-tkgrid(quit.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
 
-tkwait.variable(fin)
+quit.but <- tkbutton(tt, text="Save results", command=quitfunc2);
+quit.but2 <- tkbutton(tt, text="Don't save results", command=quitfunc);
+tkgrid(quit.but2,quit.but)
+tkgrid(tklabel(tt,text="    "))
 }
 ####################################################
+return(invisible())
 
-
-return(obs)
 }
 

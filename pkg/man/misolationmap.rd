@@ -48,7 +48,10 @@ package \code{mvoutlier}).
 }
 
 \value{
-A matrix of boolean of size \eqn{n \times n}{n x n}
+In the case where user click on \code{save results} button,
+a matrix of integer is created as a global variable in \code{last.select} object.
+It corresponds to the numbers of spatial unit corresponding to couple of sites selected
+just before leaving the Tk window.
 }
 
 \references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
@@ -73,7 +76,7 @@ kola.nb <- dnearneigh(kola.sp, 0,50000 )
 # example of use of misolationmap
 # The statistics are calculated by taking into account variables
 # Ag,As,Bi,Cd,Co,Cu,Ni
-obs<-misolationmap(kola.spdf,kola.nb,names.var=c("Ag","As","Bi","Cd","Co","Cu","Ni"),
+misolationmap(kola.spdf,kola.nb,names.var=c("Ag","As","Bi","Cd","Co","Cu","Ni"),
 propneighb=0.30,chisqqu=0.95, carte= kola.background,identify=TRUE, cex.lab=0.5)
 
 }

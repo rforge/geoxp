@@ -10,6 +10,21 @@ if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.
 if(!is.numeric(name.var) & is.na(match(as.character(name.var),names(sp.obj)))) stop("name.var is not included in the data.frame of sp.obj")
 if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
 
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())) # new environment
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
+
 # we propose to refind the same arguments used in first version of GeoXp
 long<-coordinates(sp.obj)[,1]
 lat<-coordinates(sp.obj)[,2]
@@ -75,7 +90,8 @@ ginifunc<-function()
   ptX <- NULL
 
   dev.set(3)
-  title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
  while(!quit)
    {
@@ -97,7 +113,8 @@ ginifunc<-function()
     # graphiques
     graphique(var1=var, obs=obs, num=3, graph="Lorentz", Xpoly=ptX, labvar=labvar, symbol=pch,
     couleurs=col, F=F, G=G)
-    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
       carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
@@ -208,8 +225,19 @@ SGfunc<-function()
 
 quitfunc<-function()
 {
-  tclvalue(fin)<<-TRUE
-  tkdestroy(tt)
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+   # assign("obs", row.names(sp.obj)[obs], envir = .GlobalEnv)
+}
+
+quitfunc2<-function()
+{
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+    print("Results have been saved in last.select object")
+    assign("last.select", which(obs), envir = .GlobalEnv)
 }
 
 
@@ -259,6 +287,9 @@ fbubble<-function()
 
 choixvalue <- function()
 {
+  dev.set(3)
+  title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+
   tt1<-tktoplevel()
   Name <- tclVar("value")
   entry.Name <-tkentry(tt1,width="8",textvariable=Name)
@@ -402,14 +433,13 @@ label5 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelTe
 tkconfigure(label5, textvariable=labelText5)
 tkgrid(label5,columnspan=2)
 
-quit.but <- tkbutton(tt, text="     OK     ", command=quitfunc);
-tkgrid(quit.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
 
-tkwait.variable(fin)
+quit.but <- tkbutton(tt, text="Save results", command=quitfunc2);
+quit.but2 <- tkbutton(tt, text="Don't save results", command=quitfunc);
+tkgrid(quit.but2,quit.but)
+tkgrid(tklabel(tt,text="    "))
 }
 ####################################################
-
-return(obs)
+return(invisible())
 }
 

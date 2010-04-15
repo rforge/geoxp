@@ -11,6 +11,21 @@ if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.
 if(!is.numeric(name.var) & is.na(match(as.character(name.var),names(sp.obj)))) stop("name.var is not included in the data.frame of sp.obj")
 if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
 
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())) # new environment
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
+
 # we propose to refind the same arguments used in first version of GeoXp
 long<-coordinates(sp.obj)[,1]
 lat<-coordinates(sp.obj)[,2]
@@ -44,6 +59,7 @@ ifelse(identify, label<-row.names(listvar),label<-"")
   opt2<-1
   
   angle<-0
+  names.slide="Quant. reg. smooth spline para."
   obs <- matrix(FALSE, nrow = length(long), ncol = length(long))
   graphics.off()
 
@@ -111,7 +127,8 @@ if((length(listvar)>0)&&(dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(list
         quit <- FALSE
         
         dev.set(3)
-        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+        title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
         while (!quit) 
         {
@@ -131,7 +148,8 @@ if((length(listvar)>0)&&(dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(list
      graphique(var1 = dist, var2 = dif, var3=dif2, obs = obs,opt1=opt1,opt2=opt2, num = 3, 
      graph = "Variocloud", labvar = labvar, symbol = pch, couleurs=col, quantiles = quantiles, 
      alpha1 = alpha, bin=bin, xlim=xlim, ylim=ylim)
-     title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+     title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+     title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
      carte(long = long, lat = lat, obs = obs, lablong = lablong,lablat = lablat, 
      label = label,buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart, 
@@ -150,7 +168,8 @@ if((length(listvar)>0)&&(dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(list
         polyY <- NULL
         
         dev.set(3) 
-        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+        title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
         while (!quit) {
             dev.set(3)
@@ -212,11 +231,10 @@ if (length(carte) != 0)
 ####################################################
     refresh.code <- function(...) 
     {
-     alpha <<- slider1(no = 1)
+     alpha <<- slider1(names.slide=names.slide, no = 1)
      graphique(var1 = dist, var2 = dif, var3=dif2, obs = obs,opt1=opt1,opt2=opt2, num = 3, 
      graph = "Variocloud", labvar = labvar, symbol = pch, couleurs=col, quantiles = quantiles, 
      alpha1 = alpha, bin=bin, xlim=xlim, ylim=ylim)
-     
     }
 
 
@@ -243,13 +261,23 @@ if (length(carte) != 0)
 # quitter l'application
 ####################################################
 
-quitfunc <- function() 
+quitfunc<-function()
 {
-   tclvalue(fin) <<- TRUE
-   tkdestroy(tt)
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+   # assign("obs", row.names(sp.obj)[obs], envir = .GlobalEnv)
 }
 
-
+quitfunc2<-function()
+{
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+    print("Results have been saved in last.select object")
+    obs[lower.tri(obs)]<-FALSE
+    assign("last.select", which(obs,arr.ind=TRUE), envir = .GlobalEnv)
+}
 
 ####################################################
 # Open a no interactive selection
@@ -430,8 +458,8 @@ tkgrid(tklabel(tt,text="    "))
 
 
   if(length(quantiles)!=0)
-{ slider1(tt, refresh.code, c("Quant. reg. smooth spline para."), 
-            c(borne1), c(borne2), c((borne2 - borne1)/100), c(alpha))
+{ slider1(tt, refresh.code, names.slide=names.slide,
+  borne1, borne2, (borne2 - borne1)/100, alpha)
 }
    
 
@@ -458,8 +486,6 @@ vari3.but <- tkbutton(tt, text="  On/Off  ", command=choixangle);
 tkgrid(vari3.but,columnspan=2)
 #tkgrid(vari3.but,finish.but)
 tkgrid(tklabel(tt,text="    "))
-
-
 
 
 labelText7 <- tclVar("Preselected sites")
@@ -505,14 +531,14 @@ label5 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelTe
 tkconfigure(label5, textvariable=labelText5)
 tkgrid(label5,columnspan=2)
 
-quit.but <- tkbutton(tt, text="     OK     ", command=quitfunc);
-tkgrid(quit.but,columnspan=2)
+
+quit.but <- tkbutton(tt, text="Save results", command=quitfunc2);
+quit.but2 <- tkbutton(tt, text="Don't save results", command=quitfunc);
+tkgrid(quit.but2,quit.but)
 tkgrid(tklabel(tt,text="    "))
-
-tkwait.variable(fin)
 }
-
-return(obs)
+####################################################
+return(invisible())
 
 }
 

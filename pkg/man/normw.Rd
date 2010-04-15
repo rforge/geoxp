@@ -10,7 +10,7 @@ normw(w)
 }
 
 \arguments{
-  \item{w}{A spatial weight matrix of size \eqn{n \times n}{n x n}}
+  \item{w}{A matrix of size \eqn{n \times n}{n x n}}
 }
 \details{
  \deqn{W_{ij}=\frac{W_{ij}}{\sum_kW_{ik}}}{W_ij=frac(W_(ij))(sum_kW_(ik))}

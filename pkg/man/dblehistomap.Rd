@@ -2,9 +2,10 @@
 \alias{dblehistomap}
 \title{Double Interactive Histogram and map}
 \description{
-The function \code{dblehistomap()} draws two histograms of the given variables \code{names.var[1]} and \code{names.var[2]}
-and a map with sites of coordinates \code{coordinates(sp.obj)}. Each site is associated to a value of \code{names.var[1]}
-and \code{names.var[2]} and there is interactivity between the two windows created.}
+The function \code{dblehistomap} draws two histograms of the given variables \code{names.var[1]} and
+\code{names.var[2]} and a map with sites of coordinates \code{coordinates(sp.obj)}. Each site is associated
+to a value of \code{names.var[1]} and \code{names.var[2]} and there is interactivity between the two
+windows created.}
 
 \usage{
 dblehistomap(sp.obj, names.var, nbcol=c(10,10), type = c("count","percent", "density"),
@@ -14,11 +15,11 @@ col=c("grey","lightblue3"), xlab=c("",""), ylab=c("count","count"), axes=FALSE, 
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{sp.obj}{object of class extending Spatial-class}
-  \item{names.var}{character; attribute name or column number in attribute table}
+  \item{names.var}{a vector of 2 characters; attribute name or column number in attribute table}
   \item{nbcol}{a vector of integer indicating number of cells for histogram 1 and histogram 2 (10 for each by default)}
   \item{type}{Character string indicating type of histogram to be drawn. "percent" and "count" give relative frequency and frequency histograms, "density" produces a density scale histogram.}
   \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{criteria}{a vector of boolean of size the number of spatial units, which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
   \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
@@ -33,7 +34,11 @@ col=c("grey","lightblue3"), xlab=c("",""), ylab=c("count","count"), axes=FALSE, 
 \details{The selection of sites by `points' or `polygons' on the map results in the
 drawing of the red histograms of the subdistributions corresponding to this subset of sites.}
 
-\value{A vector of boolean of size n. TRUE if the site was in the last selection.}
+\value{
+In the case where user click on \code{save results} button,
+a vector of integer is created as a global variable in \code{last.select} object.
+It corresponds to the number of spatial units selected just before leaving the Tk window.
+}
 
 \references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
 

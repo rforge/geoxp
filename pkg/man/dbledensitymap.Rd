@@ -3,9 +3,9 @@
 \title{Double Kernel density estimates and map}
 \description{
 The function \code{dbledensitymap} plots two kernel density estimates from 2 variables included
-in  \code{names.var} computed with `bkde.R', and a map with sites of coordinates \code{coordinates(sp.obj)}.
-Each site is associated to a value of \code{names.var[1]} and \code{names.var[2]}
-and the two windows are interactive. }
+in  \code{names.var} computed with \code{bkde}, and a map with sites of coordinates
+\code{coordinates(sp.obj)}. Each site is associated to a value of \code{names.var[1]} and
+\code{names.var[2]} and the two windows are interactive. }
 
 \usage{
 dbledensitymap(sp.obj, names.var, kernel='triweight',
@@ -18,7 +18,7 @@ col=c("grey","lightblue3"), xlab=c("",""), ylab="", axes=FALSE, lablong="", labl
   \item{names.var}{a vector of character of size 2; attribute names or column numbers in attribute table}
   \item{kernel}{Smoothing kernel (see help(bkde) for list of options)}
   \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{criteria}{a vector of boolean of size the number of spatial units, which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
   \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
@@ -42,7 +42,11 @@ smooth : it represents the mean percentage of sample points involved in the loca
 interval of length 2h where h is the usual bandwidth).}
 
 
-\value{A vector of boolean of size n. TRUE if the site was in the last selection.}
+\value{
+In the case where user click on \code{save results} button,
+a vector of integer is created as a global variable in \code{last.select} object.
+It corresponds to the number of spatial units selected just before leaving the Tk window.
+}
 
 \references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
 

@@ -20,8 +20,9 @@ selectmap(var1, var2, obs, Xpoly, Ypoly, method = "")
   \item{Ypoly}{Y-coordinates of the vertices of selected polygon}
   \item{method}{`point' if the selected area is a point; `poly' if the selected area is a polygon}
 }
-\details{This function is called by all the functions which draw a scatterplot such as scattermap.r,
-moranplotmap.r,... This is not an interactive function.}
+
+\details{This function is called by all the functions which draw a scatterplot such as \code{scattermap},
+\code{moranplotmap},... This is not an interactive function.}
 
 \value{
 A vector of boolean of size n. TRUE if a site has been selected, FALSE otherwise.

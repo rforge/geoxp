@@ -2,7 +2,8 @@
 \alias{barmap}
 \title{Interactive Bar plot and map}
 \description{
-The function \code{barmap()} draws a bar plot (vertical bar) of the given factor variable \code{var} and a map with sites of coordinates (\code{long},\code{lat}).}
+The function \code{barmap()} draws a bar plot (vertical bar) of the given factor variable
+\code{name.var} and a map with sites of coordinates \code{coordinates(sp.obj)}.}
 
 \usage{
 barmap(sp.obj, name.var, type = c("count","percent"),
@@ -13,16 +14,16 @@ col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{sp.obj}{object of class extending Spatial-class}
-  \item{name.var}{character; attribute name or column number in attribute table}
+  \item{name.var}{a character; attribute name or column number in attribute table}
   \item{type}{Character string indicating type of histogram to be drawn. "percent" and "count" give relative frequency and frequency histograms.}
-  \item{names.arg}{a vector of level names}
+  \item{names.arg}{a vector of level names of name.var}
   \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{criteria}{a vector of boolean of size the number os spatial units, which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
   \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
-  \item{pch}{a vector of symbol which must be equal to the number of group else all sites are printed in pch[1]}
-  \item{col}{a vector of colors which must be equal to the number of group else all sites and all bars are printed in col[1]}
+  \item{pch}{a vector of symbol which must be equal to the number of level else all sites are printed whith pch[1]}
+  \item{col}{a vector of colors which must be equal to the number of level else all sites and all bars are printed with col[1]}
   \item{xlab}{a title for the graphic x-axis}
   \item{ylab}{a title for the graphic y-axis}
   \item{axes}{a boolean with TRUE for drawing axes on the map}
@@ -35,9 +36,13 @@ Reversely, the selection of sites on the map by "points" or "polygon"
 results in the drawing of the sub-barplot in red.
 }
 
-\value{A vector of boolean of size n. TRUE if the site was in the last selection.}
+\value{
+In the case where user click on \code{save results} button,
+a vector of integer is created as a global variable in \code{last.select} object.
+It corresponds to the number of spatial units selected just before leaving the Tk window.
+}
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2009), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
 
 Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer.
 }

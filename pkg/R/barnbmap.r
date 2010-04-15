@@ -2,11 +2,25 @@ barnbmap <- function(sp.obj, nb.obj,
 criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
 xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 {
-
 # Verification of the Spatial Object sp.obj
 class.obj<-class(sp.obj)[1]
 
 if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())) # new environment
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
 
 # we propose to refind the same arguments used in first version of GeoXp
 coords<-coordinates(sp.obj)
@@ -42,7 +56,7 @@ ifelse(identify, label<-row.names(listvar),label<-"")
 if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(listvar)
 
 # Initialisation des objets de spdep
-  nb <- object
+  nb <- nb.obj
   W<-nb2mat(nb)
   if (!inherits(nb, "nb")) stop("Not a neighbours list")
  
@@ -85,7 +99,8 @@ pointfunc<-function()
     graf<<-"Neighbourplot1"
     
     dev.set(2)
-    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
         
     while(!quit)
     {
@@ -105,8 +120,9 @@ pointfunc<-function()
         carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=pch,
         method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,buble=buble,criteria=criteria,
         nointer=nointer,cbuble=z,carte=carte,nocart=nocart,couleurs=col2,classe=card(object),cex.lab=cex.lab)
-    
-        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
+        title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
     
         graphique(var1=nb, obs=obs, num=3, graph="bar.nb", W=W,
         labvar=labvar, symbol=pch,couleurs=col);
@@ -133,8 +149,9 @@ polyfunc<-function()
     quit <- FALSE
   
     dev.set(2)
-    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-   
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
     
     while(!quit)
     {
@@ -189,8 +206,9 @@ barfunc<-function()
     
    quit <- FALSE
    dev.set(3)
-   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-     
+   title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
     while(!quit)
     {
         dev.set(3)
@@ -208,8 +226,9 @@ barfunc<-function()
 
         graphique(var1=nb, obs=obs, num=3, graph="bar.nb", 
         labvar=labvar, symbol=pch,couleurs=col)
-        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-          
+        title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
         carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label,
         symbol=pch, method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,
         buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart,
@@ -302,8 +321,7 @@ SGfunc<-function()
 
 quitfunc<-function()
 {
-    tclvalue(fin)<<-TRUE
- #   graphics.off();
+    assign("GeoXp.open", FALSE, envir = baseenv())
     tkdestroy(tt)
 }
 
@@ -401,11 +419,10 @@ tkgrid(label5,columnspan=2)
 quit.but <- tkbutton(tt, text="     OK     ", command=quitfunc);
 tkgrid(quit.but,columnspan=2)
 tkgrid(tklabel(tt,text="    "))
-tkwait.variable(fin)
 }
 ####################################################
 
 
-
+return(invisible())
 
 }

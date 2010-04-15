@@ -3,7 +3,7 @@
 \title{Interactive boxplot and map}
 \description{
 The function \code{boxplotmap()} draws a boxplot of the given variable $name.var$
-and a map with site of coordinates \code{coordinates(sp.obj}. }
+and a map with site of coordinates \code{coordinates(sp.obj)}. }
 
 \usage{
 boxplotmap(sp.obj, name.var,
@@ -14,9 +14,9 @@ xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{sp.obj}{object of class extending Spatial-class}
-  \item{name.var}{character; attribute name or column number in attribute table}
+  \item{name.var}{a character; attribute name or column number in attribute table}
   \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{criteria}{a vector of boolean of size the number of spatial sites, which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
   \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
@@ -63,7 +63,7 @@ boston.sp = SpatialPoints(cbind(boston.c$LON,boston.c$LAT))
 boston.spdf = SpatialPointsDataFrame(boston.sp, boston.c)
 
 # a simple use of boxplotmap
-obs<-boxplotmap(boston.spdf,"MEDV",criteria=(boston.c$CHAS==1))
+boxplotmap(boston.spdf,"MEDV",criteria=(boston.c$CHAS==1))
 }
 
 \keyword{spatial}

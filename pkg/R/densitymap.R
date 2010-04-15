@@ -10,6 +10,21 @@ if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.
 if(!is.numeric(name.var) & is.na(match(as.character(name.var),names(sp.obj)))) stop("name.var is not included in the data.frame of sp.obj")
 if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
 
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())) # new environment
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
+
 # we propose to refind the same arguments used in first version of GeoXp
 long<-coordinates(sp.obj)[,1]
 lat<-coordinates(sp.obj)[,2]
@@ -49,8 +64,9 @@ ifelse(identify, label<-row.names(listvar),label<-"")
 
   listgraph <- c("Histogram","Barplot","Scatterplot")
 
+ # for the slider
   alpha1<-20
-
+  names.slide<-"Alpha"
 
 # options for adding a graphic with colors
   polyX2 <- NULL
@@ -86,7 +102,8 @@ pointfunc<-function()
     loc <- NULL
 
     dev.set(2)
-    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
     {
@@ -121,7 +138,8 @@ pointfunc<-function()
         label=label,cex.lab=cex.lab, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
         lablong=lablong, lablat=lablat,symbol=pch2, couleurs=col2,method=method,
         classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
-        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+        title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
          if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
           {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
@@ -147,7 +165,8 @@ polyfunc<-function()
     quit <- FALSE
 
     dev.set(2)
-    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
     {
@@ -218,6 +237,7 @@ interfunc<-function()
     while (length(polyX)<2)
     {
       dev.set(3)
+      title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
       title(sub = "Click two times to select an interval", cex.sub = 0.8, font.sub = 3,col.sub='red')
       loc<-locator(1)
       polyX <- c(polyX, loc[1])
@@ -256,6 +276,8 @@ choixvalue <- function()
      SGfunc()
      graph<<-"Densityplot2"
     }
+  dev.set(3)
+  title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
 
   tt1<-tktoplevel()
   Name <- tclVar("1st value")
@@ -312,7 +334,8 @@ tkfocus(tt1)
 
 refresh.code<-function(...)
 {
-    alpha1<<-slider1(no=1)
+
+    alpha1<<-slider1(names.slide=names.slide, no=1)
     if(graph=="Densityplot1")
     { if (length(var[obs]) > 1)
        {graphique(var1=var, obs=obs, alpha1=alpha1,  num=3, graph=graph, labvar=labvar,
@@ -424,11 +447,20 @@ SGfunc<-function()
 
 quitfunc<-function()
 {
-  tclvalue(fin)<-TRUE
-  tkdestroy(tt)
- }
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+   # assign("obs", row.names(sp.obj)[obs], envir = .GlobalEnv)
+}
 
-
+quitfunc2<-function()
+{
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+    print("Results have been saved in last.select object")
+    assign("last.select", which(obs), envir = .GlobalEnv)
+}
 
 ####################################################
 # Open a no interactive selection
@@ -514,7 +546,7 @@ tkgrid(label11,columnspan=2)
 tkgrid(tklabel(tt,text="    "))
 
 
-slider1(tt,refresh.code,c("Alpha"),c(3),c(100),c(1),c(alpha1)  )
+slider1(tt, refresh.code, names.slide, 3, 100, 1, alpha1)
 
 labelText7 <- tclVar("Preselected sites")
 label7 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText7))
@@ -565,19 +597,19 @@ tkgrid(autre.but,columnspan=2)
 tkgrid(tklabel(tt,text="    "))
 
 
-labelText5 <- tclVar("Exit")
+labelText5 <- tclVar("  Exit  ")
 label5 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText5))
 tkconfigure(label5, textvariable=labelText5)
 tkgrid(label5,columnspan=2)
 
-quit.but <- tkbutton(tt, text="     OK     ", command=quitfunc);
-tkgrid(quit.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
 
-tkwait.variable(fin)
+quit.but <- tkbutton(tt, text="Save results", command=quitfunc2);
+quit.but2 <- tkbutton(tt, text="Don't save results", command=quitfunc);
+tkgrid(quit.but2,quit.but)
+tkgrid(tklabel(tt,text="    "))
 ####################################################
 }
 
-return(obs)
+return(invisible())
 }
 

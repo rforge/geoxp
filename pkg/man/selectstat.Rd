@@ -1,7 +1,8 @@
 \name{selectstat}
 \alias{selectstat}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Selection of values on a graphic }
+\title{Selection of values on a graphic}
+
 \description{The function \code{selectstat()} is used to select sites on a graphic such
 as Histogram, Barplot, Boxplot, Polyboxplot, Scatterplot, Densityplot, Neighbourplot, Lorentz,
 Moran, Angleplot, Variocloud, Cluster, or PCA. Most of the GeoXp functions call selectstat.r.
@@ -19,8 +20,8 @@ nbcol, W, F, long, lat)
   \item{Ypoly}{Y-coordinates of the vertices of selected polygon}
   \item{method}{name of the graph wich must be drawn among Histogram, Barplot, Boxplot, Polyboxplot, Densityplot, Neighbourplot, Lorentz, Anglepoint, Variopoint}
   \item{nbcol}{nbcol : number of cells for the histogram (10 by default)}
-  \item{W}{A spatial weight matrix of size \eqn{n \times n}{n x n}}
-  \item{F}{a numerical vector}
+  \item{W}{A matrix of size \eqn{n \times n}{n x n} (for spatial weight)}
+  \item{F}{a vector of numeric}
   \item{long}{a vector of x-axis of size n}
   \item{lat}{a vector of y-axis of size n}
 }

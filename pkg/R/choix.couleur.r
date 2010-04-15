@@ -90,6 +90,8 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
                       tkmessageBox(message=msg)
 
                       dev.set(2)
+                      title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+
                       loc <- locator(1)
                       loc$name <- varChoice1
 
@@ -143,6 +145,8 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
                     tkmessageBox(message=msg)
 
                     dev.set(2)
+                    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+
                     loc <- locator(1)
                     loc$name <- varChoice1
                     legends<<-list(legends[[1]],TRUE,legends[[3]],loc)

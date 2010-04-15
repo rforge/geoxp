@@ -2,9 +2,12 @@
 \alias{clustermap}
 \title{Classification of dataset using kmeans or hclust algorithm and representation of clusters on a map.}
 \description{
-The function \code{clustermap()} performs a classification of the sites from the variables called in \code{names.var} and computes a bar plot of the clusters calculated.
-Classification methods come from \code{hclust()} (hierarchical cluster analysis) and \code{kmeans()} (k-means clustering) and number of class is chosen with \code{clustnum}.
+The function \code{clustermap()} performs a classification of the sites from the variables called
+in \code{names.var} and computes a bar plot of the clusters calculated.
+Classification methods come from \code{hclust()} (hierarchical cluster analysis) and \code{kmeans()}
+(k-means clustering) and number of class is chosen with \code{clustnum}.
 }
+
 \usage{
 clustermap(sp.obj, names.var, clustnum, method=c("kmeans","hclust"),type=NULL, centers=NULL, scale=FALSE,
 names.arg="", names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16,
@@ -14,16 +17,16 @@ col="lightblue3", xlab="Cluster", ylab="Number", axes=FALSE, lablong="", lablat=
 \arguments{
   \item{sp.obj}{object of class extending Spatial-class}
   \item{names.var}{a vector of character; attribute names or column numbers in attribute table}
-  \item{clustnum}{Number of clusters}
+  \item{clustnum}{integer, number of clusters}
   \item{method}{two methods : `kmeans' by default or `hclust'}
-  \item{type}{If method=`hclust'', type=``complete'' by default  (the possibilities are given in help(hclust)
+  \item{type}{If method=`hclust', type=`complete' by default  (the possibilities are given in help(hclust)
   as `ward', `single', etc). If method=`kmeans', type="Hartigan-Wong" by default (the possibilities are given in help(kmeans)
   as `Forgy', etc)}
   \item{centers}{If method='kmeans', user can give a matrix with initial cluster centers.}
   \item{scale}{If scale=TRUE, the dataset is reducted.}
-  \item{names.arg}{names of factors of \code{name.var}}
+  \item{names.arg}{a vector of character, names of cluster}
   \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{criteria}{a vector of boolean of size the number of spatial units, which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
   \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
@@ -42,8 +45,12 @@ represented in red on the bar plot. The dendogram is also drawn for 'hclust' met
 In option, possibility to choose the classification method. 
 }
 \value{
-A vector of boolean of size n (TRUE if the site was in the last selection) and a vector of size n whith the number of cluster for each site
+In the case where user click on \code{save results} button,
+a list is created as a global variable in \code{last.select} object. \code{obs}, a vector of integer,
+corresponds to the number of spatial units selected just before leaving the Tk window, \code{vectclass},
+vector of integer, corresponds to the number of cluster attributed to each spatial unit.
 }
+
 \references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
 
 Murtagh, F (1985). \emph{Multidimensional Clustering Algorithms}. \cr \cr
@@ -55,9 +62,9 @@ Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spa
 
 \author{Thomas-Agnan C., Aragon Y., Ruiz-Gazen A., Laurent T., Robidou L.}
 
-\note{To use the functions hclust.r and kmeans.r, we take many arguments by default.
+\note{To use the functions \code{hclust} and \code{kmeans}, we take many arguments by default.
 If the user would like to modify these arguments, he should call these functions first and
-then use the function barmap.r to visualize the calculated clusters. }
+then use the function \code{barmap} to visualize the calculated clusters. }
 
 \seealso{\code{\link{barmap}}, \code{\link{pcamap}}}
 
@@ -67,11 +74,11 @@ then use the function barmap.r to visualize the calculated clusters. }
 example(columbus)
 
 # a basic example using the kmeans method
-obs<-clustermap(columbus, c("HOVAL","INC","CRIME","OPEN","PLUMB","DISCBD"), 3,
+clustermap(columbus, c("HOVAL","INC","CRIME","OPEN","PLUMB","DISCBD"), 3,
 criteria=(columbus@data$CP==1), identify=TRUE, cex.lab=0.7)
 
 # example using the hclust method
-obs<-clustermap(columbus,c(7:12), 3, method="hclust",
+clustermap(columbus,c(7:12), 3, method="hclust",
 criteria=(columbus@data$CP==1),col=colors()[20:22],identify=TRUE,
 cex.lab=0.7, names.arg=c("Group 1","Group 2","Group 3"), xlab="Cluster")
 }

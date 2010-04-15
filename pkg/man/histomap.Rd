@@ -5,8 +5,8 @@
 
 \description{
 The function \code{histomap()} draws a histogram of a given variable \code{name.var}
-and a map with sites of coordinates coordinates(sp.obj). Each site is associated to a value of \code{name.var} and there is
-interactivity between the two windows.
+and a map with sites of coordinates \code{coordinates(sp.obj)}. Each site is associated to a value
+of \code{name.var} and there is interactivity between the two windows.
 }
 
 \usage{
@@ -18,7 +18,7 @@ xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{sp.obj}{object of class extending Spatial-class}
-  \item{name.var}{character; attribute name or column number in attribute table}
+  \item{name.var}{a character; attribute name or column number in attribute table}
   \item{nbcol}{number of cells for histogram (10 by default)}
   \item{type}{Character string indicating type of histogram to be drawn. "percent" and "count" give relative frequency and frequency histograms, "density" produces a density scale histogram.}
   \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
@@ -35,11 +35,15 @@ xlab="", ylab="", axes=FALSE, lablong="", lablat="")
   \item{lablat}{name of the y-axis that will be printed on the map}
 }
 \details{
-Sites selected by a bar on the histogram are represented on the map in red and the values of sites selected on the map by `points' or `polygon' are
+Sites selected by a bar on the histogram are represented on the map in red and the values
+of sites selected on the map by `points' or `polygon' are
 represented in red as a sub-histogram on the histogram.
 }
+
 \value{
-A vector of boolean of size n. TRUE if the site was in the last selection.
+In the case where user click on \code{save results} button,
+a vector of integer is created as a global variable in \code{last.select} object.
+It corresponds to the number of spatial units selected just before leaving the Tk window.
 }
 \references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
 
@@ -62,7 +66,6 @@ histomap(columbus,"CRIME")
 ######
 # data on price indices of real estate in France
 data(immob)
-row.names(immob)<-immob$Nom
 
 # immob is a data.frame object. We have to create
 # a Spatial object, by using first the longitude and latitude
@@ -70,6 +73,8 @@ row.names(immob)<-immob$Nom
 immob.sp = SpatialPoints(cbind(immob$longitude,immob$latitude))
 # ... and then by integrating other variables to create SpatialPointsDataFrame
 immob.spdf = SpatialPointsDataFrame(immob.sp, immob)
+# we just give names to the spatial units...
+row.names(immob.spdf)<-immob$Nom
 # For more details, see vignette('sp', package="sp")
 
 # optional : we add some contours that don't correspond to the spatial unit
@@ -81,10 +86,10 @@ cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
 histomap(immob.spdf,"prix.vente", carte= cont_midiP, identify=TRUE, cex.lab=0.6)
 
 # ... with all options
-histomap(immob.spdf,4, nbcol=15, type = "percent",
+histomap(immob.spdf,7, nbcol=15, type = "percent",
 names.attr=names(immob), criteria=immob$rentabilite>5, carte=cont_midiP,
 identify=TRUE, cex.lab=0.5, pch=12, col="pink",
-xlab="average price of square meter", ylab="percent", axes=TRUE, lablong="x",
+xlab="variation price", ylab="percent", axes=TRUE, lablong="x",
 lablat="y")
 }
 

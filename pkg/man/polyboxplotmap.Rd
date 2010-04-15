@@ -18,7 +18,7 @@ pch=16, col="lightblue3",xlab="", ylab="count", axes=FALSE, lablong="", lablat="
   \item{varwidth}{if \code{varwidth} is TRUE, the boxes are drawn with widths proportional to the square-roots of the number of observations in the groups}
   \item{names.arg}{a vector of level names (for factor)}
   \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{criteria}{a vector of boolean of size the number of Spatial units, which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
   \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
@@ -36,7 +36,11 @@ There is an interactivity only in one direction : the sites selected by quartile
 are then represented on the map in red (or colors according to the options). 
 }
 
-\value{A vector of boolean of size $n$. TRUE if the site was in the last selection.}
+\value{
+In the case where user click on \code{save results} button,
+a vector of integer is created as a global variable in \code{last.select} object.
+It corresponds to the number of spatial units selected just before leaving the Tk window.
+}
 
 \references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
 

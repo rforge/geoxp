@@ -3,7 +3,7 @@
 \title{Generalized Principal Component Analysis and map}
 \description{
 The function \code{pcamap()} draws the plots summarizing a generalized Principal Component Analysis (PCA),
-made with `genpca.r'. It draws the scatterplot of the individuals projected on a chosen principal
+made with \code{genpca}. It draws the scatterplot of the individuals projected on a chosen principal
 component plane (with their percentage of inertia), together with the scatterplot of the variables
 projected into the same plane with the quality of representation in order to interpret the principal
 component axes. The individuals scatterplot interacts with the map.
@@ -25,7 +25,7 @@ xlab=paste(direct[1]), ylab=paste(direct[2]), axes=FALSE, lablong="", lablat="")
   \item{reduce}{if TRUE, reduced PCA}
   \item{qualproj}{if TRUE, print the quality of representation of individuals }
   \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{criteria}{a vector of boolean  of size the number of Spatial unit, which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
   \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
@@ -52,7 +52,12 @@ Quality of representation of variable k projected on plane (i,j):
 }
 
 \value{
-Return `obs', vector of size n of boolean with sites selected, `inertia' vector of size p with percent of inertia of each component, `casecoord' matrix \eqn{n \times p}{n x p} of indivuduals, `varcoord' matrix \eqn{n \times p}{n x p} of principal components.
+In the case where user click on \code{save results} button,
+a list is created as a global variable in \code{last.select} object. \code{obs},
+corresponds to the number of spatial units selected just before leaving the Tk window,
+\code{inertia} vector of size p with percent of inertia of each component, \code{casecoord}
+matrix \eqn{n \times p}{n x p} of individuals, \code{varcoord} matrix \eqn{n \times p}{n x p}
+of principal components.
 }
 
 \references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
@@ -67,7 +72,7 @@ Caussinus H., Fekri M., Hakam S., Ruiz-Gazen A. (2003) , \emph{A monitoring disp
 example(columbus)
 
 # a basic PCA on 7 variables
-obs<-pcamap(columbus,c(6:12), qualproj=TRUE, identify=TRUE)
+pcamap(columbus,c(6:12), qualproj=TRUE, identify=TRUE)
 
 ###
 # data boston
@@ -80,16 +85,16 @@ boston.sp<-SpatialPoints(cbind(boston.utm[,1],boston.utm[,2]))
 boston.spdf <- SpatialPointsDataFrame(boston.sp, boston.c)
 
 # a basic PCA on 4 variables
-obs<-pcamap(boston.spdf, c(12:15), identify=TRUE, cex.lab=0.5)
+pcamap(boston.spdf, c(6:8,10,12:15), identify=TRUE, cex.lab=0.5)
 
 # generalized PCA : user have to construct a new metric and a vector
-# of gravity center, by using for exampe cov.mcd
-cov.boston<-cov.mcd(boston.c[,12:15],cor=TRUE)
+# of gravity center, by using for exampe covMcd
+cov.boston<-covMcd(boston.c[,c(6:8,10,12:15)],alpha=.75)
 b.center<-cov.boston$center
-b.cov<-cov.boston$cor
+b.cov<-cov.boston$cov
 
 # example of use of pcamap
-obs<-pcamap(boston.spdf, c(12:15), metric=b.cov, center=b.center,identify=TRUE,
+pcamap(boston.spdf, c(6:8,10,12:15), metric=b.cov, center=b.center,identify=TRUE,
 cex.lab=0.5)
 }
 

@@ -17,11 +17,11 @@ xlim=NULL, ylim=NULL)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{sp.obj}{object of class extending Spatial-class}
-  \item{name.var}{character; attribute name or column number in attribute table}
+  \item{name.var}{a character; attribute name or column number in attribute table}
   \item{bin}{a vector of numeric values where empirical variogram will be evaluated}
   \item{quantiles}{a vector of numeric values of quantile orders (the regression quantile is obtained by spline smoothing)}
   \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{criteria}{a vector of boolean of size the number of Spatial Units, which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
   \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
@@ -59,7 +59,10 @@ In options, possibility to represent a regression quantile smoothing spline \eqn
 case the points below this quantile curve are not drawn). }
 
 \value{
-A matrix of boolean of size \eqn{n \times n}{n x n}. TRUE if the couple of site was in the last selection of points.
+In the case where user click on \code{save results} button,
+a matrix of integer is created as a global variable in \code{last.select} object.
+It corresponds to the numbers of spatial unit corresponding to couple of sites selected
+just before leaving the Tk window.
 }
 
 \references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
@@ -85,7 +88,7 @@ meuse.spdf = SpatialPointsDataFrame(meuse.sp, meuse)
 data(meuse.riv)
 
 # example of use of variocloudmap
-obs<-variocloudmap(meuse.spdf, "zinc", quantiles=0.75, bin=seq(0,2000,100),
+variocloudmap(meuse.spdf, "zinc", quantiles=0.75, bin=seq(0,2000,100),
 xlim=c(0,2000),ylim=c(0,500000),pch=2,carte=meuse.riv[c(21:65,110:153),],
 criteria=(meuse$lime==1))
 }

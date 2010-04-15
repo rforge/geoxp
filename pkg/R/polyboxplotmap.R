@@ -1,7 +1,6 @@
  polyboxplotmap<-function(sp.obj, names.var, varwidth=FALSE, names.arg = "",
 names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8,
 pch=16, col="lightblue3",xlab="", ylab="count", axes=FALSE, lablong="", lablat="")
-
 {
 # Verification of the Spatial Object sp.obj
 class.obj<-class(sp.obj)[1]
@@ -10,6 +9,21 @@ if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
 if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
 if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
 if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())) # new environment
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
 
 # we propose to refind the same arguments used in first version of GeoXp
 long<-coordinates(sp.obj)[,1]
@@ -70,7 +84,8 @@ boxfunc <- function()
   quit <- FALSE
  
   dev.set(3)
-  title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+  title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+  title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
   while (!quit) 
    {
@@ -89,7 +104,8 @@ boxfunc <- function()
    
     graphique(var1 = var2, var2 = var1, obs = obs, num = 3, graph = "Polyboxplot",
     labvar = labvar, symbol = pch, couleurs = col, labmod = names.arg,bin=varwidth)
-    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
     lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,method="Cluster",
@@ -179,10 +195,21 @@ SGfunc<-function()
 # quitter l'application
 ####################################################
 
-quitfunc<-function() 
+quitfunc<-function()
 {
-  tclvalue(fin)<<-TRUE
-  tkdestroy(tt);
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+   # assign("obs", row.names(sp.obj)[obs], envir = .GlobalEnv)
+}
+
+quitfunc2<-function()
+{
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+    print("Results have been saved in last.select object")
+    assign("last.select", which(obs), envir = .GlobalEnv)
 }
 
 ####################################################
@@ -248,10 +275,10 @@ classe=var1,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,axis=axe
             tkdestroy(tt1)
             msg <- paste("Click on the map to indicate the location of the upper left corner of the legend box")
             tkmessageBox(message = msg)
+            title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
             dev.set(2)
             loc <- locator(1)
             loc$name <- names(sp.obj[,names.var[1]])
-            print(names.var[1])
             legends <<- list(legends[[1]], TRUE, legends[[4]], loc)
             carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
             lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,method="Cluster",
@@ -343,14 +370,16 @@ classe=var1,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,axis=axe
      tkgrid(autre.but, columnspan = 2)
      tkgrid(tklabel(tt, text = "    "))
    
-     labelText5 <- tclVar("Exit")
-     label5 <- tklabel(tt, justify = "center", wraplength = "3i", text = tclvalue(labelText5))
-     tkconfigure(label5, textvariable = labelText5)
-     tkgrid(label5, columnspan = 2)
-     quit.but <- tkbutton(tt, text = "     OK     ", command = quitfunc)
-     tkgrid(quit.but, columnspan = 2)
-     tkgrid(tklabel(tt, text = "    "))
-     tkwait.variable(fin)
-    }
-    return(obs)
+     labelText5 <- tclVar("  Exit  ")
+     label5 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText5))
+     tkconfigure(label5, textvariable=labelText5)
+     tkgrid(label5,columnspan=2)
+
+     quit.but <- tkbutton(tt, text="Save results", command=quitfunc2);
+     quit.but2 <- tkbutton(tt, text="Don't save results", command=quitfunc);
+     tkgrid(quit.but2,quit.but)
+     tkgrid(tklabel(tt,text="    "))
+  }
+####################################################
+return(invisible())
 }

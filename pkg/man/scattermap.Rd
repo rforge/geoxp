@@ -6,7 +6,7 @@
 \description{
 The function \code{scattermap} draws a scatterplot of the given variables included
 in \code{names.var} and a map with sites
-of coordinates \code{coordinates(sp.obj}. Boxplots of each variable
+of coordinates \code{coordinates(sp.obj)}. Boxplots of each variable
 \code{names.var[1]} and \code{names.var[2]} are represented below the x-axis and y-axis.}
 
 \usage{
@@ -17,12 +17,12 @@ pch=16, col="lightblue3",xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{sp.obj}{object of class extending Spatial-class}
-  \item{names.var}{a vector of character : 1st name corresponds to the x-variable,
+  \item{names.var}{a vector of two characters : 1st name corresponds to the x-variable,
   2nd name corresponds to the y-variable}
   \item{lin.reg}{If TRUE, drawing of the linear predictor for `response' in linear model}
-  \item{quantiles}{a list of order of conditionnal quantile regression spline}
+  \item{quantiles}{a vector of numeric corresponding to order of conditionnal quantile regression spline}
   \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{criteria}{a vector of boolean of size the number of Spatial Units, which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
   \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
@@ -41,7 +41,11 @@ on the map are then represented in red on the scatterplot. Users have
 the possibility to draw linear predictor for `response' in linear model (option \code{lin.reg})
  or conditionnal quantile regression spline (option \code{quantiles}).}
 
-\value{A vector of boolean of size n. TRUE if the site was in the last selection.}
+\value{
+In the case where user click on \code{save results} button,
+a vector of integer is created as a global variable in \code{last.select} object.
+It corresponds to the number of spatial units selected just before leaving the Tk window.
+}
 
 \references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}\cr \cr
 
@@ -73,7 +77,7 @@ cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
 
 # a example of use
 scattermap(immob.spdf,c("prix.vente","prix.location"),quantiles=0.5,
-carte= cont_midiP, xlab="Prix de vente",ylab="Prix de location",
+carte= cont_midiP, xlab="Average sell price",ylab="Average rent price",
 identify=TRUE, cex.lab=0.6)
 
 

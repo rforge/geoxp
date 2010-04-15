@@ -3,13 +3,27 @@ names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8
 col=c("grey","lightblue3"), xlab=c("",""), ylab="", axes=FALSE, lablong="", lablat="")
 {
 # Verification of the Spatial Object sp.obj
-
 class.obj<-class(sp.obj)[1]
 
 if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
 if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
 if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
 if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())) # new environment
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
 
 # we propose to refind the same arguments used in first version of GeoXp
 long<-coordinates(sp.obj)[,1]
@@ -40,9 +54,11 @@ ifelse(identify, label<-row.names(listvar),label<-"")
   legends<-list(FALSE,FALSE,"","")
   graphics.off()
 
+  # for the slider
   alpha11<-20
   alpha21<-20
-
+  names.slide<-c("Alpha (1st graph)","Alpha (2nd graph)")
+  
   graphChoice <- ""
   varChoice1 <- ""
   varChoice2 <- ""
@@ -81,20 +97,29 @@ pointfunc<-function()
      #SGfunc()
       graph1<<-"Densityplot1"
       graph2<<-"Densityplot1"
+      
+       if (length(var1[obs]) > 1)
+        {
+         graphique(var1=var1, obs=obs, alpha1=alpha11,  num=3, graph=graph1, labvar=labvar1,
+         couleurs=col[1],symbol=pch,kernel=kernel)
 
-      graphique(var1=var1, obs=obs, alpha1=alpha11,  num=3, graph=graph1, labvar=labvar1,
-      couleurs=col[1],symbol=pch,kernel=kernel)
-
-      graphique(var1=var2, obs=obs, alpha1=alpha21,  num=4, graph=graph2, labvar=labvar2,
-      couleurs=col[2],symbol=pch,kernel=kernel);
-
+         graphique(var1=var2, obs=obs, alpha1=alpha21,  num=4, graph=graph2, labvar=labvar2,
+         couleurs=col[2],symbol=pch,kernel=kernel)
+        }
+       else
+       {dev.set(3)
+       title(sub = "You have to choose at least two sites to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')
+       dev.set(4)
+       title(sub = "You have to choose at least two sites to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')
+     }
     }
 
     quit <- FALSE
     loc <- NULL
 
     dev.set(2)
-    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
     {
@@ -120,7 +145,8 @@ pointfunc<-function()
         label=label,cex.lab=cex.lab, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
         lablong=lablong, lablat=lablat,symbol=pch2, couleurs=col2,method=method,
         classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
-       title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+        title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
         # graphiques
       if (length(var1[obs]) > 1)
@@ -172,7 +198,8 @@ polyfunc<-function()
     quit <- FALSE
 
     dev.set(2)
-    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
     {
@@ -239,7 +266,7 @@ inter1func<-function()
 
 #    quit <- FALSE;
 
-  if(graph1=="Densityplot1")
+  if(graph1=="Densityplot1"||(graph1==graph2))
    {
     SGfunc()
     graph1<<-"Densityplot2"
@@ -252,6 +279,7 @@ inter1func<-function()
     while (length(polyX)<2)
     {
       dev.set(3)
+      title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
       title(sub = "Click two times to select an interval", cex.sub = 0.8, font.sub = 3,col.sub='red')
       loc<-locator(1)
       polyX <- c(polyX, loc[1])
@@ -268,10 +296,15 @@ inter1func<-function()
 
        if (length(var1[obs]) > 1)
         {
-         graphique(var1=var2, obs=obs, alpha1=alpha21,  num=4, graph=graph2,
-         labvar=labvar2, couleurs=col[2], kernel=kernel)
+        graphique(var1=var2, obs=obs, alpha1=alpha21,  num=4, graph=graph2,
+        labvar=labvar2, couleurs=col[2], kernel=kernel)
+         
         }
-
+      else
+       {dev.set(4)
+       title(sub = "You have to choose at least two sites to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')
+       }
+     
         carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
         label=label,cex.lab=cex.lab, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
         lablong=lablong, lablat=lablat,symbol=pch2, couleurs=col2,method=method,
@@ -291,7 +324,7 @@ inter1func<-function()
 
 inter2func<-function()
 {
-  if(graph2=="Densityplot1")
+  if(graph2=="Densityplot1"||(graph1==graph2))
    {
     SGfunc()
     graph1<<-"Densityplot1"
@@ -304,8 +337,9 @@ inter2func<-function()
     while (length(polyX)<2)
     {
       dev.set(4)
-      loc<-locator(1)
+      title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
       title(sub = "Click two times to select an interval", cex.sub = 0.8, font.sub = 3,col.sub='red')
+      loc<-locator(1)
       polyX <- c(polyX, loc[1])
     }
 
@@ -322,7 +356,11 @@ inter2func<-function()
      graphique(var1=var1, obs=obs, alpha1=alpha11,  num=3, graph=graph1,
      labvar=labvar1, couleurs=col[1],kernel=kernel)
      }
-
+     else
+     {dev.set(3)
+      title(sub = "You have to choose at least two sites to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')
+     }
+     
      carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
      label=label,cex.lab=cex.lab, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
      lablong=lablong, lablat=lablat,symbol=pch2, couleurs=col2,method=method,
@@ -342,13 +380,17 @@ inter2func<-function()
 
 choixvalue1 <- function()
 {
-  if(graph1=="Densityplot1")
+  if(graph1=="Densityplot1"||(graph1==graph2))
    {
     SGfunc()
     graph1<<-"Densityplot2"
     graph2<<-"Densityplot1"
    }
 
+   dev.set(3)
+   title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+      
+      
   tt1<-tktoplevel()
   Name <- tclVar("1st value")
   Name2 <- tclVar("2nd value")
@@ -413,13 +455,16 @@ choixvalue1 <- function()
 
 choixvalue2 <- function()
 {
-  if(graph2=="Densityplot1")
+  if(graph2=="Densityplot1"||(graph1==graph2))
    {
     SGfunc()
     graph1<<-"Densityplot1"
     graph2<<-"Densityplot2"
    }
 
+  dev.set(4)
+  title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+      
   tt1<-tktoplevel()
   Name <- tclVar("1st value")
   Name2 <- tclVar("2nd value")
@@ -485,29 +530,24 @@ tkfocus(tt1)
 
 refresh1.code<-function(...)
 {
- alpha11<<-slider1(no=1)
+ res<-slider1(names.slide=names.slide,no=1)
+ alpha11<<-res$alpha11
+ alpha21<<-res$alpha21
+ 
  if(graph1=="Densityplot1")
- {     if (length(var2[obs]) > 1)
+ {   if (length(var2[obs]) > 1)
        {graphique(var1=var1, obs=obs, alpha1=alpha11, num=3, graph=graph1, labvar=labvar1, couleurs=col[1],kernel=kernel)
        }
        else
        {dev.set(3)
        title(sub = "You have to choose at least two sites to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')
-       }
+      }
   }
  else
  {graphique(var1=var1, obs=obs,alpha1=alpha11,  num=3, graph="Densityplot2", Xpoly=polyX2,
-  labvar=labvar1, couleurs=col[1],kernel=kernel)}
+  labvar=labvar1, couleurs=col[1],kernel=kernel)
  }
-
-
-####################################################
-# modification du alpha pour la courbe de densité
-####################################################
-
-refresh2.code<-function(...)
-{
- alpha21<<-slider2(no=1)
+ 
  if(graph2=="Densityplot1")
   {   if (length(var2[obs]) > 1)
       {graphique(var1=var2, obs=obs, alpha1=alpha21, num=4, graph=graph2, labvar=labvar2,
@@ -522,6 +562,7 @@ refresh2.code<-function(...)
   {graphique(var1=var2, obs=obs,alpha1=alpha21, num=4, graph="Densityplot2", Xpoly=polyX2,
    labvar=labvar2, couleurs=col[2],kernel=kernel)}
  }
+ 
 
 
 ####################################################
@@ -557,9 +598,19 @@ SGfunc<-function()
 
 quitfunc<-function()
 {
-  tclvalue(fin)<-TRUE
-  graphics.off()
-  tkdestroy(tt)
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+   # assign("obs", row.names(sp.obj)[obs], envir = .GlobalEnv)
+}
+
+quitfunc2<-function()
+{
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+    print("Results have been saved in last.select object")
+    assign("last.select", which(obs), envir = .GlobalEnv)
 }
 
 ####################################################
@@ -629,16 +680,6 @@ graphfunc <- function()
    }
 }
 
-####################################################
-# quitter l'application
-####################################################
-
-quitfunc<-function()
-{
-  tclvalue(fin)<-TRUE
-  tkdestroy(tt)
-}
-
 
 ####################################################
 # Open a no interactive selection
@@ -682,12 +723,11 @@ fbubble<-function()
 ####################################################
 # Représentation graphique
 ####################################################
+graphique(var1=var2, obs=obs, alpha1=alpha21, num=4, graph=graph1, labvar=labvar2,
+couleurs=col[2],kernel=kernel,Xpoly=NULL)
 
-graphique(var1=var2, obs=obs, alpha1=alpha21, num=4, graph="Densityplot1", labvar=labvar2,
-couleurs=col[2],kernel=kernel)
-
-graphique(var1=var1, obs=obs, alpha1=alpha11, num=3, graph="Densityplot1", labvar=labvar1,
-couleurs=col[1],kernel=kernel)
+graphique(var1=var1, obs=obs, alpha1=alpha11, num=3, graph=graph2, labvar=labvar1,
+couleurs=col[1],kernel=kernel,Xpoly=NULL)
 
 carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
 label=label,cex.lab=cex.lab, symbol=pch2, couleurs=col2, carte=carte,nocart=nocart,legmap=legmap,legends=legends,
@@ -738,10 +778,7 @@ tkgrid(label11,columnspan=2)
 tkgrid(tklabel(tt,text="    "))
 
 
-slider1(tt,refresh1.code,c("Alpha (1st graph)"),c(3),c(100),c(1),c(alpha11))
-
-slider2(tt,refresh2.code,c("Alpha (2nd graph)"),c(3),c(100),c(1),c(alpha21))
-
+slider1(tt,refresh1.code,names.slide,3,100,1,c(alpha11,alpha21))
 
 labelText7 <- tclVar("Preselected sites / Draw Spatial Contours")
 label7 <- tklabel(tt, text=tclvalue(labelText7))
@@ -751,7 +788,6 @@ noint1.but <- tkbutton(tt, text="  On/Off  ", command=fnointer);
 nocou1.but <- tkbutton(tt, text="  On/Off  ", command=cartfunc);
 tkgrid(noint1.but, nocou1.but)
 tkgrid(tklabel(tt,text="    "))
-
 
 
 labelText9 <- tclVar("Bubbles")
@@ -787,13 +823,14 @@ label5 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelTe
 tkconfigure(label5, textvariable=labelText5)
 tkgrid(label5,columnspan=2)
 
-quit.but <- tkbutton(tt, text="     OK     ", command=quitfunc);
-tkgrid(quit.but,columnspan=2)
+
+quit.but <- tkbutton(tt, text="Save results", command=quitfunc2);
+quit.but2 <- tkbutton(tt, text="Don't save results", command=quitfunc);
+tkgrid(quit.but2,quit.but)
 tkgrid(tklabel(tt,text="    "))
-tkwait.variable(fin)
 }
 ####################################################
 
-return(obs)
+return(invisible())
 }
 

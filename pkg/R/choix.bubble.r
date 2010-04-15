@@ -31,6 +31,7 @@ choix.bubble<-function(buble,listvar,listnomvar,legends)
                msg <- paste("Click on the map to indicate the location of the upper left corner of the legend box")
                tkmessageBox(message=msg)
                ifelse(listnomvar=="ilocal",dev.set(3),dev.set(2))
+               title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
 
                loc <- locator(1)
 
@@ -84,6 +85,8 @@ choix.bubble<-function(buble,listvar,listnomvar,legends)
           msg <- paste("Click on the map to indicate the location of the upper left corner of the legend box")
           tkmessageBox(message=msg)
           dev.set(2)
+          title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+
           buble<-TRUE
           loc <- locator(1)
            z<-sqrt(abs(bubble+1)/max(abs(bubble)+1))*2.3

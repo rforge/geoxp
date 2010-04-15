@@ -15,10 +15,10 @@ pch=16, col="lightblue3",xlab="", ylab="", zlab="", axes=FALSE, lablong="", labl
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{sp.obj}{object of class extending Spatial-class}
-  \item{names.var}{a vector of character; attribute names or column numbers in attribute table}
+  \item{names.var}{a vector of three characters; attribute names or column numbers in attribute table}
   \item{box}{a boolean with TRUE for drawing a box on the scatterplot 3d}
   \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{criteria}{a vector of boolean of size the number of Spatial units, which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
   \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
@@ -36,11 +36,15 @@ Sites selected on the map by `points' or `polygon' are
 represented in red in the 3-d plot.
 }
 \note{
-This function uses the \code{rgl} package and a rgl device.
+This function uses the \code{rgl} package and open a \code{rgl} device.
 }
+
 \value{
-A vector of boolean of size n. TRUE if the site was in the last selection.
+In the case where user click on \code{save results} button,
+a vector of integer is created as a global variable in \code{last.select} object.
+It corresponds to the number of spatial units selected just before leaving the Tk window.
 }
+
 \references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
 
 \author{Thomas-Agnan C., Aragon Y.,  Ruiz-Gazen A., Laurent T., Robidou L.}
@@ -68,7 +72,7 @@ cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
 
 # an example of plot3dmap
 plot3dmap(immob.spdf, c("prix.vente","prix.location","variation.vente"),
-box=FALSE, carte=cont_midiP, identify=TRUE, xlab="prix.vente",
+box=FALSE, carte=cont_midiP, identify=TRUE, cex.lab=0.5,xlab="prix.vente",
 ylab="prix.location", zlab="variation.vente")
 
 

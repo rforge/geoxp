@@ -1,7 +1,8 @@
 \name{spdf2list}
 \alias{spdf2list}
 
-\title{Extract from a `SpatialPolygonsDataFrame' object the middle coordinates of boundary box and the vertices of the polygons (in the case where polygons are given) }
+\title{Extract from a \code{SpatialPolygonsDataFrame} object the middle coordinates of boundary
+box and the vertices of the polygons (in the case where polygons are given) }
 
 \description{
 The function \code{spdf2list()} calculates
@@ -29,7 +30,7 @@ The data of a \code{SpatialPolygonsDataFrame} object can be directly extract usi
 \value{
 It returns two vectors of middle coordinates for x-axis and y-axis cooresponding to middle
 of each boundary box.  It returns a matrix of numeric values with 2 columns
-($x$ and $y$ coordinates of the vertices of the polygons) where polygons are seperated from
+(x and y coordinates of the vertices of the polygons) where polygons are seperated from
 each other by 3 rows of NaN.
 }
 

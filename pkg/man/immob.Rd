@@ -3,7 +3,7 @@
 \docType{data}
 \title{Some price indices of real estate from biggest cities in France}
 \description{
-This data frame contains price indices of real estate from biggest cities in France.
+This data frame contains price indices of real estate from biggest cities in France in 2008.
 }
 \usage{data(immob)}
 \format{
@@ -23,7 +23,7 @@ This data frame contains price indices of real estate from biggest cities in Fra
 }
 
 \source{
-Prepared by Thibault LAURENT.
+Prepared by T. Laurent.
 }
 
 \references{

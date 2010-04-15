@@ -13,6 +13,7 @@ polylist2list(data)
 \arguments{
   \item{data}{A \code{polylist} object}
 }
+
 \details{
 The user can then represent the coordinates of sites of a \code{polylist} object
 as background map, using the option \code{carte} included in all interactive functions of GeoXp.
@@ -27,7 +28,7 @@ of the vertices of the polygons) where polygons are seperated from each other by
 Bivand R. et al. (2009), \emph{Applied Spatial Data Analysis with R}, Springer.
 }
 
-\author{Thibault Laurent}
+\author{T. Laurent}
 
 \seealso{\code{\link{spdf2list}}}
 

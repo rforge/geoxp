@@ -11,6 +11,21 @@ if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.
 if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
 if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
 
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())) # new environment
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
+
 # we propose to refind the same arguments used in first version of GeoXp
 long<-coordinates(sp.obj)[,1]
 lat<-coordinates(sp.obj)[,2]
@@ -71,8 +86,9 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
         quit <- FALSE
         
         dev.set(2)
-        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-    
+        title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
         while (!quit)
          {
             dev.set(2)
@@ -90,8 +106,9 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
            carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
            cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2, method="Cluster",classe=var1,legmap=legmap,
            legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
-           title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-    
+           title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+           title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
            graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot",labvar = labvar1, symbol = pch, 
            labmod = names.arg, couleurs=col, bin=type)
            
@@ -116,8 +133,9 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
         quit <- FALSE
         
         dev.set(2)
-        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-    
+        title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
         while (!quit) 
         {
             dev.set(2)
@@ -168,8 +186,9 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
         quit <- FALSE
        
         dev.set(3)
-        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-    
+        title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
         while (!quit) 
         {
             dev.set(3)
@@ -190,8 +209,9 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
            
            graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot",labvar = labvar1, symbol = pch, 
            labmod = names.arg, couleurs=col, bin=type)
-           title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-    
+           title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+           title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
            graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol, bin=type,
            labvar = labvar2,couleurs=col[1])
            
@@ -213,8 +233,9 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
         quit <- FALSE
        
         dev.set(4)
-        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-    
+        title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
         while (!quit) 
         {
             dev.set(4)
@@ -237,8 +258,9 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
            
            graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram", nbcol = nbcol, bin=type,
            labvar = labvar2,couleurs=col[1])
-           title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-    
+           title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+           title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
             graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
@@ -326,11 +348,23 @@ SGfunc <- function()
 # quitter l'application
 ####################################################
 
-quitfunc <- function() 
+quitfunc<-function()
 {
- tclvalue(fin) <- TRUE
- tkdestroy(tt)
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+   # assign("obs", row.names(sp.obj)[obs], envir = .GlobalEnv)
 }
+
+quitfunc2<-function()
+{
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+    print("Results have been  saved in last.select object")
+    assign("last.select", which(obs), envir = .GlobalEnv)
+}
+
 
 ####################################################
 # Open a no interactive selection
@@ -531,17 +565,13 @@ label5 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelTe
 tkconfigure(label5, textvariable=labelText5)
 tkgrid(label5,columnspan=2)
 
-quit.but <- tkbutton(tt, text="     OK     ", command=quitfunc);
-tkgrid(quit.but,columnspan=2)
+
+quit.but <- tkbutton(tt, text="Save results", command=quitfunc2);
+quit.but2 <- tkbutton(tt, text="Don't save results", command=quitfunc);
+tkgrid(quit.but2,quit.but)
 tkgrid(tklabel(tt,text="    "))
-
-tkwait.variable(fin);
 }
-
 ####################################################
-# Fin
-####################################################
-   
-return(obs)
+return(invisible())
 }
 

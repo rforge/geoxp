@@ -10,6 +10,21 @@ if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.
 if(!is.numeric(name.var) & is.na(match(as.character(name.var),names(sp.obj)))) stop("name.var is not included in the data.frame of sp.obj")
 if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
 
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())) # new environment
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
+
 # we propose to refind the same arguments used in first version of GeoXp
 long<-coordinates(sp.obj)[,1]
 lat<-coordinates(sp.obj)[,2]
@@ -115,7 +130,8 @@ pointfunc<-function()
     quit <- FALSE
 
     dev.set(2)
-    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
      {
@@ -147,7 +163,8 @@ pointfunc<-function()
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
       cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
 
-      title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
@@ -169,8 +186,10 @@ polyfunc<-function()
     polyX <- NULL
     polyY <- NULL
     quit <- FALSE
-                dev.set(2)
-           title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
+    dev.set(2)
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
     {
@@ -364,7 +383,7 @@ coords <- cbind(long[obs],lat[obs])
 nvlecoord <- rotation(coords,theta)
 nvlong <- nvlecoord[,1]
 nvlat <- nvlecoord[,2]
-var<-var[obs]
+var.s<-var[obs]
 
 x.lim=c(min(coords[,1],na.rm=TRUE),max(coords[,1],na.rm=TRUE))
 y.lim=c(min(coords[,2],na.rm=TRUE),max(coords[,2],na.rm=TRUE))
@@ -423,7 +442,7 @@ ifelse(limmax[nbcol]>0,limmax[nbcol] <- 2*limmax[nbcol],limmax[nbcol] <- limmax[
 
 for (i in 1:nbcol)
 {
- ens <- var[which((nvlong >= xind[i]) & (nvlong < limmax[i]))]
+ ens <- var.s[which((nvlong >= xind[i]) & (nvlong < limmax[i]))]
 
     # si la colonne est vide
     if (length(ens) != 0)
@@ -449,7 +468,7 @@ ifelse(limmax[nbrow]>0,limmax[nbrow]<-2*limmax[nbrow],limmax[nbrow]<-limmax[nbro
 
 for (i in 1:nbrow)
 {
-  ens <- var[which((nvlat >= yind[i]) & (nvlat < limmax[i]))]
+  ens <- var.s[which((nvlat >= yind[i]) & (nvlat < limmax[i]))]
     # si la ligne est vide
     if (length(ens) != 0)
     {
@@ -493,6 +512,8 @@ else
     plot(nvlong,nvlat,col=col2,pch=pch[1],asp=asp,cex=cex,xlim=range(nvlong),ylim=range(nvlat))
 }
 
+     opt.usr<-par()$usr
+
 # dessin de la grille
 # colonnes
 for (i in 1:(nbcol+1))
@@ -512,16 +533,21 @@ for (i in 1:(nbrow+1))
 ###########################################
 
 # lignes
-par(mar=c(2,0,1,1))
+op<-par(mar=c(2,0,1,1))
 
 if (!nuage)
 {
- plot(var,nvlat,"n",xlim=c(min(moylig[!ligvide],medlig[!ligvide]),max(moylig[!ligvide],medlig[!ligvide])),
-  ylim=range(nvlat),yaxt="n")
+# plot(var.s,nvlat,"n",xlim=c(min(moylig[!ligvide],medlig[!ligvide]),max(moylig[!ligvide],medlig[!ligvide])),
+#  ylim=range(nvlat),yaxt="n")
+   plot(var.s,nvlat,"n",yaxt="n")
+   op<-par(usr=c(par()$usr[1:2],opt.usr[3:4]))
 }
 else
 {
- plot(var,nvlat,col=col[1],pch=pch[1],cex=cex,xlim=range(var),ylim=range(nvlat),yaxt="n")
+# plot(var.s,nvlat,col=col[1],pch=pch[1],cex=cex,xlim=range(var.s),ylim=range(nvlat),yaxt="n")
+  plot(var.s,nvlat,type="n",col=col[1],pch=pch[1],cex=cex,yaxt="n")
+  op<-par(usr=c(par()$usr[1:2],opt.usr[3:4]))
+  points(var.s,nvlat,col=col[1],pch=pch[1],cex=cex,yaxt="n")
 }
 
 
@@ -536,14 +562,17 @@ par(mar=c(0,2,1,1))
 
 if (!nuage)
 {
- plot(nvlong,var,"n",ylim=c(min(moycol[!colvide],medcol[!colvide]),max(moycol[!colvide],medlig[!colvide])),
+ plot(nvlong,var.s,"n",ylim=c(min(moycol[!colvide],medcol[!colvide]),max(moycol[!colvide],medlig[!colvide])),
   xlim=range(nvlong),xaxt="n",yaxt="n")
  axis(side=4)
+ op<-par(usr=c(opt.usr[1:2],par()$usr[3:4]))
 }
 else
 {
- plot(nvlong,var,col=col[1],pch=pch[1],cex=cex,ylim=range(var),xlim=range(nvlong),xaxt="n",yaxt="n")
+ plot(nvlong,var.s,type="n",col=col[1],pch=pch[1],cex=cex,ylim=range(var.s),xlim=range(nvlong),xaxt="n",yaxt="n")
  axis(side=4)
+ op<-par(usr=c(opt.usr[1:2],par()$usr[3:4]))
+ points(nvlong,var.s,col=col[1],pch=pch[1],cex=cex,ylim=range(var.s),xlim=range(nvlong),xaxt="n",yaxt="n")
 }
 
  points(milcol[!colvide],moycol[!colvide],col=col[2],pch=pch[2])
@@ -611,14 +640,22 @@ if (labvar != "")
 # quitter l'application
 ####################################################
 
-    quitfunc <- function() {
-        tclvalue(fin) <<- TRUE
-      #  graphics.off()
-        tkdestroy(tt)
+quitfunc<-function()
+{
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+   # assign("obs", row.names(sp.obj)[obs], envir = .GlobalEnv)
+}
 
-   #    tkdestroy(tt1)
-   #tkwait.variable(fin)
-    }
+quitfunc2<-function()
+{
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+    print("Results have been saved in last.select object")
+    assign("last.select", which(obs), envir = .GlobalEnv)
+}
 
 ####################################################
 # rafraichissement des graphiques
@@ -734,17 +771,19 @@ autre.but <- tkbutton(tt, text="     OK     " , command=graphfunc);
 tkgrid(autre.but,columnspan=2)
 tkgrid(tklabel(tt,text="    "))
 
-labelText5 <- tclVar("Exit")
+labelText5 <- tclVar("  Exit  ")
 label5 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText5))
 tkconfigure(label5, textvariable=labelText5)
 tkgrid(label5,columnspan=2)
 
-quit.but <- tkbutton(tt, text="     OK     ", command=quitfunc);
-tkgrid(quit.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-####################################################
 
-tkwait.variable(fin)
- }
+quit.but <- tkbutton(tt, text="Save results", command=quitfunc2);
+quit.but2 <- tkbutton(tt, text="Don't save results", command=quitfunc);
+tkgrid(quit.but2,quit.but)
+tkgrid(tklabel(tt,text="    "))
+}
+####################################################
+return(invisible())
+
 }
 

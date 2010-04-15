@@ -2,8 +2,10 @@
 \alias{makeneighborsw}
 \title{Spatial weight matrix}
 \description{
-The function \code{makeneighborsw()} create a spatial weight matrix based on a given number of nearest neighbors
-(option "neighbor" by default), based on a threshold distance (option method="distance") or both these 2 methods.}
+The function \code{makeneighborsw()} create a spatial weight matrix based on a given number of nearest
+neighbors (option "neighbor" by default), based on a threshold distance (option method="distance")
+or both these 2 methods.}
+
 \usage{
 makeneighborsw(coords,method="neighbor",m=1,d,cum=TRUE)
 }
@@ -11,7 +13,7 @@ makeneighborsw(coords,method="neighbor",m=1,d,cum=TRUE)
 \arguments{
   \item{coords}{a matrix of spatial coordinates}
   \item{method}{"neighbor" by default, "distance" or "both"}  
-  \item{m}{ number of nearest neighbors}
+  \item{m}{number of nearest neighbors}
   \item{d}{threshold point}
   \item{cum}{if cum=TRUE, W is the sum of spatial weight matrix based on k nearest neighbours (for \eqn{k \leq m}{k < m};
    if FALSE W is the spatial weight matrix based only on \eqn{m^{th}}{m^th} nearest neighbours}

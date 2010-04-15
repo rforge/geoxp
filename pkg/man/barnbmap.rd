@@ -3,7 +3,8 @@
 \title{Bar plot of the number of neighbour and map}
 \description{
 The function \code{barnbmap} draws the bar plot of the link number distribution for
-a neighbourhood structure given by a nb object (spdep package) and links this bar plot with a map.
+a neighbourhood structure given by a \code{nb} object (\code{spdep} package) and links
+this bar plot with a map.
 }
 
 \usage{
@@ -11,11 +12,12 @@ barnbmap(sp.obj, nb.obj,
 criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
 xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 }
+
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{sp.obj}{object of class extending Spatial-class}
   \item{nb.obj}{object of class nb}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{criteria}{a vector of boolean of size the number of spatial units, which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
   \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
@@ -29,8 +31,8 @@ xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 }
 \details{
 For a selected site j on the map, are represented on the map its neighbours.
-For a selected bar on the graph, the corresponding sites are represented on the map with a link which means that two sites
-are neighbours.}
+For a selected bar on the graph, the corresponding sites are represented on the map with a link which
+means that two sites are neighbours.}
 
 \note{
 When user select sites on the graph or on the map, he cannot add a selection by using the other graphic.}
@@ -45,7 +47,7 @@ No value returned.
 Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer.
 }
 
-\author{Aragon Y., Thomas-Agnan C., Ruiz-Gazen A., Laurent T.}
+\author{Thomas-Agnan C., Ruiz-Gazen A., Laurent T.}
 
 \keyword{spatial}
 
@@ -70,7 +72,8 @@ barnbmap(immob.sp,immob.nb)
 # Data columbus
 example(columbus)
 
-barnbmap(columbus,col.gal.nb,criteria=which(coords[,1]>mean(coords[,1])),
+# col.gal.nb is a spatial weight matrix included in spdep package...
+barnbmap(columbus,col.gal.nb,criteria=(columbus$EW==1),
 col=colors()[98:106], identify=TRUE, cex.lab=0.7, pch=1:9)
 }
 

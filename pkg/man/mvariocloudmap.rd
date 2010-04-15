@@ -20,7 +20,7 @@ xlab="Pairwise spatial distances", ylab="Pairwise Mahalanobis distances", axes=F
   \item{names.var}{a vector of character; attribute names or column numbers in attribute table}
   \item{quantiles}{the value of alpha for representing alpha-quantile regression}
   \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{criteria}{a vector of boolean of size the number of spatial units, which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
   \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
@@ -41,8 +41,12 @@ couples which contain the selected observations on the scatterplot.
 }
 
 \value{
-A matrix of boolean of size \eqn{n \times n}{n x n}
+In the case where user click on \code{save results} button,
+a matrix of integer is created as a global variable in \code{last.select} object.
+It corresponds to the numbers of spatial unit corresponding to couple of sites selected
+just before leaving the Tk window.
 }
+
 
 \references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} }
 
@@ -70,7 +74,7 @@ meuse.nb <- knn2nb(meuse.knn)
 
 # example of use of mvariocloudmap. The statistic are calculated by taking
 # into account variables cadmium,copper,lead,zinc,elev
-obs<-mvariocloudmap(meuse.spdf,meuse.nb,c("cadmium","copper","lead","zinc","elev"),
+mvariocloudmap(meuse.spdf,meuse.nb,c("cadmium","copper","lead","zinc","elev"),
 quantiles=0.95, carte=meuse.riv[-c(1:20,73:98,156:176),],identify=TRUE,
 criteria=(meuse.spdf$lime==1))
 }

@@ -21,8 +21,7 @@
 \def\SP{\texttt{S-PLUS}\/}
 \def\SS{\texttt{S}\/}
 
-\title{GeoXp: an R package for exploratory
-spatial data analysis}
+\title{Some examples of use GeoXp}
 \author{T. Laurent\footnote{thibault.laurent@univ-tlse1.fr}, A. Ruiz-Gazen\footnote{ruiz@cict.fr} and C. Thomas-Agnan\footnote{cthomas@cict.fr} \cr
 {\normalsize Toulouse School of Economics} }
 \begin{document}
@@ -62,136 +61,105 @@ cat("\\includegraphics[width=0.9\\textwidth]{", file2, "}\n\n", sep="")
 #cat("\\includegraphics[bb = 72 500 288 750]{", file, "}\n\n", sep="")
 @
 
-We present \pkg{GeoXp}, an \RR~  package implementing interactive graphics for exploratory
-spatial data analysis. We use data bases coming from the \pkg{spdep} package to illustrate the use of these exploratory techniques based on the coupling
-between a statistical graph and a map. Besides elementary plots like boxplots, histograms
-or simple scatterplots, \pkg{GeoXp} also couples maps with Moran scatterplots, variogram
-clouds, Lorenz curves, etc. In order to make the most of the multidimensionality of the
-data, \pkg{GeoXp} includes dimension reduction techniques such as principal components analysis
-and cluster analysis whose results are also linked to the map. \newline
 
-\noindent {\sc \textbf{Key Words}}: Exploratory analysis, spatial econometrics, spatial statistics, interactive
-graphics, brushing and linking, dimension reduction.
 
-\section{Introduction}\label{sec1}
-Exploratory analysis of georeferenced data must take into account their spatial nature.
-The aims of exploratory spatial data analysis include describing geographical distributions,
-identifying spatial outliers, discovering trends or heterogeneity, regimes of spatial
-association, validating models. Geographic Information Systems (GIS) are very elaborate
-cartographic tools but their statistical analysis capabilities are generally limited. When
-they include statistical techniques, they are very basic tools from descriptive statistics
-(boxplots, histograms, barcharts, etc.) but none of the state of the are tools specific to
-spatial data from geostatistics or spatial econometrics. \citet{openshaw:1994}, \citet{anselin:1994} and \citet{anselin:1998} attempt to define the type of
-exploratory data analysis techniques that GIS should try to incorporate.
-\citet{anselin:1994} advocates the integration in the GIS of local
-measures of spatial association, spatial lag pies, spatial lag scatterplots, Moran scatterplots
-as well as variogram clouds and pocket plots. \citet{wilhelm:1998} and \citet{unwin+unwin:1998}
-also argue for the use of local measures of spatial association. \newline
-The use of the coupling between a map and a statistical graph such as a histogram,
-a boxplot or a scattermatrix has already been advocated in the literature (see detailed
-references below). The coupling is the fact that the selection of a zone on the map
-results in the automatic highlighting of the corresponding points on the statistical graph
-or reversely the selection of a portion of the graph results in the automatic highlighting
-of the corresponding points on the map.   \newline
-\citet{haslett+bradley:1991} link histograms, double histograms, scatterplot matrices, and varioclouds
-(see section~\ref{sec4}) with the maps using the PASCAL language. Anselin and Bao
-(1995) implement the methods advocated in \citet{anselin:1994} linking ArcView and Space-
-Stat. \citet{brundson:1998} implements the scatterplot matrix, the neighbour plot and the
-angle plot (see section~\ref{sec4}) plus some spatial smoothing of maps for trend detection with
-the XLISP-STAT language. \citet{haining:1998} and \citet{wise:2001} develop SAGE,
-a software system held in the ARC-INFO GIS, with very similar capabilities as those
-quoted above. Let us mention also the linkage of ArcView and XGobi by \citet{cook:1996}  and \citet{symansik:2000}  and the cartographic data visualizer (cdv)
-of \citet{dykes:1998}  based on the Tcl/Tk language. The ArcGIS Geostatistical Analyst extension\footnote{\url{http://www.esri.com/software/arcgis/extensions/geostatistical/index.html}}
-includes extensive kriging capabilities and exploratory tools but is mainly oriented towards
-geostatistics and requires the expensive ArcGIS software. Mondrian\footnote{\url{http://stats.math.uni-augsburg.de/Mondrian/}}, written in
-JAVA, features interactive descriptive tools such as mosaic plots, scatter plots, bar charts,
-histograms and parallel coordinates plots. \newline
-MANET (\citet{unwin+hawkins:1996}), preceded by SPIDER (\citet{haslett:1990}) and REGARD,
-also contains a number of interactive descriptive tools with a central objective of dealing
-with missing values, but does not contain any tool from spatial statistics.
-GeoDatm is a free specialized software for spatial data analysis developed by \citet{anselin:2003}
-and combines maps with statistical graphs dynamically. It offers many functionalities
-for exploratory data analysis and spatial regression and its main strength is extensive
-mapping with full linking and brushing possibilities. In contrast (see \citet{anselin+syabri+kho:2006}),
-GeoDa is a ``closed box'' which does not benefit from the tremendous expansion of the \RR~
-project and has to be considered as an introductory tool to spatial data analysis.   \newline
-\citet{wise:2001} \footnote{The visualization of area-based spatial data, In: Case Studies of Visualization in the Social Sciences
-online. (ed.) D. Unwin, P. Fisher. Advisory Group on Computer Graphics (AGOCG). Available online
-via \url{http://www.agocg.ac.uk/reports/visual/casestud/contents.htm}} evaluate and compare cdv, MANET, SAGE and SpaceStat.  \newline
-\citet{lesage+pace:2004} develop C/C++ code to export polygons and data information
-from ArcView shapefiles into Matlab and a GUI interface as well as mapping functions
-to link a map with a histogram and a Moran scatterplot with the possibility of zooming
-(see also \citet{lesage:1998}).   \newline
-The need for a more adaptable, comprehensive and unified tool motivated us to start the
-development of a set of statistical routines adapted to the exploration of georeferenced
-data called \pkg{GeoXp}. It is mainly an exploratory tool for researchers and experienced users
-in spatial statistics, spatial econometrics, geography, ecology, epidemiology, etc. GeoXp
-is a stand-alone (free-standing) package independent of a GIS and this is certainly an
-advantage. Its functions allow coupling between statistical plots and elementary maps
-as defined before. The routines are user friendly. The user does not need to write a lot
-of \RR~ code except for loading the data and calling a function in the command window:
-after entering some parameters as arguments of the function (usual inputs are at least the
-name of the variables concerned by the graph), the user needs to execute it. He is then
-asked to perform the selections by mouse clicking.  \newline
-The quality of the cartographic display is not a priority for the exploration itself and
-this is why the emphasis in \pkg{GeoXp} is rather in the implementation of spatial statistics
-tools as numerous and up to date as possible. The final map for a publication can always
-be produced by a more sophisticated mapping tool if necessary. \newline
-GeoXp is based on \RR: this choice of language is motivated by the flexibility of \RR~  and
-the existence of many statistical packages developed in this language. The flexibility and
-adaptability of \pkg{GeoXp} comes from the fact that \RR~  is an open source software and thus
-the user who is familiar with \RR~ can customize \pkg{GeoXp} with its own routines and benefit
-from the large amount of modelling tools available in this environment. \pkg{GeoXp} includes
-spatial econometrics as well as geostatistics tools. The advantage over approaches linking
-a computer engine for statistical computations and a cartographic device such as ArcView
-is that \pkg{GeoXp} is not specific to an operating system and it avoids file transfers. Some
-unique features are present such as linking a map with a Lorenz curve (see section~\ref{sec2}) or
-with generalized principal components analysis (see section~\ref{sec6}). \pkg{GeoXp} offers also some
-rare tools such as the angle plot of \citet{brundson:1998} (see section~\ref{sec4}) and the neighbor plot
-(see section~\ref{sec5}).  \newline
-As far as timing performances are concerned, we ran some tests on an Optiplex GX745
-2 duo 2.13GHz under Windows Vista and using the version 1.2 of \pkg{GeoXp}. With a function
-like histomap, the time required to make a selection is under 1 second for a data set of size
-less than 5 000. With a data set of size 10000, the time required is about 1.5 seconds and
-for size 50 000, it is about 6.5 seconds. For functions which involve selections on couples
-of points like for example the moranplotmap function, the call takes about 19 seconds
-for size 1000 (resp. 3mn50s for size 2500). However, beyond a data set of size 4000, an
-allocation memory problem arises and we should be able to improve on this in the next
-version of \pkg{GeoXp}. \newline
-Section~\ref{sec2} describes the basic functionalities of \pkg{GeoXp} illustrated through an example.
-In section~\ref{sec3}, we present briefly descriptive functions which link simple univariate or
-bivariate graphs to maps. In section~\ref{sec4}, we focus on geostatistics functions such as the
-variocloud and the drift plot while, in section~\ref{sec5}, we describe econometrics functions such
-as the Moran plot and the neighbor plot. The multivariate functions such as generalized
-principal component analysis are presented in section~\ref{sec6}.  \newline
-For this paper, we have chosen to illustrate only a selection of the different routines
-and the reader will find a comprehensive list of the \pkg{GeoXp} functions in the annex and
-more illustrations on the web site\footnote{\url{http://gremaq.univ-tlse1.fr/stat/Chrisweb/SiteGeoXp/Index.htm}}.
-
+\section{Description of the basic functionalities}\label{sec1}
+\subsection{General principles}
 <<echo=FALSE,eval=TRUE,results=hide>>=
 library(GeoXp)
 @
+Basically, a function\footnote{We are talking about interactive functions of \pkg{GeoXp}.
+\pkg{GeoXp} contains also some internal or wrap functions which user should not be interested by.}
+of the \pkg{GeoXp} package could be called by using this code:
+\begin{verbatim}
+function(sp.obj,...,
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8,
+pch=16, col="lightblue3", xlab="angle", ylab="absolut magnitude",
+axes=FALSE, lablong="", lablat="")
+\end{verbatim}
 
-\section{Description of the basic functionalities}\label{sec2}
-\subsection{General principles}
- The \pkg{GeoXp} functions apply to the analysis of any data set of variables measured at geographical
-sites or on geographical zones such as cities, counties, countries, etc. called
-basic spatial units. For each site (for each zone), the data set must contain the cartesian
-coordinates of the site (respectively of the centroid of the zone). Variables can be
-continuous or categorical. In the case of geographical zones, one may use additionally
-the coordinates of polygonal spatial contours to improve the map quality and to help
-identifying locations.  \newline
-As far as format is concerned, any format that can be imported in \RR~ can be used as
-long as it contains the geographical coordinates. For example one can import a shapefile
-format from ArcView using the function \code{readShapePoly} of the \RR~ package maptools or
-the function \code{readOGR} of the \RR~ package rgdal, and a MIF/MID format from MapInfo
-using the function \code{readOGR} of the \RR~ package \pkg{rgdal}. The geographical contours have their
-own format (coordinates of vertices separated from one unit to the next by the missing
-value symbol NA). The \pkg{GeoXp} functions \code{polylist2list} and \code{spdf2list} allow to
-convert respectively the maptools, sp and rgdal formats into the format of GeoXp contours.
-The names of the main \pkg{GeoXp} functions reflect their functionality and always end
-with ``map'' (example: \code{moranplotmap}, \code{scattermap}). A call
-to a \pkg{GeoXp} function generally opens three windows: two graphical \RR~ windows for the
+The first argument \code{sp.obj} is a Spatial Class object as defined by R. Bivand
+in \pkg{sp} package. It contains both spatial coordinates and characteristics observed
+of spatial units. For drawing a map, the spatial coordinates of spatial units have been
+extracted from \code{sp.obj}, by using the function \code{coordinates}. The characteristics
+of spatial units are included in \code{sp.obj@data}, a \code{data.frame}. \newline
+
+The \code{...} correspond to specificities of each function (more details in ~\ref{sec2}).
+For example, some functions make analysis on one variable only. In this case, the \code{...}
+will indicate first the name of the variable of interest and also some specificities of the
+graphic used, like the number of bars for histogram, the representation or no of a quantile regression
+curve for cloud points, etc...
+\newline
+
+Now, let see the options.
+
+\subsection{Options}
+ \begin{itemize}
+  \item{names.attr}{a vector of character of size the number of variables included in \code{sp.obj@data}:
+  for changing the names of variables included in \code{sp.obj@data}}
+  \item{criteria}{a vector of boolean of size the number of spatial units; it permit to represent
+   preselected sites with a green cross, by clicking on \code{preselected sites} on the Tk window}
+  \item{carte}{In the case where \code{sp.obj} is a \code{SpatialPolygonDataFrame}, user will have the
+   opportunity to draw the polygons of Spatial unit by using the \code{Draw Saptial contours} button in the
+   Tk window. However, if \code{sp.obj} is  a \code{SpatialPointsDataFrame}, user can give in option
+   \code{carte}, a matrix with 2 columns for drawing spatial polygonal contours: x and y coordinates of the
+   vertices of the polygon. The functions (\code{polylist2list()} and \code{spdf2list()})
+   convert some spatial objects (\code{Polylist} and \code{SpatialPolygonDataFrame})
+   into matrix as decribed above to draw a background map. }
+  \item{identify}{if TRUE, the names of selected sites will be printed on the map. The names of spatial units
+  correpond to \code{row.names} of the attribute table \code{row.names(sp.obj@data)}.}
+  \item{cex.lab}{a numeric value: it gives the character size of labels}
+  \item{pch}{16 by default, it gives the symbol for selected points}
+  \item{col}{"lightblue3" by default, it gives the color of a graphic. In the case where the variable of interest
+  is a factor user could give a vector of colors corresponding to the colors of each level to be printed
+  on the map.}
+  \item{xlab}{a character: title for the graphic x-axis}
+  \item{ylab}{a character: title for the graphic y-axis}
+  \item{axes}{a boolean with TRUE for drawing axes on the map}
+  \item{lablong}{a character: name of the x-axis that will be printed on the map}
+  \item{lablat}{a character: name of the y-axis that will be printed on the map}
+\end{itemize}
+
+\subsection{A basic example}
+This first example has been taken from the example help of \code{histomap} function.
+We consider a data set containing price indices of real estate from biggest cities in France in 2008.
+ 
+\begin{footnotesize}
+<<echo=TRUE,eval=TRUE>>=
+data(immob)
+class(immob)
+names(immob)
+@
+\end{footnotesize}
+This data set is a \code{data.frame} containing the spatial coordinates of the
+cities in variables \code{longitude} and \code{latitude}. It contains also several
+variables corresponding the name of cities, a number of region, average price of sell and
+rent, etc...
+
+
+\begin{footnotesize}
+<<echo=TRUE,eval=TRUE>>=
+# immob is a data.frame object. We have to create
+# a Spatial object, by using first the longitude and latitude
+# to create Spatial Points object ...
+immob.sp = SpatialPoints(cbind(immob$longitude,immob$latitude))
+# ... and then by integrating other variables to create SpatialPointsDataFrame
+immob.spdf = SpatialPointsDataFrame(immob.sp, immob)
+# we just give names to the spatial units...
+row.names(immob.spdf)<-immob$Nom
+# For more details, see vignette('sp', package="sp")
+
+# optional : we add some contours that don't correspond to the spatial unit
+# but are nice for mapping
+midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
+cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
+
+# A basic call of histomap function
+histomap(immob.spdf,"prix.vente", carte= cont_midiP, identify=TRUE, cex.lab=0.6)
+@
+\end{footnotesize}
+
+A call to a \pkg{GeoXp} function generally opens three windows: two graphical \RR~ windows for the
 statistical graph and the map respectively, and one Tk window for the menu. The user
 then selects on the menu the graph on which he wants to select points first. This graph
 then becomes active and the selection by mouse clicking begins.  \newline
@@ -334,7 +302,7 @@ versus arterial road network accessibility in 1961 and barplot of the variable p
 \label{plotNC1}
 \end{figure}
 
-\section{Descriptive functions}\label{sec3}
+\section{Descriptive functions}\label{sec2}
 The descriptive functions are called \code{barmap}, \code{boxplotmap}, \code{histomap},
 \code{densitymap}, \code{histobarmap}, \code{dblehistomap}, \code{dbledensitymap},
 \code{polyboxplotmap}, \code{ginimap} and \code{scattermap}. \newline

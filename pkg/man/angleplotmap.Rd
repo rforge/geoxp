@@ -3,8 +3,9 @@
 \title{Detection of an eventual directional trend}
 \description{
 The function \code{angleplotmap()} is used to detect an eventual directional trend associated
-to variable \code{name.var}. It represents the absolute difference between the value of \code{name.var} at two sites
-as a function of the angle between vector \eqn{\overrightarrow{s_is_j}}{vector(s_is_j)} and the x-axis.
+to variable \code{name.var}. It represents the absolute difference between the value of \code{name.var}
+at two sites as a function of the angle between vector \eqn{\overrightarrow{s_is_j}}{vector(s_is_j)}
+and the x-axis.
 }
 \usage{
 angleplotmap(sp.obj, name.var, quantiles=NULL,
@@ -14,10 +15,10 @@ xlab="angle", ylab="absolut magnitude", axes=FALSE, lablong="", lablat="")
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{sp.obj}{object of class extending Spatial-class}
-  \item{name.var}{character; attribute name or column number in attribute table}
-  \item{quantiles}{list of values of quantile orders (the regression quantile is obtained by spline smoothing)}
-  \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{name.var}{a character; attribute name or column number in attribute table}
+  \item{quantiles}{a vector of numeric corresponding to quantile orders (the regression quantile is obtained by spline smoothing)}
+  \item{names.attr}{a vector of character: names to use in panel (if different from the names of variable used in sp.obj)}
+  \item{criteria}{a vector of boolean which permit to represent preselected sites with a cross, using the tcltk window (must be equal to the number of spatial units)}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
   \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
@@ -40,7 +41,13 @@ If that case, only the pair of sites \eqn{(s_i,s_j)}{(s_i,s_j)} verifying :
 \deqn{D_{ij}>g_{max(\alpha)}(\theta{ij})}{D_ij>g_max(alpha)(theta_ij)} are represented.
 }
 
-\value{A matrix of boolean of size \eqn{n \times n}{n x p}. TRUE if pair of sites was in the last selection}
+\value{
+In the case where user click on \code{save results} button,
+a matrix of integer is created as a global variable in \code{last.select} object.
+It corresponds to the numbers of spatial unit corresponding to couple of sites selected
+just before leaving the Tk window.
+}
+
 
 \references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
 
@@ -70,7 +77,7 @@ africa <- readShapePoly(system.file("shapes/Africa.shp", package = "GeoXp")[1])
 africa.contour<-spdf2list(africa)$poly
 
 # A basic call of histomap function
-obs<-angleplotmap(afcon.spdf,"totcon", carte= africa.contour,
+angleplotmap(afcon.spdf,"totcon", carte= africa.contour,
 identify=TRUE, cex.lab=0.6)
 
 
@@ -88,11 +95,10 @@ meuse.spdf = SpatialPointsDataFrame(meuse.sp, meuse)
 # meuse.riv is used for contour plot
 data(meuse.riv)
 
-obs<-angleplotmap(meuse.spdf,"copper",
-col="green",quantiles=0.9,
+angleplotmap(meuse.spdf,"copper",
+col="green",quantiles=0.9, cex.lab=0.7,
 xlab="Concentration in plomb (in ppm)",pch=7,carte=meuse.riv[c(21:65,110:153),])
 
 }
-
 
 \seealso{\code{\link{variocloudmap}},\code{\link{driftmap}}}

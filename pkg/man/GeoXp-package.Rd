@@ -24,42 +24,46 @@ some dimension reduction techniques such as PCA.
 Package: \tab GeoXp\cr
 Type: \tab Package\cr
 Version: \tab 1.5.0 \cr
-Date: \tab 2010-04-10\cr
+Date: \tab 2010-04-15\cr
 License: \tab GPL Vesion 2 or later \cr
 }
 
-In the version 1.5.0, GeoXp uses the SpatialClass object proposed by Roger Bivand
+In the version 1.5.0, GeoXp has adopted the \code{SpatialClass} object proposed by Roger Bivand
 in \code{sp} package. The main advantage of using this structure object is on one hand,
-a SpatialClass object can contain both spatial coordinates and a data.frame of observed variable
-and on an other hand, it offers the possibility to make spatial analysis using both
-packages \code{sp} and \code{GeoXp}. \cr
+a \code{SpatialClass} object can contain both spatial coordinates and a \code{data.frame}
+of observed variable and on an other hand, it offers the possibility to make spatial analysis using both
+packages derived from \code{sp} as \code{spdep}, \code{gstat} and \code{GeoXp}. \cr
 On the map, the coordinates of sites are represented by
-using the function \code{coordinates} included in \code{sp} pachage, which calculates
-\code{long} (for x-axis) and \code{lat} (for y-axis), applied on a Spatial Class Object.
-Attribute value is designed by argument \code{name.var}, a character, which design
-the name of interest variable in the data of the Spatial Class object. The basic function
-using only one variable: \code{histomap()}, \code{densitymap()},... (numeric values) or
-\code{barmap()},...(factor values). Some functions use both a vector of numeric
-values and a factor (function \code{histobarmap()}, \code{polyboxplotmap()},...). Few functions as
-\code{pcamap()} and \code{clustermap()} use a matrix of numeric variables. \cr
-At this moment, a site cannot be yet represented by
-lattice/area style (only by centroïd references coordinates). However, user can represent a
-spatial polygonal contour as background map with option \code{carte}.
-A spatial polygonal contour is a matrix of numeric values with 2 columns (x and y coordinates of the vertices of the polygons)
-where polygons are seperated from each other 
-by 3 rows of NaN. In the case of a SpatialPolygonDataFrame, the contours are automatically included in the
-functions. \cr
-The functions (\code{polylist2list()} and \code{spdf2list()})
+using the function \code{coordinates} included in \code{sp} package, which calculates
+\code{longitude} (for x-axis) and \code{latitude} (for y-axis), applied on a Spatial Class Object.  \cr
+In GeoXp, we can find three main groups of functions: \cr
+- functions using only one variable: the interest variable
+is designed by argument \code{name.var}, a character corresponding to a column of the \code{data.frame}
+included in \code{sp.obj}, i.e. the Spatial Class object. It can be a numeric variable (\code{histomap()},
+\code{densitymap()}, \code{angleplotmap}...) or a factor variable (or character) (\code{barmap()},...).  \cr
+- functions using both several variables: the variables of interest are designed by argument
+\code{names.var}, a vector of character corresponding to columns of the \code{data.frame}
+included in \code{sp.obj}. It can be two numeric variables (\code{dblehistomap}, \code{dbledensitymap}),
+one numeric variable and one factor (\code{histobarmap()}, \code{polyboxplotmap()}),
+several numeric variables (\code{plot3dmap}, \code{pcamap()} and \code{clustermap()}). \cr
+- functions using both a variable and a spatial weight matrix created as a \code{nb} or \code{listw} object
+(see package \code{spdep}). \cr
+In the case where \code{sp.obj} is a \code{SpatialPolygonDataFrame}, user will have the opportunity to draw
+the polygons of Spatial unit by using the \code{Draw Saptial contours} button in the Tk window. User can
+also give a spatial polygonal contour as background map with option \code{carte}: in this case,
+a spatial polygonal contour is a matrix of numeric values with 2 columns (x and y coordinates of
+the vertices of the polygons) where polygons are seperated from each other
+by 3 rows of NaN. The functions (\code{polylist2list()} and \code{spdf2list()})
 convert some spatial objects (\code{Polylist} and \code{SpatialPolygonDataFrame})
 into matrix as decribed above to draw a background map. \cr
 Among options which are common to each function, users have the 
-possibility to give a \code{criteria}, vector of boolean of size n with TRUE on
-specific sites. These sites are then represented by a green croice on the map
-by clicking on "preselected sites" button. \cr
+possibility to give a \code{criteria}, vector of boolean of size the number of Spatial units,
+with TRUE on specific sites. These sites are then represented by a green croice on the map
+by clicking on \code{preselected sites} button on the Tk window. \cr
 Moreover, users have the possibility to make bubbles and add some graphs 
 (histogram, barplot or scattermap). The potential variables are included
-in the data.frame of the SpatialObject. Users can choose a proportional
-symbol mapping : in function plot, we give value
+in the \code{data.frame} of the \code{SpatialObject}. Users can choose a proportional
+symbol mapping: in function plot, we give value
 \eqn{var^{0.5}}{sqrt(var)}. User can choose if a legend has to appear on
 the map. He could choose then three values represented by bubbles of 
 corresponding sizes. \cr
@@ -67,7 +71,7 @@ Finally, users can choose to represent the graphical with different colors
 using argument \code{col}. In the case of factors (as function \code{barmap}), users could choose
 if a legend with corresponding colors will appear on the map. Users can also modify the representation of
 selected sites on map with argument \code{pch}.    \cr
-New functions \code{bar.nb()} and \code{hist.nb()} give the opportunity to analyse spatial
+Recent functions \code{bar.nb} and \code{hist.nb} give the opportunity to analyse spatial
 weight matrix build using functions included in \code{spdep} package.
 }
 

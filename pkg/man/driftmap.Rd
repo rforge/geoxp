@@ -10,6 +10,7 @@ divided into m rows and q columns (m and q are selected with the tk window), (ce
 in x-axis and the mean and median of \code{name.var} calculated for the m rows in y-axis, (cell 3) a scatter plot with the mean and
 median of \code{var} calculated for the q columns in x-axis and \code{coordinates(sp.obj)[,1]} in y-axis and (cell 4) a legend indicating the
 direction of the North, the variable used, etc.}
+
 \usage{
 driftmap(sp.obj, name.var, interpol=TRUE, nuage=TRUE, lty=1:2, cex=0.7,
 names.attr=names(sp.obj), carte=NULL, identify=FALSE, cex.lab=0.8, pch=rep(16,3),
@@ -18,7 +19,7 @@ col=c("lightblue3", "black", "red"), xlab="", axes=FALSE)
 
 \arguments{
   \item{sp.obj}{object of class extending Spatial-class}
-  \item{name.var}{character; attribute name or column number in attribute table}
+  \item{name.var}{a character; attribute name or column number in attribute table}
   \item{interpol}{if TRUE, the mean and median calculated are linearly interpoled}
   \item{nuage}{if TRUE, the values taken by var are also represented on right plot and on the left plot}
   \item{lty}{the line type for mean and median in the case of interpol=TRUE}
@@ -38,7 +39,11 @@ Possibility to change the number of cells in the grid with the tk window, to int
 to work on a rotated map. At the begining, all sites have been selected to the map : users have to deselect sites that they
 have choosen.}
 
-\value{No values returned, only drawing of a graphic.}
+\value{
+In the case where user click on \code{save results} button,
+a vector of integer is created as a global variable in \code{last.select} object.
+It corresponds to the number of spatial units selected just before leaving the Tk window.
+}
 
 \references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}
 }

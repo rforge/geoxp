@@ -51,7 +51,7 @@ Returns `inertia' vector of size p with percent of inertia of each component (co
 `casecoord' matrix \eqn{n \times p}{n x p} (corresponding to matrix CC),
 `varcoord' matrix \eqn{p \times n}{p x n} (corresponding to matrix VC0).}
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2009), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
 
 Caussinus H., Fekri M., Hakam S., Ruiz-Gazen A. (2003) , \emph{A monitoring display of Multivariate Outliers}, Computational Statistics and Data Analysis, vol. 44, 1-2, 237-252.}
 

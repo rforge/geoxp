@@ -3,8 +3,8 @@
 \title{Interactive histogram of the distances between two neighbors of a nb object and map}
 \description{
 The function \code{histnbmap()} draws the histogram of the distances between two neighbors for
-a neighbourhood structure given by a \code{nb} object and calculated by nbdists function (see \code{spdep} package),
-and links the graphic with a map.
+a neighbourhood structure given by a \code{nb} object and calculated by \code{nbdists} function
+(see \code{spdep} package), and links the graphic with a map.
 }
 
 \usage{
@@ -21,7 +21,7 @@ xlab="", ylab="count", axes=FALSE, lablong="", lablat="")
   \item{nbcol}{number of cells for histogram (10 by default)}
   \item{type}{Character string indicating type of histogram to be drawn. "percent" and "count" give relative frequency and frequency histograms, "density" produces a density scale histogram.}
   \item{sup}{if TRUE, it keeps only the distance of the neighbor the farest }
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{criteria}{a vector of boolean of size the number of Spatial units, which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
   \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
@@ -35,8 +35,8 @@ xlab="", ylab="count", axes=FALSE, lablong="", lablat="")
 }
 \details{
 For a selected site j on the map, are represented on the map its neighbours.
-For a selected bar on the graph, the corresponding sites are represented on the map with a link which means that two sites
-are neighbours.}
+For a selected bar on the graph, the corresponding sites are represented on the map with a link which
+means that two sites are neighbours.}
 
 \note{
 When user select sites on the graph or on the map, he cannot add a selection by using the other graphic.}

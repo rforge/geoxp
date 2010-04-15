@@ -3,9 +3,11 @@
 
 \title{Kernel density estimates and map}
 \description{
-The function \code{densitymap} draws kernel density estimates of the variable \code{name.var} with 'bkde.R'
-and a map with sites of coordinate \code{coordinates(sp.obj)}. Each site is associated to a value of \code{name.var} and there is interactivity between the two windows.
+The function \code{densitymap} draws kernel density estimates of the variable \code{name.var} with
+\code{bkde} and a map with sites of coordinate \code{coordinates(sp.obj)}. Each site is associated
+to a value of \code{name.var} and there is interactivity between the two windows.
 }
+
 \usage{
 densitymap(sp.obj, name.var, kernel='triweight',
 names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16,
@@ -14,10 +16,10 @@ col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 
 \arguments{
   \item{sp.obj}{object of class extending Spatial-class}
-  \item{name.var}{character; attribute name or column number in attribute table}
+  \item{name.var}{a character; attribute name or column number in attribute table}
   \item{kernel}{Smoothing kernel (see help(bkde) for list of options)}
    \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
-  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}
+  \item{criteria}{a vector of boolean of size the number of spatial units, which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
   \item{identify}{if not FALSE, identify plotted objects (currently only working for points plots). Labels for identification are the row.names of the attribute table row.names(as.data.frame(sp.obj)).}
   \item{cex.lab}{character size of label}
@@ -33,10 +35,14 @@ col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 \details{
 The user can choose an interval on the density curve by mouse clicking on the graph on the extremities of interval or by specifying directly values. The sites selected by an interval are then represented on the map in red.
 The selection of sites on the map by `points' or `polygon' results in the drawing of the kernel densities of the subdistributions corresponding to this subset of sites.
-Finally, the user can modify the bandwith parameter with a cursor in the tcltk
+Finally, the user can modify the bandwith parameter with a cursor in the Tk
 window (parameter \eqn{\alpha}{alpha}). \eqn{\alpha}{alpha} is the smoothing parameter for the kernel smooth : it represents the mean percentage of sample points involved in the local averaging (example : \eqn{\alpha=20}{alpha=20} means that on average, \eqn{n \times 0.2}{n x 0.2} points are in any interval of length 2h where h is the usual bandwidth).}
 
-\value{A vector of boolean of size n. TRUE if the site was in the last selection.}
+\value{
+In the case where user click on \code{save results} button,
+a vector of integer is created as a global variable in \code{last.select} object.
+It corresponds to the number of spatial units selected just before leaving the Tk window.
+}
 
 \references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
 
@@ -56,7 +62,7 @@ example(columbus)
 
 # columbus is included in the Spatial-Class object
 # a very simple use of histomap :
-histomap(columbus,"CRIME")
+densitymap(columbus,"CRIME")
 
 ######
 # data on price indices of real estate in France
@@ -80,13 +86,6 @@ cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
 densitymap(immob.spdf,"prix.vente", carte= cont_midiP, identify=TRUE,
 xlab="housing price by square meter", cex.lab=0.6)
 
-####
-# data columbus
-example(columbus)
-
-densitymap(columbus,"CRIME", col="pink",identify=TRUE,
-criteria=(columbus@data$CRIME>mean(columbus@data$CRIME)),
-pch=12,axes=TRUE,lablong="long.",lablat="lat.")
 }
 
 \keyword{spatial}

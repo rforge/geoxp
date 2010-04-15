@@ -7,6 +7,21 @@ class.obj<-class(sp.obj)[1]
 
 if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
 
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())) # new environment
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
+
 # we propose to refind the same arguments used in first version of GeoXp
 coords<-coordinates(sp.obj)
 
@@ -142,8 +157,9 @@ pointfunc<-function()
     graf<<-"Neighbourplot1"
    
     dev.set(2)
-    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-    
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
     while(!quit)
     {
       dev.set(2)
@@ -162,8 +178,9 @@ pointfunc<-function()
         carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=pch,
         method="Neighbourplot3", W=W,axis=axes,cex.lab=cex.lab,legmap=legmap,legends=legends,buble=buble,
         criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart)
-        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-    
+        title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
         graphique(var1=nb,var2=dlist, obs=obs, num=3, bin=type, graph="histo.nb",nbcol=nbcol, W=W,
         labvar=labvar, symbol=pch,couleurs=col)
 
@@ -185,8 +202,9 @@ polyfunc<-function()
     quit <- FALSE
     
     dev.set(2)
-    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-    
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
     while(!quit)
     {
         dev.set(2)
@@ -235,8 +253,9 @@ barfunc<-function()
     graf<<-"Neighbourplot2"
     quit <- FALSE
     dev.set(3)
-    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-    
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
     while(!quit)
     {
       dev.set(3)
@@ -257,8 +276,9 @@ barfunc<-function()
       
    graphique(var1=nb,var2=dlist, obs=obs, num=3,bin=type, graph="histo.nb",nbcol=nbcol, W=W,
    labvar=labvar, symbol=pch,couleurs=col)
-   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ctrl + click)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-          
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
     }
   }
 
@@ -346,10 +366,10 @@ SGfunc<-function()
 
 quitfunc<-function()
 {
-    tclvalue(fin)<<-TRUE
- #   graphics.off();
-    tkdestroy(tt);
+    assign("GeoXp.open", FALSE, envir = baseenv())
+    tkdestroy(tt)
 }
+
 
 ####################################################
 # Graphique de base
@@ -444,11 +464,8 @@ tkgrid(label5,columnspan=2)
 quit.but <- tkbutton(tt, text="     OK     ", command=quitfunc);
 tkgrid(quit.but,columnspan=2)
 tkgrid(tklabel(tt,text="    "))
-tkwait.variable(fin)
 }
 ####################################################
 
-
-
-
+return(invisible())
 }
