@@ -4,7 +4,7 @@
 \title{Interactive scatterplot and map}
 
 \description{
-The function \code{scattermap} draws a scatterplot of the given variables included
+The function \code{scattermap} draws a scatterplot of the given variables indicated
 in \code{names.var} and a map with sites
 of coordinates \code{coordinates(sp.obj)}. Boxplots of each variable
 \code{names.var[1]} and \code{names.var[2]} are represented below the x-axis and y-axis.}

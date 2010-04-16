@@ -4,12 +4,14 @@
 \title{Interactive driftplot and map}
 \description{
 The function \code{driftmap()} creates two devices : a device with the map of coord
-\code{coordinates(sp.obj)} which permits to make selection of sites and a device divided into 2 rows and 2 columns which contains : (cell 1) the selected sites
-divided into m rows and q columns (m and q are selected with the tk window), (cell 2) a scatter plot with
-\code{coordinates(sp.obj)[,2]}
-in x-axis and the mean and median of \code{name.var} calculated for the m rows in y-axis, (cell 3) a scatter plot with the mean and
-median of \code{var} calculated for the q columns in x-axis and \code{coordinates(sp.obj)[,1]} in y-axis and (cell 4) a legend indicating the
-direction of the North, the variable used, etc.}
+\code{coordinates(sp.obj)} which permits to make selection of sites and a device divided into
+2 rows and 2 columns which contains : (cell 1) the selected sites
+divided into m rows and q columns (m and q are selected with the tk window),
+(cell 2) a scatter plot with \code{coordinates(sp.obj)[,2]}
+in x-axis and the mean and median of \code{name.var} calculated for the m rows in y-axis,
+(cell 3) a scatter plot with the mean and
+median of \code{name.var} calculated for the q columns in x-axis and \code{coordinates(sp.obj)[,1]} in y-axis and (cell 4)
+a legend indicating the direction of the North, the variable used, etc.}
 
 \usage{
 driftmap(sp.obj, name.var, interpol=TRUE, nuage=TRUE, lty=1:2, cex=0.7,

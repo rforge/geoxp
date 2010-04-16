@@ -2,7 +2,7 @@
 \alias{boxplotmap}
 \title{Interactive boxplot and map}
 \description{
-The function \code{boxplotmap()} draws a boxplot of the given variable $name.var$
+The function \code{boxplotmap()} draws a boxplot of the given variable \code{name.var}
 and a map with site of coordinates \code{coordinates(sp.obj)}. }
 
 \usage{
@@ -33,7 +33,11 @@ There is an interactivity only in one direction : the sites selected by interqua
 are represented on the map in red. 
 }
 
-\value{A vector of boolean of size n. TRUE if the site was in the last selection.}
+\value{
+In the case where user click on \code{save results} button,
+a vector of integer is created as a global variable in \code{last.select} object.
+It corresponds to the number of spatial units selected just before leaving the Tk window.
+}
 
 \references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
 
