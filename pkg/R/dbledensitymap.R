@@ -13,7 +13,7 @@ if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vecto
 # Is there a Tk window already open ?
 if(interactive())
 {
- if(!exists("GeoXp.open",envir = baseenv())) # new environment
+ if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all=TRUE))==2)
  {
   assign("GeoXp.open", TRUE, envir = baseenv())
  }
@@ -52,7 +52,6 @@ ifelse(identify, label<-row.names(listvar),label<-"")
   interv<-NULL
   buble<-FALSE
   legends<-list(FALSE,FALSE,"","")
-  graphics.off()
 
   # for the slider
   alpha11<-20
@@ -80,11 +79,10 @@ ifelse(identify, label<-row.names(listvar),label<-"")
 # Transformation de data.frame en matrix
 if((length(listvar)>0)&&(dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(listvar)
 
-# Ouverture des fenêtres graphiques
-dev.new()
-dev.new()
-dev.new()
-fin <- tclVar(FALSE)
+# Windows device
+if(!(2%in%dev.list())) dev.new()
+if(!(3%in%dev.list())) dev.new()
+if(!(4%in%dev.list())) dev.new()
 
 ####################################################
 # sélection d'un point
@@ -641,7 +639,6 @@ graphfunc <- function()
 {
    if ((length(listvar) != 0) && (length(listnomvar) != 0))
     {
-        dev.off(5)
         choix <<- selectgraph(listnomvar,listgraph)
         varChoice1 <<- choix$varChoice1
         varChoice2 <<- choix$varChoice2
@@ -664,7 +661,7 @@ graphfunc <- function()
             legends <<- res1$legends
             labmod <<- res1$labmod
 
-            dev.new()
+            if(!(5%in%dev.list())) dev.new()
             graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
             obs=obs, num=5, graph=graphChoice, couleurs=col3, symbol=pch, labvar=c(varChoice1,varChoice2));
 
@@ -740,94 +737,80 @@ axis=axes, lablong=lablong, lablat=lablat,method=method,classe=listvar[,which(li
 
 if(interactive())
 {
+fontheading<-tkfont.create(family="times",size=14,weight="bold")
+
 tt <- tktoplevel()
+tkwm.title(tt, "dbledensitymap")
 
-labelText1 <- tclVar("Work on the map")
-label1 <- tklabel(tt, text=tclvalue(labelText1))
-tkconfigure(label1, textvariable=labelText1)
-tkgrid(label1,columnspan=2)
-point.but <- tkbutton(tt, text="    Points    ", command=pointfunc);
-poly.but <- tkbutton(tt, text="   Polygon   ", command=polyfunc);
-tkgrid(point.but, poly.but, tklabel(tt,text="         "))
-tkgrid(tklabel(tt,text="    "))
+frame1a <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame1a, text = "Interactive selection", font = "Times 14",
+foreground = "blue", background = "white"))
+tkpack(tklabel(frame1a, text = "Work on the map", font = "Times 12",
+foreground = "darkred", background = "white"))
 
-labelText2 <- tclVar("Select an interval by selecting on graph")
-label2 <- tklabel(tt, text=tclvalue(labelText2))
-tkconfigure(label2, textvariable=labelText2)
-tkgrid(label2,columnspan=2)
-intervalle1.but <- tkbutton(tt, text="  1st graph  ", command=inter1func);
-intervalle2.but <- tkbutton(tt, text="  2nd graph  ", command=inter2func);
-tkgrid(intervalle1.but, intervalle2.but)
-tkgrid(tklabel(tt,text="    "))
+point.but <- tkbutton(frame1a, text="Selection by point", command=pointfunc);
+poly.but <- tkbutton(frame1a, text="Selection by polygon ", command=polyfunc);
+tkpack(point.but, poly.but, side = "left", expand = "TRUE",
+        fill = "x")
 
-labelText2 <- tclVar("Select an interval by specifying bounds")
-label2 <- tklabel(tt, text=tclvalue(labelText2))
-tkconfigure(label2, textvariable=labelText2)
-tkgrid(label2,columnspan=2)
-intervalle11.but <- tkbutton(tt, text="1st variable", command=choixvalue1);
-intervalle22.but <- tkbutton(tt, text="2nd variable", command=choixvalue2);
-tkgrid(intervalle11.but,intervalle22.but, tklabel(tt,text="         "))
-tkgrid(tklabel(tt,text="    "))
+tkpack(frame1a, expand = "TRUE", fill = "x")
 
+frame1c <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame1c, text = "Select an interval on the 1st graphic", font = "Times 12",
+foreground = "darkred", background = "white"))
+intervalle1.but <- tkbutton(frame1c, text="by selecting on graph", command=inter1func);
+intervalle11.but <- tkbutton(frame1c, text="by specifying bounds", command=choixvalue1);
+tkpack(intervalle1.but,intervalle11.but, side = "left", expand = "TRUE", fill = "x")
+tkpack(frame1c, expand = "TRUE", fill = "x")
 
+frame1d <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame1d, text = "Select an interval on the 2nd graphic", font = "Times 12",
+foreground = "darkred", background = "white"))
+intervalle2.but <- tkbutton(frame1d, text="by selecting on graph", command=inter2func);
+intervalle22.but <- tkbutton(frame1d, text="by specifying bounds", command=choixvalue2);
+tkpack(intervalle2.but,intervalle22.but, side = "left", expand = "TRUE", fill = "x")
+tkpack(frame1d, expand = "TRUE", fill = "x")
 
-label1 <- tclVar("To stop selection, leave the cursor on the active graph, click on the right button of the mouse and stop")
-label11 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(label1))
-tkconfigure(label11, textvariable=label1)
-tkgrid(label11,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-
-slider1(tt,refresh1.code,names.slide,3,100,1,c(alpha11,alpha21))
-
-labelText7 <- tclVar("Preselected sites / Draw Spatial Contours")
-label7 <- tklabel(tt, text=tclvalue(labelText7))
-tkconfigure(label7, textvariable=labelText7)
-tkgrid(label7,columnspan=2)
-noint1.but <- tkbutton(tt, text="  On/Off  ", command=fnointer);
-nocou1.but <- tkbutton(tt, text="  On/Off  ", command=cartfunc);
-tkgrid(noint1.but, nocou1.but)
-tkgrid(tklabel(tt,text="    "))
+frame1b <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+nettoy.but <- tkbutton(frame1b, text="     Reset selection     " , command=SGfunc);
+tkpack(nettoy.but, side = "left", expand = "TRUE", fill = "x")
+tkpack(frame1b, expand = "TRUE", fill = "x")
 
 
-labelText9 <- tclVar("Bubbles")
-label9 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText9))
-tkconfigure(label9, textvariable=labelText9)
-tkgrid(label9,columnspan=2)
+frame2 <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame2, text = "Options", font = "Times 14",
+foreground = "blue", background = "white"))
+tkpack(tklabel(frame2, text = "Spatial contours", font = "Times 10",
+foreground = "darkred", background = "white"),tklabel(frame2, text = "Preselected sites", font = "Times 10",
+foreground = "darkred", background = "white"),tklabel(frame2, text = "Bubbles", font = "Times 10",
+foreground = "darkred", background = "white"),tklabel(frame2, text = "Additional graph", font = "Times 10",
+foreground = "darkred", background = "white"), side = "left", fill="x",expand = "TRUE")
+tkpack(frame2, expand = "TRUE", fill = "x")
 
-bubble.but <- tkbutton(tt, text="  On/Off  ", command=fbubble);
-tkgrid(bubble.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-labelText3 <- tclVar("Restore graph")
-label3 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText3))
-tkconfigure(label3, textvariable=labelText3)
-tkgrid(label3,columnspan=2)
-
-nettoy.but <- tkbutton(tt, text="     OK     " , command=SGfunc);
-tkgrid(nettoy.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-labelText4 <- tclVar("Additional graph")
-label4 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText4))
-tkconfigure(label4, textvariable=labelText4)
-tkgrid(label4,columnspan=2)
-
-autre.but <- tkbutton(tt, text="     OK     " , command=graphfunc);
-tkgrid(autre.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
+frame2b <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+nocou1.but <- tkbutton(frame2b, text="On/Off", command=cartfunc)
+noint1.but <- tkbutton(frame2b, text="On/Off", command=fnointer)
+bubble.but <- tkbutton(frame2b, text="On/Off", command=fbubble)
+autre.but <- tkbutton(frame2b, text="     OK     " , command=graphfunc)
+tkpack(nocou1.but,noint1.but,bubble.but,autre.but, side = "left", expand = "TRUE", fill = "x")
+tkpack(frame2b, expand = "TRUE", fill = "x")
 
 
-labelText5 <- tclVar("  Exit  ")
-label5 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText5))
-tkconfigure(label5, textvariable=labelText5)
-tkgrid(label5,columnspan=2)
+frame2e <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+slider1(frame2e,refresh1.code,names.slide,3,100,1,c(alpha11,alpha21))
+tkpack(frame2e, expand = "TRUE", fill = "x")
 
+frame3 <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame3, text = "Exit", font = "Times 14",
+foreground = "blue", background = "white"))
 
-quit.but <- tkbutton(tt, text="Save results", command=quitfunc2);
-quit.but2 <- tkbutton(tt, text="Don't save results", command=quitfunc);
-tkgrid(quit.but2,quit.but)
-tkgrid(tklabel(tt,text="    "))
+quit.but <- tkbutton(frame3, text="Save results", command=quitfunc2);
+quit.but2 <- tkbutton(frame3, text="Don't save results", command=quitfunc);
+
+tkpack(quit.but, quit.but2, side = "left", expand = "TRUE",
+        fill = "x")
+
+tkpack(frame3, expand = "TRUE", fill = "x")
 }
 ####################################################
 

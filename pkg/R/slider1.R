@@ -27,8 +27,9 @@ for(i in 1:p)
    sc<-tkscale(fenetre, command=refresh.code, from=minima[1], to=maxima[1],showvalue=TRUE, resolution=resolutions[1], orient="horiz")
    assign("sc", sc, env=baseenv())
    tkgrid(lab, sc)
-   #tkconfigure(eval(parse(text=paste("sc,variable=slider",i,sep="")),env=baseenv()));
    eval(parse(text=paste("tkconfigure(sc,variable=slider.value",i,")",sep="")),env=list(baseenv(),.GlobalEnv));
+   tkgrid.configure(lab, column=0, columnspan=5, sticky="w")
+   tkgrid.configure(sc, column=6, columnspan=5, sticky="w")
   }
 }
 

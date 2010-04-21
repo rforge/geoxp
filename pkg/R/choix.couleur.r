@@ -21,10 +21,6 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
          tt <- tktoplevel()
          txt <- tktext(tt, height=8)
 
-
-         test.col<-NULL
-         test.col<-colors()[3:(2+n.col)]
-
          tkpack(tklabel(tt,text=paste("Please, could you give a vector of ",n.col," colors like c(\"orange\",etc)")) )
          tkpack(txt)
 
@@ -41,7 +37,7 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
 
 
             col2<<-eval(e)
-            col3<<-eval(e)
+            col3<<-col2[1]
 
            if (length(col2)!=n.col)
             {
@@ -57,8 +53,6 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
 
                 tt <- tktoplevel()
                 txt <- tktext(tt, height=8)
-                test.col<-NULL
-                test.col<-colors()[3:(2+n.col)]
 
                 tkpack(tklabel(tt,text=paste("Please, could you give a vector of ",n.col," symbols like c(3, 4, etc)")))
                 tkpack(txt)

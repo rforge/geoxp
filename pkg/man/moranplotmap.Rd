@@ -83,7 +83,7 @@ W.listw <- nb2listw(W.nb,style="W")
 
 # moranplotmap with some options
 moranplotmap(baltimore.spdf, "PRICE", W.listw ,
-flower=TRUE, locmoran=TRUE,criteria=(columbus$CP==1),
+flower=TRUE, locmoran=TRUE,criteria=(baltimore.spdf$AC==1),
 identify=TRUE)
 
 # comparison with the moran.test function

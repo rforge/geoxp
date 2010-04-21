@@ -9,7 +9,6 @@ function (var1, var2, var3, obs, num, graph = "", couleurs = "",
     dev.set(num)
   #  par(mar = c(4.5, 4.5, 0.5, 0.5))
 
-
 ####################################################
 # Initialisation des bubbles
 ####################################################
@@ -311,11 +310,17 @@ else
         }
     }    
     
-    
-    if (graph == "Scatterplot") 
+
+
+    if (graph == "Scatterplot" || graph=="Acp1")
     {
         if (length(quantiles)!=0) couleur.quant <- heat.colors(length(quantiles))
-        par()
+
+        if(graph=="Acp1")
+        {
+         labvar[1] <- paste("component ", labvar[1], " : ", round(inertie[direct[1]], 0), "%", sep = "")
+         labvar[2] <- paste("component ", labvar[2], " : ", round(inertie[direct[2]], 0), "%", sep = "")
+        }
         layout(matrix(c(1, 3, 0, 2), 2, 2, byrow = TRUE), c(1,4), c(5, 1), )
         par(mar = c(2, 1, 2, 2))
         boxplot(var2, axes = FALSE)
@@ -326,6 +331,12 @@ else
         par(mar = c(2, 2, 2, 2))
         plot(var1, var2, "n", xlab = "", ylab = "")
         points(var1[!obs], var2[!obs], col = couleurs, pch = 16,cex=0.8)
+
+        if(graph=="Acp1")
+        {
+        segments(min(var1), 0, max(var1), 0, col = "black")
+        segments(0, min(var2), 0, max(var2), col = "black")
+        }
         
         if (opt1) 
         {
@@ -348,7 +359,24 @@ else
         if (length(var1[obs]) != 0) 
         {
          points(var1[obs], var2[obs], col = "red", pch = symbol,cex = 1.2)
+
+          if(graph=="Acp1")
+           {
+            if(is.logical(label))
+            {
+             if (label)
+             {
+              msg <- paste(round(labmod, 0), "%", sep = "")
+              text(var1[obs] + 0.02, var2[obs] + 0.02, msg[obs], cex = cex.lab, font=3,adj=c(0.75,-0.75))
+             }
+           }
+         }
         }
+       if(dev.cur()!=3)
+       {
+       layout(1)
+       par(mar=c(5.1,4.1,4.1,2.1))
+       }
     }
     
     if (graph == "Boxplot") 
@@ -407,11 +435,11 @@ else
      
         if(n5>0)
          {points(rep(1,n5), var1[obs][which((var1[obs] >= mat[5, 1]) & (var1[obs] <= max(out)))],
-          col = "red", pch = symbol,cex = 1)}
+          col = "red", pch = symbol)}
           
         if(n6>0)
          {points(rep(1,n6), var1[obs][which((var1[obs] < mat[1, 1]) & (var1[obs] >= min(out)))],
-          col = "red", pch = symbol,cex = 1)}        
+          col = "red", pch = symbol)}
                      
         }
     }
@@ -495,12 +523,12 @@ else
           if ((var1[obs][j] >= mat[5, k]) && (var1[obs][j] <= max(out)) && 
           (as.character(var2[obs][j]) == as.character(r$names[k]))) 
           {
-           points(k, var1[obs][j], col = "red", pch = symbol, cex = 1.5)
+           points(k, var1[obs][j], col = "red", pch = symbol)
            }
           
           if ((var1[obs][j] < mat[1, k]) && (var1[obs][j] >= min(out))) 
           {
-           points(k, var1[obs][j], col = "red", pch = symbol, cex = 1.5)
+           points(k, var1[obs][j], col = "red", pch = symbol)
           }
          }
         }
@@ -1033,44 +1061,20 @@ else
         }
     }
     
-    if (graph == "Acp1") 
-    {
-        msg1 <- paste("component ", labvar[1],
-        " : ", round(inertie[direct[1]], 0), "%", sep = "")
-        msg2 <- paste("component ", labvar[2],
-        " : ", round(inertie[direct[2]], 0), "%", sep = "")
-        
-        plot(var1, var2, "n", xlab = msg1, ylab = msg2)
-        points(var1[!obs], var2[!obs], col = couleurs, pch = 16, cex = 0.8)
-        segments(min(var1), 0, max(var1), 0, col = "black")
-        segments(0, min(var2), 0, max(var2), col = "black")
-        if (length(var1[obs]) != 0) 
-        {
-          points(var1[obs], var2[obs], col = "red", pch = symbol, cex = 1.2)
-        
-          if (label) 
-          {
-           msg <- paste(round(labmod, 0), "%", sep = "")
-           text(var1[obs] + 0.02, var2[obs] + 0.02, msg[obs], cex = cex.lab,
-           font=3,adj=c(0.75,-0.75))
-         }
-       }  
-    }
-    
-    
-    if (graph == "Acp2") 
+
+   if (graph == "Acp2")
     {
         centre <- rep(0, length(var1))
         msg1 <- paste("component ", labvar[1],
         " : ", round(inertie[direct[1]], 0), "%", sep = "")
         msg2 <- paste("component ", labvar[2],
         " : ", round(inertie[direct[2]], 0), "%", sep = "")
-       
-        if ((max(abs(var1)) > 1) || (max(abs(var2)) > 1)) 
+
+        if ((max(abs(var1)) > 1) || (max(abs(var2)) > 1))
         {
             plot(var1, var2, "n", xlab = msg1, ylab = msg2)
         }
-        else 
+        else
         {
             plot(-1:1, -1:1, "n", xlab = msg1, ylab = msg2)
             segments(-1, 0, 1, 0, col = "black")
@@ -1085,5 +1089,6 @@ else
         lines(x, y)
         lines(x, -y)
     }
+
 
 }
