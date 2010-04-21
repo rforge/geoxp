@@ -84,17 +84,17 @@ boston.sp<-SpatialPoints(cbind(boston.utm[,1],boston.utm[,2]))
 # SpatialPointsDataFrame object
 boston.spdf <- SpatialPointsDataFrame(boston.sp, boston.c)
 
-# a basic PCA on 4 variables
-pcamap(boston.spdf, c(6:8,10,12:15), identify=TRUE, cex.lab=0.5)
+# a basic PCA on 7 variables
+pcamap(boston.spdf, c(7:8,10,12:15), identify=TRUE, cex.lab=0.5)
 
 # generalized PCA : user have to construct a new metric and a vector
 # of gravity center, by using for exampe covMcd
-cov.boston<-covMcd(boston.c[,c(6:8,10,12:15)],alpha=.75)
+cov.boston<-covMcd(boston.c[,c(7:8,10,12:15)],alpha=.75)
 b.center<-cov.boston$center
 b.cov<-cov.boston$cov
 
 # example of use of pcamap
-pcamap(boston.spdf, c(6:8,10,12:15), metric=b.cov, center=b.center,identify=TRUE,
+pcamap(boston.spdf, c(7:8,10,12:15), metric=b.cov, center=b.center,identify=TRUE,
 cex.lab=0.5)
 }
 

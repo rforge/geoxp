@@ -1,8 +1,8 @@
 \name{spdf2list}
 \alias{spdf2list}
 
-\title{Extract from a \code{SpatialPolygonsDataFrame} object the middle coordinates of boundary
-box and the vertices of the polygons (in the case where polygons are given) }
+\title{Extract from a SpatialPolygonsDataFrame object the middle coordinates of boundary
+box and the vertices of the polygons (in the case where polygons are given)}
 
 \description{
 The function \code{spdf2list()} calculates

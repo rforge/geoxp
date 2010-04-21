@@ -338,7 +338,7 @@ else
         segments(0, min(var2), 0, max(var2), col = "black")
         }
         
-        if (opt1) 
+        if (opt1 & graph == "Scatterplot" )
         {
             xg <- seq(min(var1), max(var1), length = 100)
             reg <- lm(var2 ~ var1)
