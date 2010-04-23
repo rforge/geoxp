@@ -4,8 +4,7 @@
 \title{Midi-pyrennees school}
 \description{
 This data frame contains some information about schools in Midi-Pyrenees region.
-Data have been aggregated by pseudo-cantons (\code{PSE_CANT})
-which is the spatial unit level.
+Data have been aggregated by pseudo-cantons which is the spatial unit level.
 }
 \usage{data(immob)}
 \format{
@@ -27,7 +26,7 @@ Prepared by T. Laurent.
 }
 
 \note{
-The variables  \code{Nb_Student_per_class}} and   \code{Nb_Student_per_class}
+The variables  \code{Nb_Student_per_class} and   \code{Nb_Student_per_class}
 have been permuted because of the confidentiality of this data set.
 }
 
