@@ -416,9 +416,9 @@ quitfunc<-function()
 quitfunc2<-function()
 {
     #tclvalue(fin)<<-TRUE
-      dev.set(3)
-      layout(1)
-      par(mar=c(5.1,4.1,4.1,2.1))
+    dev.set(3)
+    layout(1)
+    par(mar=c(5.1,4.1,4.1,2.1))
     tkdestroy(tt)
     assign("GeoXp.open", FALSE, envir = baseenv())
     print("Results have been saved in last.select object")

@@ -321,7 +321,8 @@ else
          labvar[1] <- paste("component ", labvar[1], " : ", round(inertie[direct[1]], 0), "%", sep = "")
          labvar[2] <- paste("component ", labvar[2], " : ", round(inertie[direct[2]], 0), "%", sep = "")
         }
-        layout(matrix(c(1, 3, 0, 2), 2, 2, byrow = TRUE), c(1,4), c(5, 1), )
+        
+        layout(matrix(c(1, 3, 0, 2), 2, 2, byrow = TRUE), c(1,4), c(5, 1) )
         par(mar = c(2, 1, 2, 2))
         boxplot(var2, axes = FALSE)
         title(ylab = labvar[2], line = 0)
