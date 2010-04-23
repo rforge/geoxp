@@ -11,7 +11,7 @@ Data have been aggregated by pseudo-cantons which is the spatial unit level.
   A data frame with 155 observations on the following 8 variables.
   \describe{
     \item{\code{PSE_CANT}}{Code of the pseudo-canton}
-    \item{\code{COMMUNE}}{Name of the main city}
+    \item{\code{name_city}}{Name of the main city}
     \item{\code{code_dep}}{Code of the 'departement' area of the pseudo-canton}
     \item{\code{longitude}}{x-coordinate of the pseudo-canton}
     \item{\code{latitude}}{y-coordinate of the pseudo-canton}
