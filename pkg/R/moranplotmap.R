@@ -53,7 +53,6 @@ ifelse(identify, label<-row.names(listvar),label<-"")
 # Is W normalized ?
   is.norm<-all(apply(W,1,sum)==rep(1,n))
 
-
 #initialisation
   obs<-vector(mode = "logical", length = length(long))
   obsq<-rep(0,length(long))
@@ -103,8 +102,9 @@ pch2 <- rep(pch[1],4)
 
 
 # calcul du I de Moran
-var <- var - mean(var)
+#var <- var - mean(var)
 wvar <- W%*%var
+
 stdvar <- var/sd(var)
 uns <- rep(1, length(var))
 result <- nonormmoran(stdvar,uns,W)
@@ -115,10 +115,10 @@ beta.I <- qr.coef(rvar,wvar)
 
 # calcul de la variable obsq (pour les quadrants)
 
-obsq[which((var > 0) & (wvar >= 0))] <- 1
-obsq[which((var <= 0) & (wvar > 0))] <- 2
-obsq[which((var < 0) & (wvar <= 0))] <- 3
-obsq[which((var >= 0) & (wvar < 0))] <- 4
+obsq[which((var > mean(var)) & (wvar >= mean(wvar)))] <- 1
+obsq[which((var <= mean(var)) & (wvar > mean(wvar)))] <- 2
+obsq[which((var < mean(var)) & (wvar <= mean(wvar)))] <- 3
+obsq[which((var >= mean(var)) & (wvar < mean(wvar)))] <- 4
  
   
 ####################################################

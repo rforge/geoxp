@@ -642,6 +642,9 @@ quitfunc<-function()
     #tclvalue(fin)<<-TRUE
     tkdestroy(tt)
     assign("GeoXp.open", FALSE, envir = baseenv())
+    dev.set(3)
+    layout(1)
+    par(mar=c(5.1,4.1,4.1,2.1))
    # assign("obs", row.names(sp.obj)[obs], envir = .GlobalEnv)
 }
 
@@ -650,6 +653,9 @@ quitfunc2<-function()
     #tclvalue(fin)<<-TRUE
     tkdestroy(tt)
     assign("GeoXp.open", FALSE, envir = baseenv())
+    dev.set(3)
+    layout(1)
+    par(mar=c(5.1,4.1,4.1,2.1))
     print("Results have been saved in last.select object")
     assign("last.select", which(obs), envir = .GlobalEnv)
 }

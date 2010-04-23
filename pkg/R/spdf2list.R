@@ -15,7 +15,9 @@ contours<-rbind(NA,NA,NA,poly[1][[1]]@Polygons[[1]]@coords)
   {  
    X<-rbind(X,poly[i][[1]]@Polygons[[1]]@labpt[1])
    Y<-rbind(Y,poly[i][[1]]@Polygons[[1]]@labpt[2])
-   contours=rbind(contours,NA,NA,NA,poly[i][[1]]@Polygons[[1]]@coords)   
+   for(k in 1:length(poly[i][[1]]@Polygons))
+    {contours=rbind(contours,NA,NA,NA,poly[i][[1]]@Polygons[[k]]@coords)
+    }
   }
 contours=rbind(contours,NA,NA,NA)
 

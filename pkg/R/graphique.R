@@ -25,7 +25,7 @@ if(buble && (length(cbuble)!=0))
    }
 }
 else
-   {cbuble=rep(0.8,length(var1))
+   {cbuble=rep(0.7,length(var1))
     cbuble[which(obs==TRUE)]=1 
    }
  
@@ -345,14 +345,14 @@ else
             lines(xg, reg$coefficients[1] + reg$coefficients[2] * xg)
         }
         
-        if ((length(quantiles)!=0)&&(quantiles!=0)) 
+        if ((length(quantiles)!=0)&&(quantiles!=0)&&(alpha1!=0))
         {
             for (i in 1:length(quantiles)) 
             {
               fit <- qsreg(as.numeric(var1), as.numeric(var2),
               lam = alpha1, alpha = quantiles[i])
               xg <- seq(min(var1), max(var1), length = 100)
-              lines(xg, predict(fit, xg), col = couleur.quant[i])
+              lines(xg, predict(fit, xg), col = "blue",lwd=1.5)
             }
         }
         
@@ -973,8 +973,8 @@ else
     {
       plot(var1, var2, "n", xlab = labvar[1], ylab = labvar[2])
         #,xlim=c(-12,12),ylim=c(-4.5,4.5)
-      segments(min(var1), 0, max(var1), 0, col = "black")
-      segments(0, min(var2), 0, max(var2), col = "black")
+      segments(min(var1), mean(var2), max(var1), mean(var2), col = "black", lty=2)
+      segments(mean(var1), min(var2), mean(var1), max(var2), col = "black", lty=2)
       points(var1[!obs], var2[!obs], col = couleurs[obsq[!obs]], pch = symbol[obsq[!obs]],
       cex=cbuble[!obs])
      
@@ -1006,8 +1006,8 @@ else
     if (graph == "Quadrant") 
     {
         plot(var1, var2, "n", xlab = labvar[1], ylab = labvar[2])
-        segments(min(var1), 0, max(var1), 0, col = "black")
-        segments(0, min(var2), 0, max(var2), col = "black")
+        segments(min(var1), mean(var2), max(var1), mean(var2), col = "black",lty=2)
+        segments(mean(var1), min(var2), mean(var1), max(var2), col = "black",lty=2)
         points(var1[!obs], var2[!obs], col = couleurs[obsq[!obs]], pch = symbol[obsq[!obs]],
         cex=cbuble[!obs])
 

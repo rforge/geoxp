@@ -93,7 +93,7 @@ if(buble && (length(cbuble)!=0))
    }
 }
 else
-   {cbuble=rep(0.5,length(long))
+   {cbuble=rep(0.7,length(long))
     if(class(obs)=="matrix")
      { if(method == "Neighbourplot1") 
        {cbuble[intersect(which(obs==TRUE,arr.ind=TRUE)[,1],which(obs==TRUE,arr.ind=TRUE)[,2])]=1}
@@ -214,9 +214,9 @@ else
 
 if(legends[[2]])
  { if(is.null(legends[[4]]$name))
-   {legend(legends[[4]]$x,legends[[4]]$y, labmod,cex=cex.lab,col=couleurs,pch = leg.symb, pt.cex=1.125)}
+   {legend(legends[[4]]$x,legends[[4]]$y, labmod,cex=cex.lab,col=couleurs,pch = leg.symb)}
   else
-  {legend(legends[[4]]$x,legends[[4]]$y, labmod,cex=cex.lab,col=couleurs,pch = leg.symb, pt.cex=1.125,
+  {legend(legends[[4]]$x,legends[[4]]$y, labmod,cex=cex.lab,col=couleurs,pch = leg.symb,
    title=legends[[4]]$name)}
  }
 

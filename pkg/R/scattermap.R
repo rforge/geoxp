@@ -93,10 +93,11 @@ if (lin.reg || length(quantiles)!=0)
     p1 <- 1 / (1 + (h^3 / 1000)) #60
     p2 <- 1 / (1 + (h^3 / 4)) #0.6
     alpha <- (1 - p) / p
-    borne1 <- max(0.2,(1 - p1) / p1)
+    borne1 <- (1 - p1) / p1
     borne2 <- (1 - p2) / p2
 
 }
+
 names.slide=c("Reg. Smooth. Spline Parameter")
 
 ####################################################
@@ -395,6 +396,9 @@ quitfunc<-function()
     #tclvalue(fin)<<-TRUE
     tkdestroy(tt)
     assign("GeoXp.open", FALSE, envir = baseenv())
+    dev.set(3)
+    layout(1)
+    par(mar=c(5.1,4.1,4.1,2.1))
    # assign("obs", row.names(sp.obj)[obs], envir = .GlobalEnv)
 }
 
@@ -403,6 +407,9 @@ quitfunc2<-function()
     #tclvalue(fin)<<-TRUE
     tkdestroy(tt)
     assign("GeoXp.open", FALSE, envir = baseenv())
+    dev.set(3)
+    layout(1)
+    par(mar=c(5.1,4.1,4.1,2.1))
     print("Results have been saved in last.select object")
     assign("last.select", which(obs), envir = .GlobalEnv)
 }

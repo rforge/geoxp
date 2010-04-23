@@ -37,7 +37,7 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
 
 
             col2<<-eval(e)
-            col3<<-col2[1]
+            col3<<-col2
 
            if (length(col2)!=n.col)
             {
