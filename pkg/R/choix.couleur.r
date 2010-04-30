@@ -21,7 +21,7 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
          tt <- tktoplevel()
          txt <- tktext(tt, height=8)
 
-         tkpack(tklabel(tt,text=paste("Please, could you give a vector of ",n.col," colors like c(\"orange\",etc)")) )
+         tkpack(tklabel(tt,text=paste("Please, could you give a vector of ",n.col," colors like c(\"orange\", \"purple\", etc) or colors()[99:",98+n.col,"]",sep="")) )
          tkpack(txt)
 
          run <- function()

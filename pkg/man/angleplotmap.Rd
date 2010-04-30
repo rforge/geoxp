@@ -10,7 +10,7 @@ and the x-axis.
 \usage{
 angleplotmap(sp.obj, name.var, quantiles=NULL,
 names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
-xlab="angle", ylab="absolut magnitude", axes=FALSE, lablong="", lablat="")
+xlab="angle", ylab="absolute magnitude", axes=FALSE, lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

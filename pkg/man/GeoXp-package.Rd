@@ -71,7 +71,7 @@ Finally, users can choose to represent the graphical with different colors
 using argument \code{col}. In the case of factors (as function \code{barmap}), users could choose
 if a legend with corresponding colors will appear on the map. Users can also modify the representation of
 selected sites on map with argument \code{pch}.    \cr
-Recent functions \code{bar.nb} and \code{hist.nb} give the opportunity to analyse spatial
+Recent functions \code{barnbmap} and \code{histnbmap} give the opportunity to analyse spatial
 weight matrix build using functions included in \code{spdep} package.
 }
 

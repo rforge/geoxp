@@ -12,7 +12,7 @@ give a p-value associated to the autocorrelation test (gaussian version and perm
 moranplotmap(sp.obj, name.var, listw.obj, flower=FALSE, locmoran=FALSE,
 names.arg=c("H.-H.","L.-H.","L.-L.","H.-L."), names.attr=names(sp.obj), criteria=NULL,
 carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
-xlab=expression((X-bar(X))), ylab=expression(W(X-bar(X))), axes=FALSE, lablong="", lablat="")
+xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 }
 
 %- maybe also 'usage' for other objects documented here.

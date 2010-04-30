@@ -1,6 +1,6 @@
 `angleplotmap` <- function(sp.obj, name.var, quantiles=NULL,
 names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
-xlab="angle", ylab="absolut magnitude", axes=FALSE, lablong="", lablat="")
+xlab="angle", ylab="absolute magnitude", axes=FALSE, lablong="", lablat="")
 {
 
 # Verification of the Spatial Object sp.obj
@@ -400,7 +400,7 @@ tkpack(tklabel(frame3, text = "Exit", font = "Times 14",
 foreground = "blue", background = "white"))
 
 quit.but <- tkbutton(frame3, text="Save results", command=quitfunc2);
-quit.but2 <- tkbutton(frame3, text="Don't save results", command=quitfunc);
+quit.but2 <- tkbutton(frame3, text="Exit without saving", command=quitfunc);
 
 tkpack(quit.but, quit.but2, side = "left", expand = "TRUE",
         fill = "x")

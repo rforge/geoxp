@@ -455,7 +455,7 @@ tkpack(tklabel(frame3, text = "Exit", font = "Times 14",
 foreground = "blue", background = "white"))
 
 quit.but <- tkbutton(frame3, text="Save results", command=quitfunc2);
-quit.but2 <- tkbutton(frame3, text="Don't save results", command=quitfunc);
+quit.but2 <- tkbutton(frame3, text="Exit without saving", command=quitfunc)
 
 tkpack(quit.but, quit.but2, side = "left", expand = "TRUE",
         fill = "x")

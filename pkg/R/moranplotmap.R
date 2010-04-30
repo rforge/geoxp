@@ -1,7 +1,7 @@
 `moranplotmap` <-
 function(sp.obj, name.var, listw.obj, flower=FALSE, locmoran=FALSE, names.arg=c("H.-H.","L.-H.","L.-L.","H.-L."),
 names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
-xlab=expression((X-bar(X))), ylab=expression(W(X-bar(X))), axes=FALSE, lablong="", lablat="")
+xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 {
 # Verification of the Spatial Object sp.obj
 class.obj<-class(sp.obj)[1]
@@ -54,6 +54,8 @@ ifelse(identify, label<-row.names(listvar),label<-"")
   is.norm<-all(apply(W,1,sum)==rep(1,n))
 
 #initialisation
+if(xlab=="") xlab=name.var
+if(ylab=="") ylab=paste("spatially lagged",name.var)
   obs<-vector(mode = "logical", length = length(long))
   obsq<-rep(0,length(long))
   nointer<-FALSE
@@ -761,7 +763,7 @@ tkpack(tklabel(frame3, text = "Exit", font = "Times 14",
 foreground = "blue", background = "white"))
 
 quit.but <- tkbutton(frame3, text="Save results", command=quitfunc2);
-quit.but2 <- tkbutton(frame3, text="Don't save results", command=quitfunc);
+quit.but2 <- tkbutton(frame3, text="Exit without saving", command=quitfunc)
 
 tkpack(quit.but, quit.but2, side = "left", expand = "TRUE",
         fill = "x")
