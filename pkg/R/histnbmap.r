@@ -100,8 +100,9 @@ if(!(3%in%dev.list())) dev.new()
         if (np != n.nb)
             stop("Number of coords not equal to number of regions")
         dimension <- ncol(coords)
-        dlist <- .Call("nbdists", nb, as.matrix(coords), as.integer(np),
-            as.integer(dimension), as.integer(longlat), PACKAGE = "spdep")[[1]]
+#        dlist <- .Call("nbdists", nb, as.matrix(coords), as.integer(np),
+#            as.integer(dimension), as.integer(longlat), PACKAGE = "spdep")[[1]]
+        dlist <- nbdists(nb=nb, coords=coords, longlat=longlat)
     }
 
 # this code also ....
@@ -133,8 +134,9 @@ if(!(3%in%dev.list())) dev.new()
         if (np != n.nb)
             stop("Number of coords not equal to number of regions")
         dimension <- ncol(coords)
-        dlist <- .Call("nbdists", nb, as.matrix(coords), as.integer(np),
-            as.integer(dimension), as.integer(longlat), PACKAGE = "spdep")[[1]]
+#        dlist <- .Call("nbdists", nb, as.matrix(coords), as.integer(np),
+#            as.integer(dimension), as.integer(longlat), PACKAGE = "spdep")[[1]]
+        dlist <- nbdists(nb=nb, coords=coords, longlat=longlat)
     }   
    
     W<-nb2mat(nb)   
