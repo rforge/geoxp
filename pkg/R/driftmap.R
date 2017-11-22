@@ -2,6 +2,7 @@
 names.attr=names(sp.obj), carte=NULL, identify=FALSE, cex.lab=0.8, pch=rep(16,3),
 col=c("lightblue3", "black", "red"), xlab="", axes=FALSE)
 {
+envir = as.environment(1)
 # Verification of the Spatial Object sp.obj
 class.obj<-class(sp.obj)[1]
 
@@ -9,21 +10,6 @@ if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
 if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
 if(!is.numeric(name.var) & is.na(match(as.character(name.var),names(sp.obj)))) stop("name.var is not included in the data.frame of sp.obj")
 if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
-
-# Is there a Tk window already open ?
-if(interactive())
-{
- if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all=TRUE))==2)
- {
-  assign("GeoXp.open", TRUE, envir = baseenv())
- }
- else
- {if(get("GeoXp.open",envir= baseenv()))
-   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
-  else
-  {assign("GeoXp.open", TRUE, envir = baseenv())}
- }
-}
 
 # we propose to refind the same arguments used in first version of GeoXp
 long<-coordinates(sp.obj)[,1]
@@ -36,6 +22,7 @@ if(!(is.integer(var) || is.double(var))) stop("the variable name.var should be a
 
 listvar<-sp.obj@data
 listnomvar<-names.attr
+
 
 # Code which was necessary in the previous version
 
@@ -657,7 +644,7 @@ quitfunc2<-function()
     layout(1)
     par(mar=c(5.1,4.1,4.1,2.1))
     print("Results have been saved in last.select object")
-    assign("last.select", which(obs), envir = .GlobalEnv)
+    assign("last.select", which(obs), envir = envir)
 }
 
 ####################################################
@@ -688,9 +675,26 @@ SGfunc<-function()
 # Représentation graphique
 ####################################################
 
-graphique.drift()
-carte(long=long, lat=lat, obs=obs,label=label,symbol=pch[3],carte=carte,nocart=nocart,
-cex.lab=cex.lab,method="",axis=axes)
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all.names=TRUE))==2)
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+  graphique.drift()
+  carte(long=long, lat=lat, obs=obs,label=label,symbol=pch[3],carte=carte,nocart=nocart,
+  cex.lab=cex.lab,method="",axis=axes)
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {graphique.drift()
+   carte(long=long, lat=lat, obs=obs,label=label,symbol=pch[3],carte=carte,nocart=nocart,
+   cex.lab=cex.lab,method="",axis=axes)
+   assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
 
 ####################################################
 # création de la boite de dialogue

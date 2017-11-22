@@ -11,8 +11,8 @@ of \code{name.var} and there is interactivity between the two windows.
 
 \usage{
 histomap(sp.obj, name.var, nbcol=10, type = c("count","percent", "density"),
-names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
-xlab="", ylab="", axes=FALSE, lablong="", lablat="")
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, 
+pch=16, col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 }
 
 %- maybe also 'usage' for other objects documented here.
@@ -45,7 +45,7 @@ In the case where user click on \code{save results} button,
 a vector of integer is created as a global variable in \code{last.select} object.
 It corresponds to the number of spatial units selected just before leaving the Tk window.
 }
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23. \cr \cr
 
 Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer.
 }
@@ -57,12 +57,13 @@ Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spa
 
 ######
 # data oldcol
-example(columbus)
+if (require("spData", quietly=TRUE) && require("rgdal", quietly=TRUE)) {
+example(columbus, package="spData")
 
 # columbus is included in the Spatial-Class object
 # a very simple use of histomap :
 histomap(columbus,"CRIME")
-
+}
 ######
 # data on price indices of real estate in France
 data(immob)
@@ -79,6 +80,7 @@ row.names(immob.spdf)<-immob$Nom
 
 # optional : we add some contours that don't correspond to the spatial unit
 # but are nice for mapping
+if (require("maptools", quietly=TRUE)) {
 midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
 cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
 
@@ -91,7 +93,7 @@ names.attr=names(immob), criteria=immob$rentabilite>5, carte=cont_midiP,
 identify=TRUE, cex.lab=0.5, pch=12, col="pink",
 xlab="variation price", ylab="percent", axes=TRUE, lablong="x",
 lablat="y")
-}
+}}
 
 \keyword{spatial}
 \keyword{univar}

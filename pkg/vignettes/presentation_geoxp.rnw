@@ -226,6 +226,7 @@ the \code{SpatialPolygonsDataFrame} into a matrix of numeric with 2 columns ($x$
 
 \begin{footnotesize}
 <<echo=TRUE,eval=TRUE>>=
+require("maptools")
 midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
 cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
 @
@@ -373,7 +374,7 @@ The corresponding sub-density of this selection has been drawn on the second gra
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=6cm]{fig2b}
-\includegraphics[width=6cm]{fig2c}
+\includegraphics[width=6cm]{fig2c}    \newline
 \includegraphics[width=6cm]{fig2d}
 \end{center}
 \caption{example of the \code{dbledensitymap} function}\label{fig3b}

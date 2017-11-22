@@ -8,9 +8,10 @@ a neighbourhood structure given by a \code{nb} object and calculated by \code{nb
 }
 
 \usage{
-histnbmap(sp.obj, nb.obj, longlat = NULL, nbcol=10, type = c("count","percent", "density"),
-sup=FALSE, criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
-xlab="", ylab="count", axes=FALSE, lablong="", lablat="")
+histnbmap(sp.obj, nb.obj, longlat = NULL, nbcol=10, 
+type = c("count","percent", "density"), sup=FALSE, criteria=NULL, carte=NULL, 
+identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3", xlab="", ylab="count", 
+axes=FALSE, lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -45,8 +46,7 @@ When user select sites on the graph or on the map, he cannot add a selection by 
 No value returned.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010),
-\emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23. \cr \cr
 
 Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer.
 }
@@ -58,12 +58,13 @@ Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spa
 \examples{
 ##
 # data columbus
-example(columbus)
+if (require("spData", quietly=TRUE) && require("rgdal", quietly=TRUE)) {
+example(columbus, package="spData")
 
 # a simple use of histnbmap
 histnbmap(columbus, col.gal.nb, criteria=(columbus$CP==1),
 xlab="distance of the neighbor the farest")
-
+}
 ##
 # data meuse
 data(meuse)

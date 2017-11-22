@@ -8,15 +8,15 @@ at two sites as a function of the angle between vector \eqn{\overrightarrow{s_is
 and the x-axis.
 }
 \usage{
-angleplotmap(sp.obj, name.var, quantiles=NULL,
-names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
+angleplotmap(sp.obj, name.var, quantiles=TRUE, names.attr=names(sp.obj), 
+criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
 xlab="angle", ylab="absolute magnitude", axes=FALSE, lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{sp.obj}{object of class extending Spatial-class}
   \item{name.var}{a character; attribute name or column number in attribute table}
-  \item{quantiles}{a vector of numeric corresponding to quantile orders (the regression quantile is obtained by spline smoothing)}
+  \item{quantiles}{a boolean to represent the Additive Quantile Regression Smoothing}
   \item{names.attr}{a vector of character: names to use in panel (if different from the names of variable used in sp.obj)}
   \item{criteria}{a vector of boolean which permit to represent preselected sites with a cross, using the tcltk window (must be equal to the number of spatial units)}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
@@ -49,7 +49,7 @@ just before leaving the Tk window.
 }
 
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23. \cr \cr
 
 Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer.
 }
@@ -73,6 +73,7 @@ afcon.spdf = SpatialPointsDataFrame(afcon.sp, afcon)
 
 # optional : we add some contours that don't correspond to the spatial unit
 # but are nice for mapping
+require("maptools")
 africa <- readShapePoly(system.file("shapes/Africa.shp", package = "GeoXp")[1])
 africa.contour<-spdf2list(africa)$poly
 
@@ -96,7 +97,7 @@ meuse.spdf = SpatialPointsDataFrame(meuse.sp, meuse)
 data(meuse.riv)
 
 angleplotmap(meuse.spdf,"copper",
-col="green",quantiles=0.9, cex.lab=0.7,
+col="green",quantiles=TRUE, cex.lab=0.7,
 xlab="Concentration in plomb (in ppm)",pch=7,carte=meuse.riv[c(21:65,110:153),])
 
 }

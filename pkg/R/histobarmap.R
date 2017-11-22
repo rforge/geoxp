@@ -3,28 +3,14 @@ names.arg = "", names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FA
 cex.lab=0.8, pch=16, col="lightblue3", xlab=c("barplot","histogram"), ylab=rep("count",2),
 axes=FALSE, lablong="", lablat="")
 {
+envir = as.environment(1)
 # Verification of the Spatial Object sp.obj
 class.obj<-class(sp.obj)[1]
-
+spdf<-(class.obj=="SpatialPolygonsDataFrame")
 if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
 if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
 if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
 if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
-
-# Is there a Tk window already open ?
-if(interactive())
-{
- if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all=TRUE))==2)
- {
-  assign("GeoXp.open", TRUE, envir = baseenv())
- }
- else
- {if(get("GeoXp.open",envir= baseenv()))
-   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
-  else
-  {assign("GeoXp.open", TRUE, envir = baseenv())}
- }
-}
 
 # we propose to refind the same arguments used in first version of GeoXp
 long<-coordinates(sp.obj)[,1]
@@ -41,7 +27,7 @@ listnomvar<-names.attr
  col3<-"lightblue3"
 
 # Code which was necessary in the previous version
- if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+# if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
 
 
  # for identifyng the selected sites
@@ -90,18 +76,31 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
         while (!quit)
          {
             dev.set(2)
+           if(spdf & nrow(sp.obj)>75 & !buble) 
+            {points(long,lat,pch=16,col='royalblue')}
             loc <- locator(1)
             if (is.null(loc)) 
             {
               quit <- TRUE
-              carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
+              carte(long=long, lat=lat,buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
               cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
               legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
               next
             }
-           obs <<- selectmap(var1 = long, var2 = lat, obs = obs,Xpoly = loc[1], Ypoly = loc[2], method = "point")
-           
-           carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
+            
+       if(!spdf|nrow(sp.obj)>75)
+       { 
+        obs<<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point")}
+        else
+        {if(gContains(sp.obj,SpatialPoints(cbind(loc$x,loc$y),proj4string=CRS(proj4string(sp.obj)))))
+         {for (i in 1:nrow(sp.obj))
+           {if(gContains(sp.obj[i,],SpatialPoints(cbind(loc$x,loc$y),proj4string=CRS(proj4string(sp.obj)))))
+            {obs[i]<<-!obs[i]
+             break}  
+           }
+         } 
+       }           
+           carte(long=long, lat=lat, buble=buble,  sp.obj=sp.obj,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
            cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2, method="Cluster",classe=var1,legmap=legmap,
            legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
            title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
@@ -133,7 +132,9 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
         dev.set(2)
         title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
         title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-
+        if(spdf) 
+         {points(long,lat,pch=16,col='royalblue')}
+         
         while (!quit) 
         {
             dev.set(2)
@@ -156,7 +157,7 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
 
         obs <<- selectmap(var1=long, var2=lat, obs=obs, Xpoly=polyX, Ypoly=polyY, method="poly")
 
-           carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
+           carte(long=long, lat=lat, buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
            cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
            legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
            
@@ -201,7 +202,7 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
 
            obs<<-selectstat(var1=var1,obs=obs,Xpoly=loc[1], Ypoly=loc[2],method="Barplot");    
 
-           carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
+           carte(long=long, lat=lat, buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
            cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
            legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
            
@@ -247,7 +248,7 @@ if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(li
 
            obs<<-selectstat(var1=var2,obs=obs,Xpoly=loc[1], Ypoly=loc[2],method="Histogram", nbcol=nbcol);   
 
-           carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
+           carte(long=long, lat=lat, buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
            cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
            legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
            
@@ -305,7 +306,7 @@ cartfunc <- function()
  if (length(carte) != 0)
    {
     ifelse(!nocart,nocart<<-TRUE,nocart<<-FALSE)
-    carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
+    carte(long=long, lat=lat, buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
     cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
     legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
    }
@@ -323,7 +324,7 @@ SGfunc <- function()
 {
    obs <<- vector(mode = "logical", length = length(long))
      
-   carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
+   carte(long=long, lat=lat, buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
    cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
    legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
          
@@ -359,7 +360,7 @@ quitfunc2<-function()
     tkdestroy(tt)
     assign("GeoXp.open", FALSE, envir = baseenv())
     print("Results have been  saved in last.select object")
-    assign("last.select", which(obs), envir = .GlobalEnv)
+    assign("last.select", which(obs), envir = envir)
 }
 
 
@@ -372,7 +373,7 @@ fnointer<-function()
  if (length(criteria) != 0)
  {
   ifelse(!nointer,nointer<<-TRUE,nointer<<-FALSE)
-  carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+  carte(long=long, lat=lat, buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
   lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,couleurs=col2,
   method="Cluster",classe=var,legmap=legmap,legends=legends,labmod=names.arg,axis=axes,cex.lab=cex.lab)     
  }
@@ -397,7 +398,7 @@ fbubble<-function()
   z <<- res2$z
   legmap <<- res2$legmap
   
-carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
+carte(long=long, lat=lat, buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
 cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
 legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
  
@@ -406,16 +407,39 @@ legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
 ####################################################
 # Représentation graphique
 ####################################################
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all.names=TRUE))==2)
+ {
+  carte(long=long, lat=lat, buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
+  cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
+  legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
            
-carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
-cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
-legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
+  graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot", bin=type, labvar = labvar1,
+  symbol = pch, labmod = names.arg,couleurs=col)
            
-graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot", bin=type, labvar = labvar1,
-symbol = pch, labmod = names.arg,couleurs=col)
+  graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol, bin=type,
+  labvar = labvar2, couleurs=col[1])
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {carte(long=long, lat=lat, buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
+   cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
+   legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
            
-graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol, bin=type,
-labvar = labvar2, couleurs=col[1])
+   graphique(var1 = var1, obs = obs, num = 3, graph = "Barplot", bin=type, labvar = labvar1,
+   symbol = pch, labmod = names.arg,couleurs=col)
+           
+   graphique(var1 = var2, obs = obs, num = 4, graph = "Histogram",nbcol = nbcol, bin=type,
+   labvar = labvar2, couleurs=col[1])
+   assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
+
 
 ####################################################
 # création de la boite de dialogue to create legens
@@ -434,7 +458,7 @@ if(interactive())
   loc$name <- names(sp.obj[,names.var[1]])
   legends<<-list(legends[[1]],TRUE,legends[[3]],loc)
 
-  carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
+  carte(long=long, lat=lat, buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
   cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
   legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")
         
@@ -445,7 +469,7 @@ if(interactive())
   legends<<-list(legends[[1]],FALSE,legends[[3]],"")
   tkdestroy(tt1)	
 
-  carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
+  carte(long=long, lat=lat, buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,  label=label,
   cex.lab=cex.lab,symbol=pch,carte=carte,nocart=nocart,couleurs=col2,method="Cluster",classe=var1,legmap=legmap,
   legends=legends,labmod=names.arg,axis=axes,lablong="", lablat="")        
  }

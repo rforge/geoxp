@@ -8,7 +8,7 @@ It is used to detect spatial autocorrelation. Possibility to draw the empirical 
 and a robust empirical semi-variogram.}
 
 \usage{
-variocloudmap(sp.obj, name.var, bin=NULL, quantiles=NULL,
+variocloudmap(sp.obj, name.var, bin=NULL, quantiles=TRUE,
 names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8,
 pch=16, col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="",
 xlim=NULL, ylim=NULL)
@@ -19,7 +19,7 @@ xlim=NULL, ylim=NULL)
   \item{sp.obj}{object of class extending Spatial-class}
   \item{name.var}{a character; attribute name or column number in attribute table}
   \item{bin}{a vector of numeric values where empirical variogram will be evaluated}
-  \item{quantiles}{a vector of numeric values of quantile orders (the regression quantile is obtained by spline smoothing)}
+  \item{quantiles}{a boolean to represent the Additive Quantile Regression Smoothing}
   \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
   \item{criteria}{a vector of boolean of size the number of Spatial Units, which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
@@ -65,7 +65,7 @@ It corresponds to the numbers of spatial unit corresponding to couple of sites s
 just before leaving the Tk window.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23. \cr \cr
 
 Cressie N. and Hawkins D. (1980), \emph{Robust estimation of the variogram}, in Journal of the international association for mathematical geology, 13, 115-125.}
 
@@ -88,7 +88,7 @@ meuse.spdf = SpatialPointsDataFrame(meuse.sp, meuse)
 data(meuse.riv)
 
 # example of use of variocloudmap
-variocloudmap(meuse.spdf, "zinc", quantiles=0.75, bin=seq(0,2000,100),
+variocloudmap(meuse.spdf, "zinc", quantiles=TRUE, bin=seq(0,2000,100),
 xlim=c(0,2000),ylim=c(0,500000),pch=2,carte=meuse.riv[c(21:65,110:153),],
 criteria=(meuse$lime==1))
 }

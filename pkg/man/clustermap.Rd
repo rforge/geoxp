@@ -9,9 +9,10 @@ Classification methods come from \code{hclust()} (hierarchical cluster analysis)
 }
 
 \usage{
-clustermap(sp.obj, names.var, clustnum, method=c("kmeans","hclust"),type=NULL, centers=NULL, scale=FALSE,
-names.arg="", names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16,
-col="lightblue3", xlab="Cluster", ylab="Number", axes=FALSE, lablong="", lablat="")
+clustermap(sp.obj, names.var, clustnum, method=c("kmeans","hclust"), type=NULL,
+centers=NULL, scale=FALSE, names.arg="", names.attr=names(sp.obj), criteria=NULL, 
+carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3", 
+xlab="Cluster", ylab="Number", axes=FALSE, lablong="", lablat="")
 }
 
 \arguments{
@@ -51,7 +52,7 @@ corresponds to the number of spatial units selected just before leaving the Tk w
 vector of integer, corresponds to the number of cluster attributed to each spatial unit.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23. \cr \cr
 
 Murtagh, F (1985). \emph{Multidimensional Clustering Algorithms}. \cr \cr
 
@@ -71,7 +72,8 @@ then use the function \code{barmap} to visualize the calculated clusters. }
 \examples{
 #####
 # data columbus
-example(columbus)
+if (require("spData", quietly=TRUE) && require("rgdal", quietly=TRUE)) {
+example(columbus, package="spData")
 
 # a basic example using the kmeans method
 clustermap(columbus, c("HOVAL","INC","CRIME","OPEN","PLUMB","DISCBD"), 3,
@@ -81,7 +83,7 @@ criteria=(columbus@data$CP==1), identify=TRUE, cex.lab=0.7)
 clustermap(columbus,c(7:12), 3, method="hclust",
 criteria=(columbus@data$CP==1),col=colors()[20:22],identify=TRUE,
 cex.lab=0.7, names.arg=c("Group 1","Group 2","Group 3"), xlab="Cluster")
-}
+}}
 
 \keyword{spatial}
 \keyword{multivariate}

@@ -48,7 +48,7 @@ a vector of integer is created as a global variable in \code{last.select} object
 It corresponds to the number of spatial units selected just before leaving the Tk window.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23. \cr \cr
 
 Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer. \cr \cr
 
@@ -84,13 +84,15 @@ criteria=(auckland$Deaths.1977.85>mean(auckland$Deaths.1977.85)))
 
 ######
 # data eire
-eire <- readShapePoly(system.file("etc/shapes/eire.shp", package="spdep")[1],
-ID="names", proj4string=CRS("+proj=utm +zone=30 +units=km"))
+if (require("spData", quietly=TRUE) && require("rgdal", quietly=TRUE)) {
+eire <- readOGR(system.file("shapes/eire.shp", package="spData")[1])
+row.names(eire) <- as.character(eire$names)
+proj4string(eire) <- CRS("+proj=utm +zone=30 +units=km")
 
 dbledensitymap(eire,c("A","towns"),kernel="normal",
 xlab=c("Individuals rate of blood type A",
 "Surface urbaine"),identify=TRUE)
-
+}
 }
 
 \keyword{spatial}

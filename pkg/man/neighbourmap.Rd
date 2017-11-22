@@ -10,8 +10,8 @@ links this scatterplot with a map.
 
 \usage{
 neighbourmap(sp.obj, name.var, nb.obj, lin.reg=TRUE,
-names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
-xlab="", ylab="", axes=FALSE, lablong="", lablat="")
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8,
+pch=16, col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -45,7 +45,7 @@ It corresponds to the numbers of spatial unit corresponding to couple of sites s
 just before leaving the Tk window.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}\cr \cr
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23. \cr \cr
 
 Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer.
 }
@@ -57,12 +57,13 @@ Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spa
 \examples{
 ###
 # columbus
-example(columbus)
+if (require("spData", quietly=TRUE) && require("rgdal", quietly=TRUE)) {
+example(columbus, package="spData")
 
 # example of use of neighbourmap
 neighbourmap(columbus, "CRIME", col.gal.nb,
 criteria=(columbus@data$CRIME>mean(columbus@data$CRIME)))
-
+}
 ###
 # data immob
 data(immob)
@@ -80,6 +81,7 @@ immob.spdf = SpatialPointsDataFrame(immob.sp, immob)
 
 # optional : we add some contours that don't correspond to the spatial unit
 # but are nice for mapping
+if (require("maptools", quietly=TRUE)) {
 midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
 cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
 
@@ -89,7 +91,7 @@ W.nb<-tri2nb(cbind(immob$longitude,immob$latitude))
 # example of use of neighbourmap
 neighbourmap(immob.spdf,"prix.vente", W.nb, identify=TRUE, cex.lab=0.5,
 carte=cont_midiP)
-}
+}}
 
 \seealso{\code{\link{moranplotmap}},\code{\link{makeneighborsw}},\code{\link{normw}},\code{\link{nonormmoran}} }
 

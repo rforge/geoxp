@@ -55,7 +55,7 @@ a list is created as a global variable in \code{last.select} object. \$obs, a ve
 corresponds to the number of spatial units selected just before leaving the Tk window, \$MORAN,
 a numeric, corresponds to the value of the Moran'I statistic.
 }
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23. \cr \cr
 
 Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer. \cr \cr
 
@@ -91,7 +91,8 @@ moran.test(baltimore.spdf$PRICE,W.listw)
  
 ##
 # data columbus
-example(columbus)
+if (require("spData", quietly=TRUE) && require("rgdal", quietly=TRUE)) {
+example(columbus, package="spData")
 
 # use of moranplotmap with spatial weight matrix col.gal.nb :
 # 1. row-standardized
@@ -102,7 +103,7 @@ moranplotmap(columbus,"HOVAL",nb2listw(col.gal.nb,style="B"))
 
 # 3. globally standardized
 moranplotmap(columbus,"HOVAL",nb2listw(col.gal.nb,style="C"))
-}
+}}
 
 
 \seealso{\code{\link{neighbourmap}},\code{\link{makeneighborsw}},\code{\link{normw}},\code{\link{nonormmoran}} }

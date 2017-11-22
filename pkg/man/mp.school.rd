@@ -6,9 +6,9 @@
 This data frame contains some information about schools in Midi-Pyrenees region.
 The school is the spatial unit level.
 }
-\usage{data(immob)}
+\usage{data(mp.school)}
 \format{
-  A data frame with 226 observations on the following 8 variables.
+  A data frame with 226 observations on the following 13 variables.
   \describe{
     \item{\code{longitude}}{x-coordinate of the pseudo-canton}
     \item{\code{latitude}}{y-coordinate of the pseudo-canton}
@@ -18,6 +18,11 @@ The school is the spatial unit level.
     \item{\code{Occupancy.rate}}{Rate of occupancy}
     \item{\code{Cost.per.student}}{Average cast per student}
     \item{\code{Nb.students.per.class}}{Average number of students per class}
+    \item{\code{Freq.certifies}}{The frequency of certifies teachers}
+    \item{\code{Freq.agreges}}{The frequency of agreges teachers}
+    \item{\code{Freq.rep.stud}}{The frequency of students who repeated a class}
+    \item{\code{Nb.specialties}}{the number of specialities offered to students in the school}    
+    \item{\code{Teachers.age}}{The mean age of the teachers in the school}       
       }
 }
 

@@ -10,7 +10,7 @@ of coordinates \code{coordinates(sp.obj)}. Boxplots of each variable
 \code{names.var[1]} and \code{names.var[2]} are represented below the x-axis and y-axis.}
 
 \usage{
-scattermap(sp.obj, names.var, lin.reg=TRUE, quantiles=NULL,
+scattermap(sp.obj, names.var, lin.reg=TRUE, quantiles=TRUE,
 names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8,
 pch=16, col="lightblue3",xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 }
@@ -20,7 +20,7 @@ pch=16, col="lightblue3",xlab="", ylab="", axes=FALSE, lablong="", lablat="")
   \item{names.var}{a vector of two characters : 1st name corresponds to the x-variable,
   2nd name corresponds to the y-variable}
   \item{lin.reg}{If TRUE, drawing of the linear predictor for `response' in linear model}
-  \item{quantiles}{a vector of numeric corresponding to order of conditionnal quantile regression spline}
+  \item{quantiles}{a boolean to represent the Additive Quantile Regression Smoothing}
   \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
   \item{criteria}{a vector of boolean of size the number of Spatial Units, which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
@@ -47,7 +47,7 @@ a vector of integer is created as a global variable in \code{last.select} object
 It corresponds to the number of spatial units selected just before leaving the Tk window.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}\cr \cr
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23. \cr \cr
 
 Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer.
 }
@@ -72,26 +72,29 @@ immob.spdf = SpatialPointsDataFrame(immob.sp, immob)
 
 # optional : we add some contours that don't correspond to the spatial unit
 # but are nice for mapping
+if (require("maptools", quietly=TRUE)) {
 midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
 cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
 
 # a example of use
-scattermap(immob.spdf,c("prix.vente","prix.location"),quantiles=0.5,
+scattermap(immob.spdf,c("prix.vente","prix.location"),
 carte= cont_midiP, xlab="Average sell price",ylab="Average rent price",
 identify=TRUE, cex.lab=0.6)
 
 
-
+}
 ######
 # data eire
-eire <- readShapePoly(system.file("etc/shapes/eire.shp", package="spdep")[1],
-ID="names", proj4string=CRS("+proj=utm +zone=30 +units=km"))
+if (require("spData", quietly=TRUE) && require("rgdal", quietly=TRUE)) {
+eire <- readOGR(system.file("shapes/eire.shp", package="spData")[1])
+row.names(eire) <- as.character(eire$names)
+proj4string(eire) <- CRS("+proj=utm +zone=30 +units=km")
 
 
 # example of use of scattermap
-scattermap(eire, c("ROADACC","OWNCONS"),lin.reg=TRUE,quantiles=0.95,
+scattermap(eire, c("ROADACC","OWNCONS"),lin.reg=TRUE,
 xlab="Roads",ylab="Consomation Rate",col="purple")
-}
+}}
 
 \keyword{regression}
 \keyword{spatial}

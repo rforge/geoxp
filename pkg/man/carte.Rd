@@ -9,7 +9,7 @@ GeoXp (this is not an interactive function).
 }
 
 \usage{
-carte(long, lat, obs, criteria=NULL, buble=FALSE, cbuble=NULL, nointer=FALSE,
+carte(long, lat, obs, sp.obj=NULL, criteria=NULL, buble=FALSE, cbuble=NULL, nointer=FALSE,
 carte=NULL,nocart=FALSE, label="",cex.lab=NULL, symbol=16, lablong="", 
 lablat="", method="", W=NULL,couleurs="blue", classe=NULL, legmap=NULL,
 legends=list(FALSE,FALSE),labmod="",axis=FALSE)
@@ -19,6 +19,7 @@ legends=list(FALSE,FALSE),labmod="",axis=FALSE)
   \item{long}{a vector x of size n}
   \item{lat}{a vector y of size n}
   \item{obs}{a boolean vector of size n with TRUE on selected sites}
+  \item{sp.obj}{a SpatialPolygonsDataFrame object}
   \item{criteria}{a vector of size n of boolean with TRUE on specific sites (these for non interactive selection)}
   \item{buble}{a boolean with TRUE for drawing bubbles, FALSE otherwise}
   \item{cbuble}{vector of size n with size of each site depending on variable with which bubbles are constructed }
@@ -44,7 +45,7 @@ with different sizes of circle (`bubble'), using a spatial contour (`carte'), pr
 Possibility to draw a legend giving the sizes of bubbles and colors of levels.
 } 
 \value{No values, only drawing of a map}
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23.}
 \author{Thomas-Agnan C., Aragon Y., Ruiz-Gazen A., Laurent T., Robidou L.}
 
 \keyword{spatial} 

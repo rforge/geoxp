@@ -1,8 +1,9 @@
-`variocloudmap` <- function(sp.obj, name.var, bin=NULL, quantiles=NULL,
+`variocloudmap` <- function(sp.obj, name.var, bin=NULL, quantiles=TRUE,
 names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8,
 pch=16, col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="",
 xlim=NULL, ylim=NULL)
 {
+envir = as.environment(1)
 # Verification of the Spatial Object sp.obj
 class.obj<-class(sp.obj)[1]
 
@@ -10,21 +11,6 @@ if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
 if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
 if(!is.numeric(name.var) & is.na(match(as.character(name.var),names(sp.obj)))) stop("name.var is not included in the data.frame of sp.obj")
 if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
-
-# Is there a Tk window already open ?
-if(interactive())
-{
- if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all=TRUE))==2)  # new environment
- {
-  assign("GeoXp.open", TRUE, envir = baseenv())
- }
- else
- {if(get("GeoXp.open",envir= baseenv()))
-   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
-  else
-  {assign("GeoXp.open", TRUE, envir = baseenv())}
- }
-}
 
 # we propose to refind the same arguments used in first version of GeoXp
 long<-coordinates(sp.obj)[,1]
@@ -38,6 +24,7 @@ if(!(is.integer(var) || is.double(var))) stop("the variable name.var should be a
 
 listvar<-sp.obj@data
 listnomvar<-names.attr
+
 
 # Code which was necessary in the previous version
  if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
@@ -59,7 +46,7 @@ ifelse(identify, label<-row.names(listvar),label<-"")
   opt2<-1
   
   angle<-0
-  names.slide="Quant. reg. smooth spline para."
+  names.slide="Alpha Quantile Value"
   obs <- matrix(FALSE, nrow = length(long), ncol = length(long))
 
   directionnel<-FALSE
@@ -105,19 +92,22 @@ if((length(listvar)>0)&&(dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(list
 # choix des bornes des réglettes (inspiré de la documentation de Matlab)
 ####################################################
 
-   v4 <- sort(dist)
-   v4 <- as.vector(v4)
-   z <- seq(1, max(v4), by = (max(v4)/3500))
-   z <- round(z)
-   z1 <- z[2:length(z)] - z[1:(length(z) - 1)]
-   h <- mean(z1)
-   p <- 1/(1 + (h^3/6))
-   p1 <- 1/(1 + (h^3/60))
-   p2 <- 1/(1 + (h^3/0.6))
-   alpha <- (1 - p)/p
-   borne1 <- (1 - p1)/p1
-   borne2 <- (1 - p2)/p2
+#   v4 <- sort(dist)
+#   v4 <- as.vector(v4)
+#   z <- seq(1, max(v4), by = (max(v4)/3500))
+#   z <- round(z)
+#   z1 <- z[2:length(z)] - z[1:(length(z) - 1)]
+#   h <- mean(z1)
+#   p <- 1/(1 + (h^3/6))
+#   p1 <- 1/(1 + (h^3/60))
+#   p2 <- 1/(1 + (h^3/0.6))
+#   alpha <- (1 - p)/p
+#   borne1 <- (1 - p1)/p1
+#   borne2 <- (1 - p2)/p2
 
+borne1=0.01
+borne2=0.99
+alpha=0.5
 ####################################################
 # sélection d'un point sur le variocloud
 ####################################################
@@ -276,7 +266,7 @@ quitfunc2<-function()
     assign("GeoXp.open", FALSE, envir = baseenv())
     print("Results have been saved in last.select object")
     obs[lower.tri(obs)]<-FALSE
-    assign("last.select", which(obs,arr.ind=TRUE), envir = .GlobalEnv)
+    assign("last.select", which(obs,arr.ind=TRUE), envir = envir)
 }
 
 ####################################################
@@ -423,15 +413,35 @@ else
 ####################################################
 # Représentation Graphique
 ####################################################
-
-     graphique(var1 = dist, var2 = dif, var3=dif2, obs = obs,opt1=opt1,opt2=opt2, num = 3, 
-     graph = "Variocloud", labvar = labvar, symbol = pch, couleurs=col, quantiles = quantiles, 
-     alpha1 = alpha, bin=bin, xlim=xlim, ylim=ylim)
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all.names=TRUE))==2)  # new environment
+ {
+   graphique(var1 = dist, var2 = dif, var3=dif2, obs = obs,opt1=opt1,opt2=opt2, num = 3, 
+   graph = "Variocloud", labvar = labvar, symbol = pch, couleurs=col, quantiles = quantiles, 
+   alpha1 = alpha, bin=bin, xlim=xlim, ylim=ylim)
      
-     carte(long = long, lat = lat, obs = obs, lablong = lablong,lablat = lablat, 
-     label = label,buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart, 
-     cex.lab=cex.lab, method = "Variocloud",axis=axes,legmap=legmap,legends=legends)
-            
+   carte(long = long, lat = lat, obs = obs, lablong = lablong,lablat = lablat, 
+   label = label,buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart, 
+   cex.lab=cex.lab, method = "Variocloud",axis=axes,legmap=legmap,legends=legends)
+   assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  { graphique(var1 = dist, var2 = dif, var3=dif2, obs = obs,opt1=opt1,opt2=opt2, num = 3, 
+    graph = "Variocloud", labvar = labvar, symbol = pch, couleurs=col, quantiles = quantiles, 
+    alpha1 = alpha, bin=bin, xlim=xlim, ylim=ylim)
+     
+    carte(long = long, lat = lat, obs = obs, lablong = lablong,lablat = lablat, 
+    label = label,buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart, 
+    cex.lab=cex.lab, method = "Variocloud",axis=axes,legmap=legmap,legends=legends)
+    assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
+          
 ####################################################
 # création de la boite de dialogue
 ####################################################
@@ -500,7 +510,7 @@ tkpack(angle.but, side = "left", expand = "TRUE", fill = "x")
 tkpack(frame2f, expand = "TRUE", fill = "x")
 
 
-if(length(quantiles)!=0)
+if(quantiles)
 {
 frame1c <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
 

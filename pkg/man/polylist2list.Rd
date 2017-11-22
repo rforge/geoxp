@@ -35,8 +35,9 @@ Bivand R. et al. (2009), \emph{Applied Spatial Data Analysis with R}, Springer.
 
 
 \examples{
-data(eire)
+if (require("spData", quietly=TRUE)) {
+data(eire, package="spData")
 eire.contours<-polylist2list(eire.polys.utm)
-}
+}}
 
 \keyword{manip}

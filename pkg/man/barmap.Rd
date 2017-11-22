@@ -6,9 +6,9 @@ The function \code{barmap()} draws a bar plot (vertical bar) of the given factor
 \code{name.var} and a map with sites of coordinates \code{coordinates(sp.obj)}.}
 
 \usage{
-barmap(sp.obj, name.var, type = c("count","percent"),
-names.arg="", names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, 
-col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="")
+barmap(sp.obj, name.var, type = c("count","percent"), names.arg="", 
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, 
+pch=16, col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 }
 
 %- maybe also 'usage' for other objects documented here.
@@ -42,7 +42,7 @@ a vector of integer is created as a global variable in \code{last.select} object
 It corresponds to the number of spatial units selected just before leaving the Tk window.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23. \cr \cr
 
 Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer.
 }
@@ -54,8 +54,10 @@ Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spa
 \examples{
 ######
 # data eire
-eire <- readShapePoly(system.file("etc/shapes/eire.shp", package="spdep")[1],
-ID="names", proj4string=CRS("+proj=utm +zone=30 +units=km"))
+if (require("spData", quietly=TRUE) && require("rgdal", quietly=TRUE)) {
+eire <- readOGR(system.file("shapes/eire.shp", package="spData")[1])
+row.names(eire) <- as.character(eire$names)
+proj4string(eire) <- CRS("+proj=utm +zone=30 +units=km")
 
 # a basic usage ...
 barmap(eire,"pale")
@@ -66,7 +68,7 @@ names.arg=c("not pale","pale"), names.attr=names(eire),
 criteria=NULL, identify=TRUE, cex.lab=0.8, pch=c(10,11), 
 xlab="Are majority people are pale ?", ylab="Percent", 
 axes=TRUE, lablong="longitude", lablat="latitude")
-
+}
 }
 \keyword{spatial}
 \keyword{univar}

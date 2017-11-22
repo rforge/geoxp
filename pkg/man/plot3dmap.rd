@@ -45,7 +45,7 @@ a vector of integer is created as a global variable in \code{last.select} object
 It corresponds to the number of spatial units selected just before leaving the Tk window.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23.}
 
 \author{Thomas-Agnan C., Aragon Y.,  Ruiz-Gazen A., Laurent T., Robidou L.}
 
@@ -67,6 +67,7 @@ immob.spdf = SpatialPointsDataFrame(immob.sp, immob)
 
 # optional : we add some contours that don't correspond to the spatial unit
 # but are nice for mapping
+if (require("maptools", quietly=TRUE)) {
 midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
 cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
 
@@ -75,14 +76,16 @@ plot3dmap(immob.spdf, c("prix.vente","prix.location","variation.vente"),
 box=FALSE, carte=cont_midiP, identify=TRUE, cex.lab=0.5,xlab="prix.vente",
 ylab="prix.location", zlab="variation.vente")
 
-
+}
 ######
 # data eire
-eire <- readShapePoly(system.file("etc/shapes/eire.shp", package="spdep")[1],
-ID="names", proj4string=CRS("+proj=utm +zone=30 +units=km"))
+if (require("spData", quietly=TRUE) && require("rgdal", quietly=TRUE)) {
+eire <- readOGR(system.file("shapes/eire.shp", package="spData")[1])
+row.names(eire) <- as.character(eire$names)
+proj4string(eire) <- CRS("+proj=utm +zone=30 +units=km")
 
 # an example of use
-plot3dmap(eire, c("A","RETSALE","INCOME"), xlab="A",ylab="RETSALE",zlab="INCOME")
+plot3dmap(eire, c("A","RETSALE","INCOME"), xlab="A",ylab="RETSALE",zlab="INCOME")}
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

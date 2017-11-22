@@ -2,6 +2,7 @@
 names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
 xlab="degree of isolation", ylab="Pairwise Mahalanobis distances", axes=FALSE, lablong="", lablat="")
 {
+envir = as.environment(1)
 # Verification of the Spatial Object sp.obj
 class.obj<-class(sp.obj)[1]
 
@@ -13,7 +14,7 @@ if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vecto
 # Is there a Tk window already open ?
 if(interactive())
 {
- if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all=TRUE))==2)
+ if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all.names=TRUE))==2)
  {
   assign("GeoXp.open", TRUE, envir = baseenv())
  }
@@ -74,7 +75,6 @@ if(!(3%in%dev.list())) dev.new()
 
 n=nrow(dataset)
 p=ncol(dataset)
-require(robustbase) # for robust Mahalanobis distance
 
 covr=covMcd(dataset,alpha=0.75)
 cinv=solve(covr$cov)
@@ -128,9 +128,20 @@ idxg<-sort(chibound,index.return=TRUE)
 # calcul des distances de Mahalanobis par site
 
 rd <- sqrt(mahalanobis(dataset, center = covr$center, cov = covr$cov))
-xarw <- arw(dataset, covr$center, covr$cov, alpha = 0.025)
-  ifelse(xarw$cn != Inf, alphab <- sqrt(c(xarw$cn, qchisq(c(0.75, 0.5, 0.25), ncol(dataset)))),
-  alphab <- sqrt(qchisq(c(0.975, 0.75, 0.5, 0.25), ncol(dataset))))
+
+pcrit<-ifelse(p <= 10,(0.24 - 0.003 * p)/sqrt(n), (0.252 - 0.0018 * p)/sqrt(n))
+ delta <- qchisq(1 - 0.025, p)
+ 
+ d2 <- mahalanobis(dataset, covr$center, covr$cov)
+ d2ord <- sort(d2)
+ dif <- pchisq(d2ord, p) - (0.5:n)/n
+ i <- (d2ord >= delta) & (dif > 0)
+ alfan<-ifelse(sum(i) == 0,0,max(dif[i]))
+ if (alfan < pcrit) 
+        alfan <- 0
+ cn<-ifelse(alfan > 0, max(d2ord[n - ceiling(n * alfan)], delta), Inf)
+
+alphab<-ifelse(cn != Inf, sqrt(c(cn, qchisq(c(0.75, 0.5, 0.25), ncol(dataset)))),sqrt(qchisq(c(0.975, 0.75, 0.5, 0.25), ncol(dataset))))
 
 
 chi2.quant<-rep(0,n)
@@ -644,7 +655,7 @@ quitfunc2<-function()
     tkdestroy(tt)
     assign("GeoXp.open", FALSE, envir = baseenv())
     print("Results have been saved in last.select object")
-    assign("last.select", which(obs,arr.ind=TRUE), envir = .GlobalEnv)
+    assign("last.select", which(obs,arr.ind=TRUE), envir = envir)
 }
 
 

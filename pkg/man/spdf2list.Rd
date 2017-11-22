@@ -34,7 +34,7 @@ of each boundary box.  It returns a matrix of numeric values with 2 columns
 each other by 3 rows of NaN.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}\cr \cr
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23. \cr \cr
 
 Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer.
 }
@@ -44,8 +44,9 @@ Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spa
 \seealso{\code{\link{polylist2list}}}
 
 \examples{
+if (require("maptools", quietly=TRUE)) {
 africa <- readShapePoly(system.file("shapes/Africa.shp", package = "GeoXp")[1])
 africa.contour<-spdf2list(africa)$poly
-}
+}}
 
 \keyword{manip}

@@ -2,28 +2,14 @@
 names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8,
 pch=16, col="lightblue3",xlab="", ylab="count", axes=FALSE, lablong="", lablat="")
 {
+envir = as.environment(1)
 # Verification of the Spatial Object sp.obj
 class.obj<-class(sp.obj)[1]
-
+spdf<-(class.obj=="SpatialPolygonsDataFrame")
 if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
 if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
 if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
 if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
-
-# Is there a Tk window already open ?
-if(interactive())
-{
- if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all=TRUE))==2)  # new environment
- {
-  assign("GeoXp.open", TRUE, envir = baseenv())
- }
- else
- {if(get("GeoXp.open",envir= baseenv()))
-   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
-  else
-  {assign("GeoXp.open", TRUE, envir = baseenv())}
- }
-}
 
 # we propose to refind the same arguments used in first version of GeoXp
 long<-coordinates(sp.obj)[,1]
@@ -40,7 +26,7 @@ listnomvar<-names.attr
  col3<-"lightblue3"
  
 # Code which was necessary in the previous version
- if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+# if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
 
 
  # for identifyng the selected sites
@@ -54,7 +40,7 @@ ifelse(identify, label<-row.names(listvar),label<-"")
   legends <- list(FALSE, FALSE, "", "")
   labvar <- c(xlab,ylab)
     
-if(names.arg[1]=="") names.arg<-levels(as.factor(var))
+if(names.arg[1]=="") names.arg<-levels(as.factor(var1))
     
   var1 = as.matrix(var1)
   var2 = as.matrix(var2)
@@ -105,7 +91,7 @@ boxfunc <- function()
     title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
     title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
-    carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+    carte(long=long, lat=lat,buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
     lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,method="Cluster",
     classe=var1,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,axis=axes,cex.lab=cex.lab)
             
@@ -156,7 +142,7 @@ cartfunc <- function()
  if (length(carte) != 0)
    {
     ifelse(!nocart,nocart<<-TRUE,nocart<<-FALSE)
-    carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+    carte(long=long, lat=lat,buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
     lablong=lablong, lablat=lablat, label=label, symbol=pch,couleurs=col,carte=carte,nocart=nocart,
     method="Cluster",classe=var1,legmap=legmap,legends=legends,labmod=names.arg,axis=axes,cex.lab=cex.lab)    
    }
@@ -177,7 +163,7 @@ SGfunc<-function()
      graphique(var1 = var2, var2 = var1, obs = obs, num = 3, graph = "Polyboxplot",
     labvar = labvar, symbol = pch, couleurs = col, labmod = names.arg,bin=varwidth)
    
-    carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+    carte(long=long, lat=lat,buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
     lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,method="Cluster",
     classe=var1,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,axis=axes,cex.lab=cex.lab)
             
@@ -206,7 +192,7 @@ quitfunc2<-function()
     tkdestroy(tt)
     assign("GeoXp.open", FALSE, envir = baseenv())
     print("Results have been saved in last.select object")
-    assign("last.select", which(obs), envir = .GlobalEnv)
+    assign("last.select", which(obs), envir = envir)
 }
 
 ####################################################
@@ -218,7 +204,7 @@ fnointer<-function()
  if (length(criteria) != 0)
  {
   ifelse(!nointer,nointer<<-TRUE,nointer<<-FALSE)
-  carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+  carte(long=long, lat=lat,buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
   lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,couleurs=col,
   method="Cluster",classe=var1,legmap=legmap,legends=legends,labmod=names.arg,axis=axes,cex.lab=cex.lab)     
  }
@@ -243,7 +229,7 @@ fbubble<-function()
   z <<- res2$z
   legmap <<- res2$legmap
   
- carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+ carte(long=long, lat=lat,buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
  lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,couleurs=col,
  method="Cluster",classe=var1,legmap=legmap,legends=legends,labmod=names.arg,axis=axes,cex.lab=cex.lab)
  
@@ -254,13 +240,34 @@ fbubble<-function()
 # représentation graphique
 ####################################################
 
-graphique(var1 = var2, var2 = var1, obs = obs, num = 3, graph = "Polyboxplot",
-labvar = labvar, symbol = pch, couleurs = col, labmod = names.arg,bin=varwidth)
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all.names=TRUE))==2)  # new environment
+ {
+  graphique(var1 = var2, var2 = var1, obs = obs, num = 3, graph = "Polyboxplot",
+  labvar = labvar, symbol = pch, couleurs = col, labmod = names.arg,bin=varwidth)
    
-carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
-lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,method="Cluster",
-classe=var1,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,axis=axes,cex.lab=cex.lab)
-    
+  carte(long=long, lat=lat,buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+  lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,method="Cluster",
+  classe=var1,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,axis=axes,cex.lab=cex.lab)
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {graphique(var1 = var2, var2 = var1, obs = obs, num = 3, graph = "Polyboxplot",
+  labvar = labvar, symbol = pch, couleurs = col, labmod = names.arg,bin=varwidth)
+   
+  carte(long=long, lat=lat,buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+  lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,method="Cluster",
+  classe=var1,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,axis=axes,cex.lab=cex.lab)
+  assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
+
+  
 ####################################################
 # Légende ou non ?
 ####################################################        
@@ -277,7 +284,7 @@ classe=var1,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,axis=axe
             loc <- locator(1)
             loc$name <- names(sp.obj[,names.var[1]])
             legends <<- list(legends[[1]], TRUE, legends[[4]], loc)
-            carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+            carte(long=long, lat=lat,buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
             lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,method="Cluster",
             classe=var1,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,axis=axes,cex.lab=cex.lab)    
         }
@@ -286,7 +293,7 @@ classe=var1,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,axis=axe
         {
             legends <<- list(legends[[2]], FALSE, legends[[4]], "")
             tkdestroy(tt1)
-            carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+            carte(long=long, lat=lat,buble=buble,  sp.obj=sp.obj, cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
             lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,method="Cluster",
             classe=var1,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,axis=axes,cex.lab=cex.lab)    
         }

@@ -1,4 +1,4 @@
-choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NULL,legends,col,pch)
+choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NULL,legends,col,pch, spdf=FALSE)
  {
     if((graphChoice == "Barplot")||(graphChoice == "Moran"))
      { if(graphChoice == "Barplot")
@@ -46,7 +46,7 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
             }
            else
             {
-             tt2 <- tktoplevel()
+             if(!spdf) {tt2 <- tktoplevel()}
 
               OnOK3 <- function()
                {
@@ -90,7 +90,7 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
                       loc$name <- varChoice1
 
                       legends<<-list(legends[[1]],TRUE,legends[[3]],loc)
-                      print(legends)
+                      #print(legends)
                       tkdestroy(tt1)
                      }
 
@@ -170,7 +170,8 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
               tkdestroy(tt2)
             }
 
-           labelText13 <- tclVar("Do you want also symbols on the map ?")
+          if(!spdf)
+           {labelText13 <- tclVar("Do you want also symbols on the map ?")
            label13 <- tklabel(tt2,justify = "center", wraplength = "3i", text=tclvalue(labelText13))
            tkconfigure(label13, textvariable=labelText13)
            tkgrid(label13,columnspan=2)
@@ -181,6 +182,9 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
            tkgrid(tklabel(tt2,text="    "))
            tkfocus(tt2)
            tkwait.window(tt2)
+           }
+           else
+           {OnOK4()}
            tkdestroy(tt)
           }
 

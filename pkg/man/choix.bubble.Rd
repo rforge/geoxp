@@ -21,7 +21,7 @@ choix.bubble(buble,listvar,listnomvar,legends)
 \details{This function is not an interactive function.}
 
 \value{A list of parameters which permit to use the function carte.}
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23.}
 \author{Laurent T.}
 
 \keyword{spatial}

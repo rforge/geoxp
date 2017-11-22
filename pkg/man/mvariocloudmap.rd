@@ -8,9 +8,10 @@ variocloud. The number of couples of sites plotted can be reduced by considering
 couples above a quantile regression curve.
 }
 \usage{
-mvariocloudmap(sp.obj, nb.obj, names.var, quantiles=NULL,
-names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
-xlab="Pairwise spatial distances", ylab="Pairwise Mahalanobis distances", axes=FALSE, lablong="", lablat="")
+mvariocloudmap(sp.obj, nb.obj, names.var, quantiles=TRUE, 
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8,
+pch=16, col="lightblue3", xlab="Pairwise spatial distances", 
+ylab="Pairwise Mahalanobis distances", axes=FALSE, lablong="", lablat="")
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -18,7 +19,7 @@ xlab="Pairwise spatial distances", ylab="Pairwise Mahalanobis distances", axes=F
   \item{sp.obj}{object of class extending Spatial-class}
   \item{nb.obj}{object of class nb}
   \item{names.var}{a vector of character; attribute names or column numbers in attribute table}
-  \item{quantiles}{the value of alpha for representing alpha-quantile regression}
+  \item{quantiles}{a boolean to represent the Additive Quantile Regression Smoothing}
   \item{names.attr}{names to use in panel (if different from the names of variable used in sp.obj)}
   \item{criteria}{a vector of boolean of size the number of spatial units, which permit to represent preselected sites with a cross, using the tcltk window}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of the vertices of the polygon}
@@ -48,7 +49,7 @@ just before leaving the Tk window.
 }
 
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} }
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23.}
 
 \author{Fizmoser P., Thomas-Agnan C., Ruiz-Gazen A., Laurent T.}
 

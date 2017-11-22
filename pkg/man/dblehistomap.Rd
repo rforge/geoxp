@@ -8,9 +8,10 @@ to a value of \code{names.var[1]} and \code{names.var[2]} and there is interacti
 windows created.}
 
 \usage{
-dblehistomap(sp.obj, names.var, nbcol=c(10,10), type = c("count","percent", "density"),
-names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16,
-col=c("grey","lightblue3"), xlab=c("",""), ylab=c("count","count"), axes=FALSE, lablong="", lablat="")
+dblehistomap(sp.obj, names.var, nbcol=c(10,10), 
+type = c("count","percent", "density"), names.attr=names(sp.obj), criteria=NULL, 
+carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col=c("grey","lightblue3"), 
+xlab=c("",""), ylab=c("count","count"), axes=FALSE, lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -40,7 +41,7 @@ a vector of integer is created as a global variable in \code{last.select} object
 It corresponds to the number of spatial units selected just before leaving the Tk window.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23.}
 
 \author{Thomas-Agnan C., Aragon Y., Ruiz-Gazen A., Laurent T., Robidou L.}
 
@@ -62,6 +63,7 @@ immob.spdf = SpatialPointsDataFrame(immob.sp, immob)
 
 # optional : we add some contours that don't correspond to the spatial unit
 # but are nice for mapping
+require("maptools")
 midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
 cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
 

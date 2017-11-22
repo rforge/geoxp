@@ -41,7 +41,7 @@ It corresponds to the number of spatial units selected just before leaving the T
 
 \note{The Gini Index is given in the tcltk window (see function \code{gini} for the formula used to calculate it).}
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23.}
 
 \author{Thomas-Agnan C., Aragon Y.,  Ruiz-Gazen A., Laurent T., Robidou L.}
 
@@ -50,8 +50,10 @@ It corresponds to the number of spatial units selected just before leaving the T
 \examples{
 ######
 # data eire
-eire <- readShapePoly(system.file("etc/shapes/eire.shp", package="spdep")[1],
-ID="names", proj4string=CRS("+proj=utm +zone=30 +units=km"))
+if (require("spData", quietly=TRUE) && require("rgdal", quietly=TRUE)) {
+eire <- readOGR(system.file("shapes/eire.shp", package="spData")[1])
+row.names(eire) <- as.character(eire$names)
+proj4string(eire) <- CRS("+proj=utm +zone=30 +units=km")
 
 # a basic usage ...
 ginimap(eire,"INCOME")
@@ -60,6 +62,7 @@ ginimap(eire,"INCOME")
 ginimap(eire,"INCOME",criteria=(eire$pale==1),
 identify=TRUE, pch=5, col="orange",
 axes=TRUE, lablong="X", lablat="Y")
+}
 }
 
 

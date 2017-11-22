@@ -2,6 +2,7 @@
 names.arg="", names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16,
 col="lightblue3", xlab="Cluster", ylab="Number", axes=FALSE, lablong="", lablat="")
 {
+envir = as.environment(1)
 # Verification of the Spatial Object sp.obj
 class.obj<-class(sp.obj)[1]
 
@@ -13,7 +14,7 @@ if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vecto
 # Is there a Tk window already open ?
 if(interactive())
 {
- if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all=TRUE))==2)
+ if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all.names=TRUE))==2)
  {
   assign("GeoXp.open", TRUE, envir = baseenv())
  }
@@ -344,7 +345,7 @@ quitfunc2<-function()
     assign("GeoXp.open", FALSE, envir = baseenv())
     print("Results have saved in last.select object")
     res<-list(obs=which(obs),vectclass=vectclass)
-    assign("last.select", res, envir = .GlobalEnv)
+    assign("last.select", res, envir = envir)
     
 }
 ####################################################

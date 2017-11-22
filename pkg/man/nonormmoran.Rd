@@ -37,7 +37,7 @@ a list with \code{nobs} is the number of observations,
 \code{imean} is E(I), \code{ivar} is var(I), \code{istat} is the normalized Moran's I statistic
 (corresponding to \eqn{Z_I}{Z_i}), and \code{prob} the associated p-value.}
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (20010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23.}
 
 \author{Translated into R from Jim Lessage's \emph{Spatial Econometrics Toolbox}, \url{http://www.spatial-econometrics.com/} }
 

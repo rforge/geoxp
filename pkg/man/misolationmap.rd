@@ -8,8 +8,9 @@ the x-axis and a map
 }
 \usage{
 misolationmap(sp.obj, nb.obj, names.var, propneighb=0.4,chisqqu=0.975,
-names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
-xlab="degree of isolation", ylab="Pairwise Mahalanobis distances", axes=FALSE, lablong="", lablat="")
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8,
+pch=16, col="lightblue3", xlab="degree of isolation", 
+ylab="Pairwise Mahalanobis distances", axes=FALSE, lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -54,30 +55,27 @@ It corresponds to the numbers of spatial unit corresponding to couple of sites s
 just before leaving the Tk window.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23.}
 
 \author{Fizmoser P., Thomas-Agnan C., Ruiz-Gazen A., Laurent T.,}
 
 \examples{
-## data kola
-data(moss)
-data(kola.background)
-
-# transformation of some variables
-moss[,c("Ag","As","Bi","Cd","Co","Cu","Ni")]<-log10(moss[, c("Ag","As","Bi","Cd","Co","Cu","Ni")])
+## data radarImage
+require("robustbase")
+data(radarImage)
 
 # creation of a SpatialClass object
-kola.sp <- SpatialPoints(moss[,c("XCOO","YCOO")])
-kola.spdf <- SpatialPointsDataFrame(kola.sp, moss)
+radarImage.sp <- SpatialPoints(radarImage[1300:1573,c("X.coord","Y.coord")])
+radarImage.spdf <- SpatialPointsDataFrame(radarImage.sp, radarImage[1300:1573,])
 
 # creation of a spatial weight matrix nb
-kola.nb <- dnearneigh(kola.sp, 0,50000 )
+radarImage.nb <- dnearneigh(radarImage.sp, 0,1.5 )
 
 # example of use of misolationmap
 # The statistics are calculated by taking into account variables
 # Ag,As,Bi,Cd,Co,Cu,Ni
-misolationmap(kola.spdf,kola.nb,names.var=c("Ag","As","Bi","Cd","Co","Cu","Ni"),
-propneighb=0.30,chisqqu=0.95, carte= kola.background,identify=TRUE, cex.lab=0.5)
+misolationmap(radarImage.spdf,radarImage.nb,names.var=c("Band.1","Band.2","Band.3"),
+propneighb=0.30,chisqqu=0.95, identify=TRUE, cex.lab=0.5)
 
 }
 
